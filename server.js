@@ -91,7 +91,7 @@ app.get('/api/auth/me', authenticate, (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        res.json(user);
+        res.json({ user });
     } catch (err) {
         console.error('Get user error:', err);
         res.status(500).json({ error: 'Server error' });
@@ -129,6 +129,35 @@ app.delete('/api/users/account', authenticate, (req, res) => {
 
 // ==================== RECIPE ROUTES ====================
 
+// Create a recipe
+app.post('/api/recipes', authenticate, (req, res) => {
+    try {
+        const { name, description, cookTime, servings, difficulty, cuisine, emoji, ingredients, instructions } = req.body;
+        if (!name) {
+            return res.status(400).json({ error: 'Recipe name is required' });
+        }
+        const ingredientsStr = Array.isArray(ingredients) ? ingredients.join(',') : (ingredients || '');
+        const recipe = RecipeDB.create(req.userId, {
+            name,
+            description,
+            cook_time: cookTime,
+            servings,
+            difficulty,
+            cuisine,
+            emoji,
+            ingredients: ingredientsStr,
+            instructions
+        });
+        if (!recipe) {
+            return res.status(500).json({ error: 'Failed to create recipe' });
+        }
+        res.status(201).json(recipe);
+    } catch (err) {
+        console.error('Create recipe error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 // Get all recipes
 app.get('/api/recipes', (req, res) => {
     try {
@@ -148,6 +177,17 @@ app.get('/api/recipes/discover', authenticate, (req, res) => {
         res.json(recipes);
     } catch (err) {
         console.error('Get discover recipes error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get recipes created by current user
+app.get('/api/recipes/user/created', authenticate, (req, res) => {
+    try {
+        const recipes = RecipeDB.getByUser(req.userId);
+        res.json(recipes);
+    } catch (err) {
+        console.error('Get user recipes error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -206,6 +246,24 @@ app.delete('/api/recipes/:id/like', authenticate, (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Unlike recipe error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete a recipe (only if created by current user)
+app.delete('/api/recipes/:id', authenticate, (req, res) => {
+    try {
+        const recipe = RecipeDB.getById(parseInt(req.params.id));
+        if (!recipe) {
+            return res.status(404).json({ error: 'Recipe not found' });
+        }
+        if (recipe.createdBy !== req.userId) {
+            return res.status(403).json({ error: 'You can only delete your own recipes' });
+        }
+        RecipeDB.delete(parseInt(req.params.id));
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Delete recipe error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -319,14 +377,22 @@ app.delete('/api/mealplan/:date/:mealType', authenticate, (req, res) => {
 app.get('/api/stats', authenticate, (req, res) => {
     try {
         const user = UserDB.getById(req.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
         const likedRecipes = RecipeDB.getLiked(req.userId);
         const groceryItems = GroceryDB.getAll(req.userId);
         const mealPlan = MealPlanDB.getAll(req.userId);
 
-        // Calculate days as member
-        const createdAt = new Date(user.createdAt);
-        const now = new Date();
-        const memberDays = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24)) + 1;
+        // Calculate days as member (handle null/invalid dates)
+        let memberDays = 1;
+        if (user.createdAt) {
+            const createdAt = new Date(user.createdAt);
+            if (!isNaN(createdAt.getTime())) {
+                const now = new Date();
+                memberDays = Math.max(1, Math.floor((now - createdAt) / (1000 * 60 * 60 * 24)) + 1);
+            }
+        }
 
         res.json({
             likedCount: likedRecipes.length,

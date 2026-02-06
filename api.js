@@ -83,7 +83,8 @@ const TenderAPI = {
 
     async getCurrentUser() {
         const data = await this.request('/auth/me');
-        return data.user; // <-- important
+        // Handle both { user: {...} } and direct {...} response formats
+        return data.user || data;
     },
 
     isLoggedIn() {
@@ -105,6 +106,13 @@ const TenderAPI = {
     },
 
     // ==================== RECIPES ====================
+
+    async createRecipe(data) {
+        return this.request('/recipes', {
+            method: 'POST',
+            body: data,
+        });
+    },
 
     async getRecipes() {
         return this.request('/recipes');
@@ -132,6 +140,14 @@ const TenderAPI = {
 
     async unlikeRecipe(id) {
         return this.request(`/recipes/${id}/like`, { method: 'DELETE' });
+    },
+
+    async getMyRecipes() {
+        return this.request('/recipes/user/created');
+    },
+
+    async deleteRecipe(id) {
+        return this.request(`/recipes/${id}`, { method: 'DELETE' });
     },
 
     // ==================== GROCERY ====================

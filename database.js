@@ -126,6 +126,13 @@ async function initDatabase() {
         )
     `);
 
+    // Add created_by column if it doesn't exist (migration)
+    try {
+        db.run('ALTER TABLE recipes ADD COLUMN created_by INTEGER');
+    } catch (e) {
+        // Column already exists, ignore
+    }
+
     // Insert sample recipes if table is empty
     const result = db.exec('SELECT COUNT(*) as count FROM recipes');
     const count = result.length > 0 ? result[0].values[0][0] : 0;
@@ -192,19 +199,23 @@ function runUpdate(sql, params = []) {
 // Insert sample recipes
 function insertSampleRecipes() {
     const recipes = [
-        { name: 'Pasta Carbonara', description: 'Classic Italian pasta with eggs, cheese, and pancetta', cook_time: 25, servings: 4, difficulty: 'medium', cuisine: 'italian', emoji: '🍝', ingredients: 'spaghetti,eggs,parmesan,pancetta,black pepper', instructions: '1. Cook pasta. 2. Fry pancetta. 3. Mix eggs and cheese. 4. Combine all.' },
-        { name: 'Chicken Tacos', description: 'Flavorful Mexican tacos with seasoned chicken', cook_time: 20, servings: 4, difficulty: 'easy', cuisine: 'mexican', emoji: '🌮', ingredients: 'chicken breast,taco shells,lettuce,tomato,cheese,sour cream', instructions: '1. Season and cook chicken. 2. Warm shells. 3. Assemble tacos.' },
-        { name: 'Caesar Salad', description: 'Fresh romaine with creamy Caesar dressing', cook_time: 15, servings: 2, difficulty: 'easy', cuisine: 'american', emoji: '🥗', ingredients: 'romaine lettuce,parmesan,croutons,caesar dressing,lemon', instructions: '1. Chop lettuce. 2. Add dressing. 3. Top with croutons and cheese.' },
-        { name: 'Beef Stir Fry', description: 'Quick and healthy Asian-inspired dish', cook_time: 30, servings: 4, difficulty: 'medium', cuisine: 'chinese', emoji: '🥘', ingredients: 'beef strips,bell peppers,broccoli,soy sauce,garlic,ginger', instructions: '1. Slice beef and veggies. 2. Stir fry beef. 3. Add veggies and sauce.' },
-        { name: 'Margherita Pizza', description: 'Classic Italian pizza with fresh ingredients', cook_time: 45, servings: 4, difficulty: 'medium', cuisine: 'italian', emoji: '🍕', ingredients: 'pizza dough,tomato sauce,mozzarella,fresh basil,olive oil', instructions: '1. Roll dough. 2. Add sauce and cheese. 3. Bake at 450F. 4. Add basil.' },
-        { name: 'Sushi Rolls', description: 'Homemade maki rolls with fresh fish', cook_time: 40, servings: 4, difficulty: 'hard', cuisine: 'japanese', emoji: '🍱', ingredients: 'sushi rice,nori,salmon,cucumber,avocado,rice vinegar', instructions: '1. Prepare rice. 2. Lay nori. 3. Add fillings. 4. Roll and slice.' },
-        { name: 'Butter Chicken', description: 'Creamy Indian curry with tender chicken', cook_time: 35, servings: 4, difficulty: 'medium', cuisine: 'indian', emoji: '🍛', ingredients: 'chicken thighs,tomatoes,cream,butter,garam masala,garlic', instructions: '1. Marinate chicken. 2. Make sauce. 3. Simmer together. 4. Serve with rice.' },
-        { name: 'Greek Gyros', description: 'Mediterranean wrap with tzatziki sauce', cook_time: 25, servings: 4, difficulty: 'medium', cuisine: 'greek', emoji: '🥙', ingredients: 'lamb or chicken,pita bread,tzatziki,tomato,onion,lettuce', instructions: '1. Season and cook meat. 2. Warm pita. 3. Assemble with toppings.' },
-        { name: 'Pad Thai', description: 'Classic Thai noodle dish', cook_time: 30, servings: 4, difficulty: 'medium', cuisine: 'thai', emoji: '🍜', ingredients: 'rice noodles,shrimp,eggs,bean sprouts,peanuts,lime', instructions: '1. Soak noodles. 2. Stir fry shrimp and eggs. 3. Add noodles and sauce.' },
-        { name: 'French Onion Soup', description: 'Rich soup with melted cheese topping', cook_time: 60, servings: 4, difficulty: 'medium', cuisine: 'french', emoji: '🍲', ingredients: 'onions,beef broth,bread,gruyere cheese,butter,thyme', instructions: '1. Caramelize onions. 2. Add broth. 3. Top with bread and cheese. 4. Broil.' },
-        { name: 'Bibimbap', description: 'Korean rice bowl with vegetables and egg', cook_time: 35, servings: 2, difficulty: 'medium', cuisine: 'korean', emoji: '🍚', ingredients: 'rice,beef,spinach,carrots,zucchini,egg,gochujang', instructions: '1. Cook rice. 2. Prepare toppings. 3. Arrange in bowl. 4. Add egg and sauce.' },
-        { name: 'Fish and Chips', description: 'British classic with crispy battered fish', cook_time: 40, servings: 4, difficulty: 'medium', cuisine: 'british', emoji: '🐟', ingredients: 'cod fillets,potatoes,flour,beer,tartar sauce', instructions: '1. Make batter. 2. Fry chips. 3. Batter and fry fish. 4. Serve with sauce.' }
+        { name: 'Pasta Carbonara', description: 'Classic Italian pasta with eggs, cheese, and pancetta', cook_time: 25, servings: 4, difficulty: 'medium', cuisine: 'italian', emoji: '🍝', ingredients: '350g spaghetti,100g pancetta,3 eggs,50g parmesan,2 cloves garlic,black pepper', instructions: '1. Boil spaghetti in salted water until al dente. 2. Fry pancetta with garlic until crisp. 3. Beat eggs with grated parmesan and pepper. 4. Drain pasta, reserve some water. 5. Toss hot pasta with pancetta, remove from heat, stir in egg mixture with splash of pasta water until creamy.' },
+        { name: 'Chicken Tacos', description: 'Flavorful Mexican tacos with seasoned chicken', cook_time: 20, servings: 4, difficulty: 'easy', cuisine: 'mexican', emoji: '🌮', ingredients: '500g chicken breast,1 tbsp oil,2 tsp taco seasoning,8 taco shells,lettuce,tomato,cheese,sour cream', instructions: '1. Slice chicken and toss with seasoning. 2. Cook in skillet with oil over medium-high for 6–8 minutes. 3. Warm taco shells. 4. Fill shells with chicken and toppings.' },
+        { name: 'Caesar Salad', description: 'Fresh romaine with creamy Caesar dressing', cook_time: 15, servings: 2, difficulty: 'easy', cuisine: 'american', emoji: '🥗', ingredients: '2 romaine hearts,50g parmesan,1 cup croutons,1/3 cup caesar dressing,1 lemon', instructions: '1. Chop romaine and place in bowl. 2. Add croutons and grated parmesan. 3. Toss with dressing and a squeeze of lemon. 4. Serve immediately.' },
+        { name: 'Beef Stir Fry', description: 'Quick and healthy Asian-inspired dish', cook_time: 30, servings: 4, difficulty: 'medium', cuisine: 'chinese', emoji: '🥘', ingredients: '500g beef strips,1 bell pepper,1 cup broccoli,2 tbsp soy sauce,2 cloves garlic,1 tsp ginger,1 tbsp oil', instructions: '1. Heat oil in wok. 2. Stir fry beef for 3–4 minutes. 3. Add garlic and ginger for 30 seconds. 4. Add vegetables and cook 4–5 minutes. 5. Add soy sauce and toss to coat.' },
+        { name: 'Margherita Pizza', description: 'Classic Italian pizza with fresh ingredients', cook_time: 45, servings: 4, difficulty: 'medium', cuisine: 'italian', emoji: '🍕', ingredients: '1 pizza dough,1/2 cup tomato sauce,200g mozzarella,fresh basil,1 tbsp olive oil', instructions: '1. Preheat oven to 450F. 2. Roll dough and place on tray. 3. Spread sauce, add mozzarella. 4. Bake 10–12 minutes until crust is golden. 5. Top with basil and drizzle olive oil.' },
+        { name: 'Sushi Rolls', description: 'Homemade maki rolls with fresh fish', cook_time: 40, servings: 4, difficulty: 'hard', cuisine: 'japanese', emoji: '🍱', ingredients: '2 cups sushi rice,2 tbsp rice vinegar,4 nori sheets,200g salmon,1 cucumber,1 avocado', instructions: '1. Cook and season rice with vinegar. 2. Place nori on mat and spread rice thinly. 3. Add salmon, cucumber, avocado. 4. Roll tightly and slice into pieces.' },
+        { name: 'Butter Chicken', description: 'Creamy Indian curry with tender chicken', cook_time: 35, servings: 4, difficulty: 'medium', cuisine: 'indian', emoji: '🍛', ingredients: '600g chicken thighs,2 tbsp butter,1 cup crushed tomatoes,1/2 cup cream,1 tbsp garam masala,2 cloves garlic', instructions: '1. Brown chicken in butter. 2. Add garlic and spices and cook 1 minute. 3. Add tomatoes and simmer 15 minutes. 4. Stir in cream and simmer 5 more minutes. 5. Serve with rice.' },
+        { name: 'Greek Gyros', description: 'Mediterranean wrap with tzatziki sauce', cook_time: 25, servings: 4, difficulty: 'medium', cuisine: 'greek', emoji: '🥙', ingredients: '500g chicken or lamb,4 pita breads,1 cup tzatziki,1 tomato,1 onion,lettuce', instructions: '1. Season and grill meat until cooked through. 2. Slice thinly. 3. Warm pitas. 4. Fill with meat, veggies, and tzatziki.' },
+        { name: 'Pad Thai', description: 'Classic Thai noodle dish', cook_time: 30, servings: 4, difficulty: 'medium', cuisine: 'thai', emoji: '🍜', ingredients: '200g rice noodles,200g shrimp,2 eggs,1 cup bean sprouts,1/4 cup peanuts,1 lime,3 tbsp pad thai sauce', instructions: '1. Soak noodles in warm water. 2. Stir fry shrimp, then scramble eggs. 3. Add noodles and sauce. 4. Toss in bean sprouts. 5. Serve topped with peanuts and lime.' },
+        { name: 'French Onion Soup', description: 'Rich soup with melted cheese topping', cook_time: 60, servings: 4, difficulty: 'medium', cuisine: 'french', emoji: '🍲', ingredients: '4 onions,2 tbsp butter,1L beef broth,4 slices bread,100g gruyere,1 tsp thyme', instructions: '1. Slice onions and cook in butter over low heat 30 minutes until caramelized. 2. Add broth and thyme, simmer 20 minutes. 3. Pour into bowls, top with bread and cheese. 4. Broil until cheese melts.' },
+        { name: 'Bibimbap', description: 'Korean rice bowl with vegetables and egg', cook_time: 35, servings: 2, difficulty: 'medium', cuisine: 'korean', emoji: '🍚', ingredients: '2 cups rice,200g beef,spinach,carrots,zucchini,2 eggs,gochujang', instructions: '1. Cook rice. 2. Sauté vegetables and beef separately. 3. Fry eggs sunny-side up. 4. Arrange everything over rice and serve with gochujang.' },
+        { name: 'Fish and Chips', description: 'British classic with crispy battered fish', cook_time: 40, servings: 4, difficulty: 'medium', cuisine: 'british', emoji: '🐟', ingredients: '4 cod fillets,4 potatoes,1 cup flour,1 cup beer,oil,salt', instructions: '1. Cut potatoes into fries and fry until golden. 2. Mix flour and beer for batter. 3. Dip fish in batter and fry until crisp. 4. Serve hot with fries.' },
+        { name: 'Ratatouille', description: 'French vegetable stew with tomato and herbs', cook_time: 45, servings: 4, difficulty: 'medium', cuisine: 'french', emoji: '🍆', ingredients: '1 eggplant,2 zucchini,3 roma tomatoes,1/2 onion,4 cloves garlic,400g crushed tomatoes,olive oil,herbs', instructions: '1. Preheat oven to 375F. 2. Sauté onion and garlic in olive oil. 3. Add crushed tomatoes and simmer 15 minutes. 4. Pour sauce into baking dish, layer sliced vegetables. 5. Cover and bake 30 minutes.' },
+        { name: 'Pho', description: 'Vietnamese beef noodle soup with aromatic broth', cook_time: 90, servings: 4, difficulty: 'hard', cuisine: 'vietnamese', emoji: '🍲', ingredients: '1 onion,1 piece ginger,8 cups beef stock,rice noodles,200g beef,spices,fish sauce', instructions: '1. Char onion and ginger. 2. Simmer with spices and stock 30–40 minutes. 3. Cook rice noodles separately. 4. Add sliced beef to hot broth. 5. Serve over noodles with herbs.' },
+        { name: 'Mac and Cheese', description: 'Classic baked macaroni and cheese', cook_time: 40, servings: 4, difficulty: 'easy', cuisine: 'american', emoji: '🧀', ingredients: '450g macaroni,6 tbsp butter,5 tbsp flour,2.5 cups milk,2 cups shredded cheese,1/2 cup breadcrumbs', instructions: '1. Preheat oven to 400F. 2. Boil pasta until al dente. 3. Make roux with butter and flour, whisk in milk. 4. Stir in cheese until melted. 5. Combine with pasta, top with breadcrumbs, bake 15–20 minutes.' }
     ];
+
 
     for (const recipe of recipes) {
         runInsert(
@@ -405,8 +416,41 @@ const RecipeDB = {
         return runInsert('INSERT OR IGNORE INTO disliked_recipes (user_id, recipe_id) VALUES (?, ?)', [userId, recipeId]);
     },
 
+    create(userId, data) {
+        const id = runInsert(
+            `INSERT INTO recipes (name, description, cook_time, servings, difficulty, cuisine, emoji, ingredients, instructions, created_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                data.name,
+                data.description || '',
+                data.cook_time || 0,
+                data.servings || 4,
+                data.difficulty || 'medium',
+                data.cuisine || '',
+                data.emoji || '🍽️',
+                data.ingredients || '',
+                data.instructions || '',
+                userId
+            ]
+        );
+        if (!id) return null;
+        return this.getById(id);
+    },
+
     unlike(userId, recipeId) {
         runUpdate('DELETE FROM liked_recipes WHERE user_id = ? AND recipe_id = ?', [userId, recipeId]);
+    },
+
+    getByUser(userId) {
+        const recipes = runQuery('SELECT * FROM recipes WHERE created_by = ? ORDER BY created_at DESC', [userId]);
+        return recipes.map(this.formatRecipe);
+    },
+
+    delete(id) {
+        runUpdate('DELETE FROM liked_recipes WHERE recipe_id = ?', [id]);
+        runUpdate('DELETE FROM disliked_recipes WHERE recipe_id = ?', [id]);
+        runUpdate('DELETE FROM meal_plans WHERE recipe_id = ?', [id]);
+        runUpdate('DELETE FROM recipes WHERE id = ?', [id]);
     },
 
     formatRecipe(recipe) {
@@ -421,6 +465,7 @@ const RecipeDB = {
             emoji: recipe.emoji,
             ingredients: recipe.ingredients ? recipe.ingredients.split(',') : [],
             instructions: recipe.instructions,
+            createdBy: recipe.created_by || null,
             createdAt: recipe.created_at
         };
     }
