@@ -1,4 +1,4 @@
-# 3498 Software Engineering Project – Recipe App
+# 3498 Software Engineering Project – Tender App
 
 This project is a Node.js web application with a backend server, a database, and a web dashboard interface.
 
