@@ -146,8 +146,31 @@ const TenderAPI = {
         return this.request('/recipes/user/created');
     },
 
+    async updateRecipe(id, data) {
+        return this.request(`/recipes/${id}`, {
+            method: 'PUT',
+            body: data,
+        });
+    },
+
     async deleteRecipe(id) {
         return this.request(`/recipes/${id}`, { method: 'DELETE' });
+    },
+
+    // ==================== ADMIN ====================
+
+    async promoteToAdmin(email) {
+        return this.request('/admin/promote', {
+            method: 'POST',
+            body: email ? { email } : {},
+        });
+    },
+
+    async demoteAdmin(email) {
+        return this.request('/admin/demote', {
+            method: 'POST',
+            body: { email },
+        });
     },
 
     // ==================== GROCERY ====================

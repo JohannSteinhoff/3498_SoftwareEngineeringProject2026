@@ -728,12 +728,12 @@
                     <div class="phone-header">
                         <h3>Tonight's Dinner?</h3>
                     </div>
-                    <div class="recipe-card">
-                        <div class="recipe-image">🍝</div>
+                    <div class="recipe-card" id="hero-recipe-card">
+                        <div class="recipe-image" id="hero-recipe-emoji">🍝</div>
                         <div class="recipe-info">
-                            <h4>Creamy Tuscan Pasta</h4>
-                            <p>30 min • 4 servings • Easy</p>
-                            <div class="recipe-tags">
+                            <h4 id="hero-recipe-name">Creamy Tuscan Pasta</h4>
+                            <p id="hero-recipe-meta">30 min • 4 servings • Easy</p>
+                            <div class="recipe-tags" id="hero-recipe-tags">
                                 <span class="tag">Italian</span>
                                 <span class="tag">Vegetarian</span>
                             </div>
@@ -954,26 +954,70 @@
             });
         });
 
+        // Recipe data for the phone mockup
+        const heroRecipes = [
+            { emoji: '🍝', name: 'Creamy Tuscan Pasta', meta: '30 min • 4 servings • Easy', tags: ['Italian', 'Vegetarian'] },
+            { emoji: '🍣', name: 'Spicy Tuna Roll Bowl', meta: '20 min • 2 servings • Medium', tags: ['Japanese', 'Seafood'] },
+            { emoji: '🌮', name: 'Street-Style Tacos', meta: '25 min • 3 servings • Easy', tags: ['Mexican', 'Spicy'] },
+            { emoji: '🍛', name: 'Butter Chicken Curry', meta: '45 min • 4 servings • Medium', tags: ['Indian', 'Comfort'] },
+            { emoji: '🥗', name: 'Mediterranean Bowl', meta: '15 min • 2 servings • Easy', tags: ['Healthy', 'Fresh'] },
+            { emoji: '🍔', name: 'Smash Burger Deluxe', meta: '20 min • 2 servings • Easy', tags: ['American', 'Classic'] },
+            { emoji: '🍜', name: 'Spicy Ramen', meta: '35 min • 2 servings • Medium', tags: ['Japanese', 'Soup'] },
+            { emoji: '🥘', name: 'Shakshuka', meta: '25 min • 3 servings • Easy', tags: ['Middle Eastern', 'Brunch'] },
+            { emoji: '🍕', name: 'Margherita Pizza', meta: '40 min • 4 servings • Medium', tags: ['Italian', 'Classic'] },
+            { emoji: '🥙', name: 'Chicken Shawarma Wrap', meta: '30 min • 2 servings • Easy', tags: ['Lebanese', 'Protein'] },
+        ];
+
+        let currentRecipeIndex = 0;
+
+        function showNextRecipe(direction) {
+            const card = document.getElementById('hero-recipe-card');
+            const xDir = direction === 'like' ? 100 : -100;
+            const rotDir = direction === 'like' ? 10 : -10;
+
+            card.style.transition = 'transform 0.3s, opacity 0.3s';
+            card.style.transform = `translateX(${xDir}px) rotate(${rotDir}deg)`;
+            card.style.opacity = '0';
+
+            setTimeout(() => {
+                currentRecipeIndex = (currentRecipeIndex + 1) % heroRecipes.length;
+                const recipe = heroRecipes[currentRecipeIndex];
+
+                document.getElementById('hero-recipe-emoji').textContent = recipe.emoji;
+                document.getElementById('hero-recipe-name').textContent = recipe.name;
+                document.getElementById('hero-recipe-meta').textContent = recipe.meta;
+
+                const tagsEl = document.getElementById('hero-recipe-tags');
+                tagsEl.innerHTML = recipe.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+                card.style.transition = 'none';
+                card.style.transform = `translateX(${-xDir}px) rotate(0)`;
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        card.style.transition = 'transform 0.3s, opacity 0.3s';
+                        card.style.transform = 'translateX(0) rotate(0)';
+                        card.style.opacity = '1';
+                    });
+                });
+            }, 300);
+        }
+
         // Swipe button animations
         document.querySelectorAll('.swipe-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const card = document.querySelector('.recipe-card');
-                if (this.classList.contains('like')) {
-                    card.style.transform = 'translateX(100px) rotate(10deg)';
-                    card.style.opacity = '0';
-                } else {
-                    card.style.transform = 'translateX(-100px) rotate(-10deg)';
-                    card.style.opacity = '0';
-                }
+                const direction = this.classList.contains('like') ? 'like' : 'nope';
+                showNextRecipe(direction);
+            });
+        });
 
-                setTimeout(() => {
-                    card.style.transition = 'none';
-                    card.style.transform = 'translateX(0) rotate(0)';
-                    card.style.opacity = '1';
-                    setTimeout(() => {
-                        card.style.transition = 'all 0.3s';
-                    }, 50);
-                }, 300);
+        // Auto-rotate recipes every 3 seconds (pauses when user interacts)
+        let autoRotateTimer = setInterval(() => showNextRecipe('like'), 3000);
+
+        document.querySelectorAll('.swipe-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                clearInterval(autoRotateTimer);
+                autoRotateTimer = setInterval(() => showNextRecipe('like'), 3000);
             });
         });
     </script>

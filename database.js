@@ -133,6 +133,13 @@ async function initDatabase() {
         // Column already exists, ignore
     }
 
+    // Add is_admin column if it doesn't exist (migration)
+    try {
+        db.run('ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0');
+    } catch (e) {
+        // Column already exists, ignore
+    }
+
     // Insert sample recipes if table is empty
     const result = db.exec('SELECT COUNT(*) as count FROM recipes');
     const count = result.length > 0 ? result[0].values[0][0] : 0;
@@ -352,6 +359,18 @@ const UserDB = {
         runUpdate('DELETE FROM users WHERE id = ?', [id]);
     },
 
+    hasAdmins() {
+        const admins = runQuery('SELECT id FROM users WHERE is_admin = 1');
+        return admins.length > 0;
+    },
+
+    setAdmin(email, isAdmin) {
+        const users = runQuery('SELECT id FROM users WHERE email = ?', [email.toLowerCase()]);
+        if (users.length === 0) return null;
+        runUpdate('UPDATE users SET is_admin = ? WHERE email = ?', [isAdmin ? 1 : 0, email.toLowerCase()]);
+        return this.getById(users[0].id);
+    },
+
     formatUser(user) {
         return {
             id: user.id,
@@ -366,6 +385,7 @@ const UserDB = {
             cuisines: user.cuisines || [],
             likedCount: user.likedCount || 0,
             groceryCount: user.groceryCount || 0,
+            isAdmin: user.is_admin === 1,
             createdAt: user.created_at,
             updatedAt: user.updated_at
         };
@@ -437,6 +457,28 @@ const RecipeDB = {
         return this.getById(id);
     },
 
+    update(id, data) {
+        const updates = [];
+        const values = [];
+
+        if (data.name) { updates.push('name = ?'); values.push(data.name); }
+        if (data.description !== undefined) { updates.push('description = ?'); values.push(data.description); }
+        if (data.cook_time !== undefined) { updates.push('cook_time = ?'); values.push(data.cook_time); }
+        if (data.servings !== undefined) { updates.push('servings = ?'); values.push(data.servings); }
+        if (data.difficulty) { updates.push('difficulty = ?'); values.push(data.difficulty); }
+        if (data.cuisine !== undefined) { updates.push('cuisine = ?'); values.push(data.cuisine); }
+        if (data.emoji) { updates.push('emoji = ?'); values.push(data.emoji); }
+        if (data.ingredients !== undefined) { updates.push('ingredients = ?'); values.push(data.ingredients); }
+        if (data.instructions !== undefined) { updates.push('instructions = ?'); values.push(data.instructions); }
+
+        if (updates.length > 0) {
+            values.push(id);
+            runUpdate(`UPDATE recipes SET ${updates.join(', ')} WHERE id = ?`, values);
+        }
+
+        return this.getById(id);
+    },
+
     unlike(userId, recipeId) {
         runUpdate('DELETE FROM liked_recipes WHERE user_id = ? AND recipe_id = ?', [userId, recipeId]);
     },
@@ -478,10 +520,24 @@ const GroceryDB = {
     },
 
     add(userId, item) {
+        // Check if an item with the same name already exists (case-insensitive)
+        const existing = runQuery(
+            'SELECT * FROM grocery_items WHERE user_id = ? AND LOWER(name) = LOWER(?)',
+            [userId, item.name.trim()]
+        );
+
+        if (existing.length > 0) {
+            const match = existing[0];
+            const newQty = match.quantity + (item.quantity || 1);
+            runUpdate('UPDATE grocery_items SET quantity = ? WHERE id = ?', [newQty, match.id]);
+            saveDatabase();
+            return this.getById(match.id);
+        }
+
         const id = runInsert(
             `INSERT INTO grocery_items (user_id, name, quantity, unit, category)
              VALUES (?, ?, ?, ?, ?)`,
-            [userId, item.name, item.quantity || 1, item.unit || '', item.category || 'Other']
+            [userId, item.name.trim(), item.quantity || 1, item.unit || '', item.category || 'Other']
         );
         return this.getById(id);
     },

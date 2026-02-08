@@ -250,14 +250,46 @@ app.delete('/api/recipes/:id/like', authenticate, (req, res) => {
     }
 });
 
-// Delete a recipe (only if created by current user)
+// Update a recipe (only if created by current user or admin)
+app.put('/api/recipes/:id', authenticate, (req, res) => {
+    try {
+        const recipe = RecipeDB.getById(parseInt(req.params.id));
+        if (!recipe) {
+            return res.status(404).json({ error: 'Recipe not found' });
+        }
+        const user = UserDB.getById(req.userId);
+        if (recipe.createdBy !== req.userId && !user.isAdmin) {
+            return res.status(403).json({ error: 'You can only edit your own recipes' });
+        }
+        const { name, description, cookTime, servings, difficulty, cuisine, emoji, ingredients, instructions } = req.body;
+        const ingredientsStr = Array.isArray(ingredients) ? ingredients.join(',') : (ingredients || undefined);
+        const updated = RecipeDB.update(parseInt(req.params.id), {
+            name,
+            description,
+            cook_time: cookTime,
+            servings,
+            difficulty,
+            cuisine,
+            emoji,
+            ingredients: ingredientsStr,
+            instructions
+        });
+        res.json(updated);
+    } catch (err) {
+        console.error('Update recipe error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete a recipe (only if created by current user or admin)
 app.delete('/api/recipes/:id', authenticate, (req, res) => {
     try {
         const recipe = RecipeDB.getById(parseInt(req.params.id));
         if (!recipe) {
             return res.status(404).json({ error: 'Recipe not found' });
         }
-        if (recipe.createdBy !== req.userId) {
+        const user = UserDB.getById(req.userId);
+        if (recipe.createdBy !== req.userId && !user.isAdmin) {
             return res.status(403).json({ error: 'You can only delete your own recipes' });
         }
         RecipeDB.delete(parseInt(req.params.id));
@@ -368,6 +400,61 @@ app.delete('/api/mealplan/:date/:mealType', authenticate, (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Remove meal plan error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ==================== ADMIN ROUTES ====================
+
+// Promote current user to admin (works if no admins exist yet, or if requester is already admin)
+app.post('/api/admin/promote', authenticate, (req, res) => {
+    try {
+        const user = UserDB.getById(req.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const { email } = req.body;
+        const targetEmail = email || user.email;
+
+        // If admins already exist, only an admin can promote others
+        if (UserDB.hasAdmins() && !user.isAdmin) {
+            return res.status(403).json({ error: 'Only admins can promote other users' });
+        }
+
+        const promoted = UserDB.setAdmin(targetEmail, true);
+        if (!promoted) {
+            return res.status(404).json({ error: 'Target user not found' });
+        }
+
+        res.json({ success: true, user: promoted });
+    } catch (err) {
+        console.error('Promote admin error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Demote a user from admin (requires admin)
+app.post('/api/admin/demote', authenticate, (req, res) => {
+    try {
+        const user = UserDB.getById(req.userId);
+        if (!user || !user.isAdmin) {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const demoted = UserDB.setAdmin(email, false);
+        if (!demoted) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ success: true, user: demoted });
+    } catch (err) {
+        console.error('Demote admin error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });

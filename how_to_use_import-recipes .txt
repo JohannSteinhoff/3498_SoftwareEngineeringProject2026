@@ -1,0 +1,5 @@
+Generate 20 recipes as a JSON array. Each recipe should have these exact fields: name (string), description (short
+  sentence), emoji (single food emoji), cook_time (number in minutes), servings (number), difficulty ("easy", "medium",
+  or "hard"), cuisine (e.g. "italian", "mexican", "indian", "japanese", "american", "thai", "french", "korean", "greek",
+   "chinese", "vietnamese", "british"), ingredients (array of strings), instructions (string with numbered steps).
+  Output ONLY the raw JSON array, no markdown formatting.
