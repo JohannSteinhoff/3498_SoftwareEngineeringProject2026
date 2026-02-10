@@ -2,15 +2,54 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { initDatabase, UserDB, RecipeDB, GroceryDB, MealPlanDB } = require('./database');
+
+const os = require('os');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const LOG_FILE = path.join(__dirname, 'server.log');
+
+function getLocalIP() {
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                return iface.address;
+            }
+        }
+    }
+    return 'unknown';
+}
+
+// ==================== LOGGING ====================
+
+function log(level, message, details) {
+    const timestamp = new Date().toISOString();
+    let line = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
+    if (details) line += ` | ${JSON.stringify(details)}`;
+    line += '\n';
+    console.log(line.trimEnd());
+    fs.appendFileSync(LOG_FILE, line);
+}
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname))); // Serve static files
+
+// Request logging middleware
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+        const start = Date.now();
+        res.on('finish', () => {
+            const duration = Date.now() - start;
+            log('REQUEST', `${req.method} ${req.path} -> ${res.statusCode} (${duration}ms)`);
+        });
+    }
+    next();
+});
 
 // Simple session store (in production, use Redis or database sessions)
 const sessions = new Map();
@@ -25,6 +64,7 @@ function authenticate(req, res, next) {
     const token = req.headers.authorization?.replace('Bearer ', '');
 
     if (!token || !sessions.has(token)) {
+        log('WARN', `Unauthorized request to ${req.path}`);
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
@@ -40,6 +80,7 @@ app.post('/api/auth/register', (req, res) => {
         const user = UserDB.create(req.body);
 
         if (!user) {
+            log('WARN', 'Registration failed - email already exists', { email: req.body.email });
             return res.status(400).json({ error: 'Email already registered' });
         }
 
@@ -47,9 +88,10 @@ app.post('/api/auth/register', (req, res) => {
         const token = generateToken();
         sessions.set(token, user.id);
 
+        log('AUTH', `New user registered: ${user.email}`, { userId: user.id, name: `${user.firstName} ${user.lastName}` });
         res.status(201).json({ user, token });
     } catch (err) {
-        console.error('Register error:', err);
+        log('ERROR', 'Register error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -61,6 +103,7 @@ app.post('/api/auth/login', (req, res) => {
         const user = UserDB.authenticate(email, password);
 
         if (!user) {
+            log('WARN', `Failed login attempt for: ${email}`);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
@@ -68,9 +111,10 @@ app.post('/api/auth/login', (req, res) => {
         const token = generateToken();
         sessions.set(token, user.id);
 
+        log('AUTH', `User logged in: ${user.email}`, { userId: user.id });
         res.json({ user, token });
     } catch (err) {
-        console.error('Login error:', err);
+        log('ERROR', 'Login error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -79,7 +123,9 @@ app.post('/api/auth/login', (req, res) => {
 app.post('/api/auth/logout', (req, res) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (token) {
+        const userId = sessions.get(token);
         sessions.delete(token);
+        log('AUTH', `User logged out`, { userId });
     }
     res.json({ success: true });
 });
@@ -93,7 +139,7 @@ app.get('/api/auth/me', authenticate, (req, res) => {
         }
         res.json({ user });
     } catch (err) {
-        console.error('Get user error:', err);
+        log('ERROR', 'Get user error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -106,7 +152,7 @@ app.put('/api/users/profile', authenticate, (req, res) => {
         const user = UserDB.update(req.userId, req.body);
         res.json(user);
     } catch (err) {
-        console.error('Update user error:', err);
+        log('ERROR', 'Update user error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -114,6 +160,7 @@ app.put('/api/users/profile', authenticate, (req, res) => {
 // Delete account
 app.delete('/api/users/account', authenticate, (req, res) => {
     try {
+        log('AUTH', `Account deleted`, { userId: req.userId });
         UserDB.delete(req.userId);
 
         // Remove session
@@ -122,7 +169,7 @@ app.delete('/api/users/account', authenticate, (req, res) => {
 
         res.json({ success: true });
     } catch (err) {
-        console.error('Delete user error:', err);
+        log('ERROR', 'Delete user error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -153,7 +200,7 @@ app.post('/api/recipes', authenticate, (req, res) => {
         }
         res.status(201).json(recipe);
     } catch (err) {
-        console.error('Create recipe error:', err);
+        log('ERROR', 'Create recipe error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -164,7 +211,7 @@ app.get('/api/recipes', (req, res) => {
         const recipes = RecipeDB.getAll();
         res.json(recipes);
     } catch (err) {
-        console.error('Get recipes error:', err);
+        log('ERROR', 'Get recipes error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -176,7 +223,7 @@ app.get('/api/recipes/discover', authenticate, (req, res) => {
         const recipes = RecipeDB.getForUser(req.userId, limit);
         res.json(recipes);
     } catch (err) {
-        console.error('Get discover recipes error:', err);
+        log('ERROR', 'Get discover recipes error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -187,7 +234,7 @@ app.get('/api/recipes/user/created', authenticate, (req, res) => {
         const recipes = RecipeDB.getByUser(req.userId);
         res.json(recipes);
     } catch (err) {
-        console.error('Get user recipes error:', err);
+        log('ERROR', 'Get user recipes error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -201,7 +248,7 @@ app.get('/api/recipes/:id', (req, res) => {
         }
         res.json(recipe);
     } catch (err) {
-        console.error('Get recipe error:', err);
+        log('ERROR', 'Get recipe error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -212,7 +259,7 @@ app.get('/api/recipes/user/liked', authenticate, (req, res) => {
         const recipes = RecipeDB.getLiked(req.userId);
         res.json(recipes);
     } catch (err) {
-        console.error('Get liked recipes error:', err);
+        log('ERROR', 'Get liked recipes error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -223,7 +270,7 @@ app.post('/api/recipes/:id/like', authenticate, (req, res) => {
         RecipeDB.like(req.userId, parseInt(req.params.id));
         res.json({ success: true });
     } catch (err) {
-        console.error('Like recipe error:', err);
+        log('ERROR', 'Like recipe error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -234,7 +281,7 @@ app.post('/api/recipes/:id/dislike', authenticate, (req, res) => {
         RecipeDB.dislike(req.userId, parseInt(req.params.id));
         res.json({ success: true });
     } catch (err) {
-        console.error('Dislike recipe error:', err);
+        log('ERROR', 'Dislike recipe error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -245,7 +292,7 @@ app.delete('/api/recipes/:id/like', authenticate, (req, res) => {
         RecipeDB.unlike(req.userId, parseInt(req.params.id));
         res.json({ success: true });
     } catch (err) {
-        console.error('Unlike recipe error:', err);
+        log('ERROR', 'Unlike recipe error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -276,7 +323,7 @@ app.put('/api/recipes/:id', authenticate, (req, res) => {
         });
         res.json(updated);
     } catch (err) {
-        console.error('Update recipe error:', err);
+        log('ERROR', 'Update recipe error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -295,7 +342,7 @@ app.delete('/api/recipes/:id', authenticate, (req, res) => {
         RecipeDB.delete(parseInt(req.params.id));
         res.json({ success: true });
     } catch (err) {
-        console.error('Delete recipe error:', err);
+        log('ERROR', 'Delete recipe error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -308,7 +355,7 @@ app.get('/api/grocery', authenticate, (req, res) => {
         const items = GroceryDB.getAll(req.userId);
         res.json(items);
     } catch (err) {
-        console.error('Get grocery error:', err);
+        log('ERROR', 'Get grocery error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -319,7 +366,7 @@ app.post('/api/grocery', authenticate, (req, res) => {
         const item = GroceryDB.add(req.userId, req.body);
         res.status(201).json(item);
     } catch (err) {
-        console.error('Add grocery error:', err);
+        log('ERROR', 'Add grocery error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -330,7 +377,7 @@ app.put('/api/grocery/:id', authenticate, (req, res) => {
         const item = GroceryDB.update(parseInt(req.params.id), req.body);
         res.json(item);
     } catch (err) {
-        console.error('Update grocery error:', err);
+        log('ERROR', 'Update grocery error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -341,7 +388,7 @@ app.post('/api/grocery/:id/toggle', authenticate, (req, res) => {
         const item = GroceryDB.toggle(parseInt(req.params.id));
         res.json(item);
     } catch (err) {
-        console.error('Toggle grocery error:', err);
+        log('ERROR', 'Toggle grocery error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -352,7 +399,7 @@ app.delete('/api/grocery/:id', authenticate, (req, res) => {
         GroceryDB.delete(parseInt(req.params.id));
         res.json({ success: true });
     } catch (err) {
-        console.error('Delete grocery error:', err);
+        log('ERROR', 'Delete grocery error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -363,7 +410,7 @@ app.delete('/api/grocery', authenticate, (req, res) => {
         GroceryDB.clearAll(req.userId);
         res.json({ success: true });
     } catch (err) {
-        console.error('Clear grocery error:', err);
+        log('ERROR', 'Clear grocery error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -376,7 +423,7 @@ app.get('/api/mealplan', authenticate, (req, res) => {
         const mealPlan = MealPlanDB.getAll(req.userId);
         res.json(mealPlan);
     } catch (err) {
-        console.error('Get meal plan error:', err);
+        log('ERROR', 'Get meal plan error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -388,7 +435,7 @@ app.post('/api/mealplan', authenticate, (req, res) => {
         MealPlanDB.add(req.userId, recipeId, date, mealType);
         res.json({ success: true });
     } catch (err) {
-        console.error('Add meal plan error:', err);
+        log('ERROR', 'Add meal plan error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -399,12 +446,30 @@ app.delete('/api/mealplan/:date/:mealType', authenticate, (req, res) => {
         MealPlanDB.remove(req.userId, req.params.date, req.params.mealType);
         res.json({ success: true });
     } catch (err) {
-        console.error('Remove meal plan error:', err);
+        log('ERROR', 'Remove meal plan error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
 
 // ==================== ADMIN ROUTES ====================
+
+// Get all users (admin only)
+app.get('/api/admin/users', authenticate, (req, res) => {
+    try {
+        const user = UserDB.getById(req.userId);
+        if (!user || !user.isAdmin) {
+            log('WARN', 'Non-admin tried to access user list', { userId: req.userId });
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+
+        const users = UserDB.getAllUsers();
+        log('ADMIN', `Admin viewed all users`, { adminId: req.userId, userCount: users.length });
+        res.json(users);
+    } catch (err) {
+        log('ERROR', 'Get all users error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 // Promote current user to admin (works if no admins exist yet, or if requester is already admin)
 app.post('/api/admin/promote', authenticate, (req, res) => {
@@ -419,6 +484,7 @@ app.post('/api/admin/promote', authenticate, (req, res) => {
 
         // If admins already exist, only an admin can promote others
         if (UserDB.hasAdmins() && !user.isAdmin) {
+            log('WARN', `Non-admin tried to promote user`, { userId: req.userId, target: targetEmail });
             return res.status(403).json({ error: 'Only admins can promote other users' });
         }
 
@@ -427,9 +493,10 @@ app.post('/api/admin/promote', authenticate, (req, res) => {
             return res.status(404).json({ error: 'Target user not found' });
         }
 
+        log('ADMIN', `User promoted to admin: ${targetEmail}`, { promotedBy: req.userId });
         res.json({ success: true, user: promoted });
     } catch (err) {
-        console.error('Promote admin error:', err);
+        log('ERROR', 'Promote admin error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -452,9 +519,10 @@ app.post('/api/admin/demote', authenticate, (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
+        log('ADMIN', `User demoted from admin: ${email}`, { demotedBy: req.userId });
         res.json({ success: true, user: demoted });
     } catch (err) {
-        console.error('Demote admin error:', err);
+        log('ERROR', 'Demote admin error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -488,7 +556,7 @@ app.get('/api/stats', authenticate, (req, res) => {
             memberDays
         });
     } catch (err) {
-        console.error('Get stats error:', err);
+        log('ERROR', 'Get stats error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -504,23 +572,27 @@ app.get('/', (req, res) => {
 async function startServer() {
     await initDatabase();
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
+        const localIP = getLocalIP();
+        log('SERVER', `Tender server started on port ${PORT}`);
         console.log(`
-    ╔════════════════════════════════════════╗
-    ║                                        ║
-    ║   🍳 Tender Server Running!            ║
-    ║                                        ║
-    ║   Local: http://localhost:${PORT}         ║
-    ║                                        ║
-    ║   API Endpoints:                       ║
-    ║   - POST /api/auth/register            ║
-    ║   - POST /api/auth/login               ║
-    ║   - GET  /api/recipes                  ║
-    ║   - GET  /api/grocery                  ║
-    ║                                        ║
-    ╚════════════════════════════════════════╝
+    ╔════════════════════════════════════════════╗
+    ║                                            ║
+    ║   🍳 Tender Server Running!                ║
+    ║                                            ║
+    ║   Local:   http://localhost:${PORT}            ║
+    ║   Network: http://${localIP}:${PORT}   ║
+    ║   Log:     server.log                      ║
+    ║                                            ║
+    ║   Open the Network URL on your phone       ║
+    ║   (must be on the same Wi-Fi network)      ║
+    ║                                            ║
+    ╚════════════════════════════════════════════╝
         `);
     });
 }
 
-startServer().catch(console.error);
+startServer().catch(err => {
+    log('ERROR', 'Server failed to start', { error: err.message });
+    console.error(err);
+});

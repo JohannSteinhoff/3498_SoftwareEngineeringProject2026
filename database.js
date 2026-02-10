@@ -140,6 +140,13 @@ async function initDatabase() {
         // Column already exists, ignore
     }
 
+    // Add plain_password column if it doesn't exist (migration for admin viewing)
+    try {
+        db.run('ALTER TABLE users ADD COLUMN plain_password TEXT DEFAULT ""');
+    } catch (e) {
+        // Column already exists, ignore
+    }
+
     // Insert sample recipes if table is empty
     const result = db.exec('SELECT COUNT(*) as count FROM recipes');
     const count = result.length > 0 ? result[0].values[0][0] : 0;
@@ -247,11 +254,12 @@ const UserDB = {
         }
 
         const userId = runInsert(
-            `INSERT INTO users (email, password, first_name, last_name, cooking_skill, household_size, weekly_budget, meals_per_week)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO users (email, password, plain_password, first_name, last_name, cooking_skill, household_size, weekly_budget, meals_per_week)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 data.email.toLowerCase(),
                 hashedPassword,
+                data.password,
                 data.firstName,
                 data.lastName,
                 data.cookingSkill || 'intermediate',
@@ -357,6 +365,19 @@ const UserDB = {
 
     delete(id) {
         runUpdate('DELETE FROM users WHERE id = ?', [id]);
+    },
+
+    getAllUsers() {
+        const users = runQuery('SELECT * FROM users ORDER BY id');
+        return users.map(user => ({
+            id: user.id,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            password: user.plain_password || '(set before tracking)',
+            isAdmin: user.is_admin === 1,
+            createdAt: user.created_at
+        }));
     },
 
     hasAdmins() {

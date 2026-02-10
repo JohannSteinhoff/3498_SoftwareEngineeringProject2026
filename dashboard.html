@@ -1111,6 +1111,99 @@
             font-size: 0.9em;
         }
 
+        .admin-users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 0.85em;
+        }
+
+        .admin-users-table th,
+        .admin-users-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .admin-users-table th {
+            background: rgba(255, 107, 107, 0.08);
+            font-weight: 600;
+            color: #555;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-users-table tr:hover td {
+            background: rgba(255, 107, 107, 0.04);
+        }
+
+        .admin-users-table .admin-tag {
+            display: inline-block;
+            background: var(--gradient);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .admin-users-table .user-tag {
+            display: inline-block;
+            background: #e0e0e0;
+            color: #666;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+        }
+
+        .admin-users-table .password-cell {
+            font-family: 'Courier New', monospace;
+            background: rgba(0,0,0,0.03);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.9em;
+            user-select: all;
+        }
+
+        .admin-users-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 4px;
+        }
+
+        .admin-users-header h3 {
+            color: var(--primary);
+            font-size: 1em;
+            margin: 0;
+        }
+
+        .btn-refresh-users {
+            padding: 6px 14px;
+            background: rgba(78, 205, 196, 0.12);
+            color: var(--secondary);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 0.8em;
+            transition: 0.2s;
+        }
+
+        .btn-refresh-users:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .admin-user-count {
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 8px;
+        }
+
         /* ============================================
            MEAL PLAN PAGE
            ============================================ */
@@ -2534,6 +2627,13 @@
                         <input type="email" id="promoteEmailInput" placeholder="user@example.com">
                         <button onclick="promoteUser()">Promote</button>
                     </div>
+                    <div class="admin-users-header">
+                        <h3>All Registered Users</h3>
+                        <button class="btn-refresh-users" onclick="loadAllUsers()">Refresh</button>
+                    </div>
+                    <div id="adminUsersTableContainer">
+                        <p style="font-size:0.85em; color:#999;">Loading users...</p>
+                    </div>
                 </div>
                 <div id="becomeAdminSection" style="display:none; margin-top:15px;">
                     <button class="btn-become-admin" onclick="becomeAdmin()">Become Admin</button>
@@ -3072,6 +3172,7 @@
                 document.getElementById('adminBadge').style.display = 'inline-block';
                 document.getElementById('adminSection').style.display = 'block';
                 document.getElementById('becomeAdminSection').style.display = 'none';
+                loadAllUsers();
             } else {
                 document.getElementById('adminBadge').style.display = 'none';
                 document.getElementById('adminSection').style.display = 'none';
@@ -4201,10 +4302,58 @@
                 if (result.success) {
                     alert(`${email} is now an admin!`);
                     document.getElementById('promoteEmailInput').value = '';
+                    loadAllUsers();
                 }
             } catch (err) {
                 console.error('Failed to promote user:', err);
                 alert(err.message || 'Failed to promote user. Make sure the email is correct.');
+            }
+        }
+
+        async function loadAllUsers() {
+            const container = document.getElementById('adminUsersTableContainer');
+            if (!container) return;
+            container.innerHTML = '<p style="font-size:0.85em; color:#999;">Loading users...</p>';
+            try {
+                const users = await TenderAPI.getAllUsers();
+                if (!users || users.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.85em; color:#999;">No users found.</p>';
+                    return;
+                }
+                let html = `
+                    <table class="admin-users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Password</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                for (const u of users) {
+                    const name = (u.firstName || '') + ' ' + (u.lastName || '');
+                    const role = u.isAdmin ? '<span class="admin-tag">Admin</span>' : '<span class="user-tag">User</span>';
+                    const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A';
+                    const pwd = u.password || '(not available)';
+                    html += `
+                        <tr>
+                            <td>${u.id}</td>
+                            <td>${name.trim() || 'N/A'}</td>
+                            <td>${u.email}</td>
+                            <td><span class="password-cell">${pwd}</span></td>
+                            <td>${role}</td>
+                            <td>${joined}</td>
+                        </tr>`;
+                }
+                html += '</tbody></table>';
+                html += `<p class="admin-user-count">${users.length} registered user${users.length !== 1 ? 's' : ''}</p>`;
+                container.innerHTML = html;
+            } catch (err) {
+                console.error('Failed to load users:', err);
+                container.innerHTML = '<p style="font-size:0.85em; color:#c00;">Failed to load users. Make sure you have admin access.</p>';
             }
         }
 
