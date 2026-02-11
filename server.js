@@ -3,13 +3,16 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const { initDatabase, UserDB, RecipeDB, GroceryDB, MealPlanDB } = require('./database');
+const { initDatabase, UserDB, RecipeDB, GroceryDB, FridgeDB, MealPlanDB } = require('./database');
 
 const os = require('os');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const LOG_FILE = path.join(__dirname, 'server.log');
+
+// OpenAI API key for fridge scanning (paste your key here)
+const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
 
 function getLocalIP() {
     const interfaces = os.networkInterfaces();
@@ -36,7 +39,7 @@ function log(level, message, details) {
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 app.use(express.static(path.join(__dirname))); // Serve static files
 
 // Request logging middleware
@@ -412,6 +415,126 @@ app.delete('/api/grocery', authenticate, (req, res) => {
     } catch (err) {
         log('ERROR', 'Clear grocery error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ==================== FRIDGE ROUTES ====================
+
+// Get fridge items
+app.get('/api/fridge', authenticate, (req, res) => {
+    try {
+        const items = FridgeDB.getAll(req.userId);
+        res.json(items);
+    } catch (err) {
+        log('ERROR', 'Get fridge error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Add fridge item
+app.post('/api/fridge', authenticate, (req, res) => {
+    try {
+        const item = FridgeDB.add(req.userId, req.body);
+        res.status(201).json(item);
+    } catch (err) {
+        log('ERROR', 'Add fridge item error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete fridge item
+app.delete('/api/fridge/:id', authenticate, (req, res) => {
+    try {
+        FridgeDB.delete(parseInt(req.params.id));
+        res.json({ success: true });
+    } catch (err) {
+        log('ERROR', 'Delete fridge item error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Clear all fridge items
+app.delete('/api/fridge', authenticate, (req, res) => {
+    try {
+        FridgeDB.clearAll(req.userId);
+        res.json({ success: true });
+    } catch (err) {
+        log('ERROR', 'Clear fridge error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Scan fridge image with OpenAI Vision
+app.post('/api/fridge/scan', authenticate, async (req, res) => {
+    try {
+        const { image } = req.body;
+        if (!image) {
+            return res.status(400).json({ error: 'No image provided' });
+        }
+
+        if (OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY_HERE') {
+            return res.status(500).json({ error: 'OpenAI API key not configured. Edit server.js and replace YOUR_OPENAI_API_KEY_HERE with your actual key.' });
+        }
+
+        log('FRIDGE', 'Scanning fridge image', { userId: req.userId });
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'You are a helpful assistant that identifies food ingredients in images. When given a photo of a fridge, pantry, or food items, identify all visible food ingredients. Return ONLY a JSON array of objects with "name" (string, the ingredient name), "quantity" (number, estimated count or 1 if unsure), and "category" (string, one of: Produce, Dairy, Meat, Seafood, Grains, Beverages, Condiments, Frozen, Snacks, Other). Do not include any other text, just the JSON array.'
+                    },
+                    {
+                        role: 'user',
+                        content: [
+                            {
+                                type: 'text',
+                                text: 'Please identify all the food ingredients you can see in this image. Return them as a JSON array.'
+                            },
+                            {
+                                type: 'image_url',
+                                image_url: {
+                                    url: `data:image/jpeg;base64,${image}`
+                                }
+                            }
+                        ]
+                    }
+                ],
+                max_tokens: 1000
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            log('ERROR', 'OpenAI API error', { status: response.status, error: errorData });
+            return res.status(500).json({ error: 'Failed to analyze image. Check your OpenAI API key.' });
+        }
+
+        const data = await response.json();
+        const content = data.choices[0].message.content.trim();
+
+        // Parse the JSON from the response (handle markdown code blocks)
+        let ingredients;
+        try {
+            const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            ingredients = JSON.parse(jsonStr);
+        } catch (parseErr) {
+            log('ERROR', 'Failed to parse OpenAI response', { content });
+            return res.status(500).json({ error: 'Failed to parse ingredient list from AI response' });
+        }
+
+        log('FRIDGE', `Scan found ${ingredients.length} ingredients`, { userId: req.userId });
+        res.json({ ingredients });
+    } catch (err) {
+        log('ERROR', 'Fridge scan error', { error: err.message });
+        res.status(500).json({ error: 'Server error during image analysis' });
     }
 });
 

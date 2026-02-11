@@ -209,6 +209,34 @@ const TenderAPI = {
         return this.request('/grocery', { method: 'DELETE' });
     },
 
+    // ==================== FRIDGE ====================
+
+    async getFridgeItems() {
+        return this.request('/fridge');
+    },
+
+    async addFridgeItem(item) {
+        return this.request('/fridge', {
+            method: 'POST',
+            body: item,
+        });
+    },
+
+    async deleteFridgeItem(id) {
+        return this.request(`/fridge/${id}`, { method: 'DELETE' });
+    },
+
+    async clearFridge() {
+        return this.request('/fridge', { method: 'DELETE' });
+    },
+
+    async scanFridgeImage(base64Image) {
+        return this.request('/fridge/scan', {
+            method: 'POST',
+            body: { image: base64Image },
+        });
+    },
+
     // ==================== MEAL PLAN ====================
 
     async getMealPlan() {

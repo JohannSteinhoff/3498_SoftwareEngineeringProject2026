@@ -114,6 +114,19 @@ async function initDatabase() {
     `);
 
     db.run(`
+        CREATE TABLE IF NOT EXISTS fridge_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            quantity INTEGER DEFAULT 1,
+            unit TEXT DEFAULT '',
+            category TEXT DEFAULT 'Other',
+            added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    `);
+
+    db.run(`
         CREATE TABLE IF NOT EXISTS meal_plans (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -424,16 +437,72 @@ const RecipeDB = {
         return recipes.length > 0 ? this.formatRecipe(recipes[0]) : null;
     },
 
+    // Maps dietary restrictions to ingredient keywords that should be excluded
+    getDietaryExclusions(restrictions) {
+        const EXCLUSIONS = {
+            'gluten-free': ['flour', 'bread', 'pasta', 'spaghetti', 'macaroni', 'panko', 'breadcrumbs',
+                'tortillas', 'tortilla', 'tostada shells', 'ramen noodles', 'phyllo', 'puff pastry',
+                'wontons', 'gnocchi', 'rolls', 'buns', 'noodles'],
+            'dairy-free': ['cheese', 'milk', 'cream', 'butter', 'yogurt', 'cheddar', 'mozzarella',
+                'parmesan', 'pecorino', 'gruyere', 'feta', 'paneer', 'ghee', 'bechamel'],
+            'vegetarian': ['chicken', 'beef', 'pork', 'shrimp', 'fish sauce', 'clams', 'duck',
+                'sausage', 'bacon', 'spam', 'ground beef', 'pork shoulder', 'pork belly',
+                'steak', 'sausage meat', 'chicken breast', 'chicken thighs', 'duck legs',
+                'duck fat'],
+            'vegan': ['chicken', 'beef', 'pork', 'shrimp', 'fish sauce', 'clams', 'duck',
+                'sausage', 'bacon', 'spam', 'ground beef', 'pork shoulder', 'pork belly',
+                'steak', 'sausage meat', 'chicken breast', 'chicken thighs', 'duck legs',
+                'duck fat', 'egg', 'egg wash', 'cheese', 'milk', 'cream', 'butter', 'yogurt',
+                'cheddar', 'mozzarella', 'parmesan', 'pecorino', 'gruyere', 'feta', 'paneer',
+                'ghee', 'bechamel', 'honey', 'dashi'],
+            'keto': ['pasta', 'spaghetti', 'macaroni', 'rice', 'basmati rice', 'cooked rice',
+                'bread', 'potatoes', 'noodles', 'flour', 'sugar', 'tortillas', 'tortilla',
+                'tostada shells', 'ramen noodles', 'gnocchi', 'grits', 'rolls', 'buns', 'beans',
+                'refried beans'],
+            'halal': ['pork', 'bacon', 'spam', 'pork shoulder', 'pork belly', 'sausage meat',
+                'red wine', 'wine', 'mirin'],
+            'kosher': ['pork', 'bacon', 'spam', 'pork shoulder', 'pork belly', 'sausage meat',
+                'shrimp', 'clams']
+        };
+
+        const excluded = new Set();
+        for (const restriction of restrictions) {
+            const items = EXCLUSIONS[restriction];
+            if (items) items.forEach(i => excluded.add(i));
+        }
+        return excluded;
+    },
+
+    // Check if a recipe's ingredients violate any dietary restrictions
+    recipeViolatesDietary(ingredientsStr, excludedIngredients) {
+        if (excludedIngredients.size === 0) return false;
+        const ingredients = (ingredientsStr || '').toLowerCase().split(',').map(i => i.trim());
+        for (const ingredient of ingredients) {
+            for (const excluded of excludedIngredients) {
+                if (ingredient.includes(excluded)) return true;
+            }
+        }
+        return false;
+    },
+
     getForUser(userId, limit = 10) {
+        // Get user's dietary restrictions
+        const userDietary = runQuery('SELECT dietary FROM user_dietary WHERE user_id = ?', [userId]);
+        const restrictions = userDietary.map(d => d.dietary);
+        const excludedIngredients = this.getDietaryExclusions(restrictions);
+
+        // Get candidate recipes (excluding already liked/disliked)
         const recipes = runQuery(`
             SELECT r.* FROM recipes r
             WHERE r.id NOT IN (SELECT recipe_id FROM disliked_recipes WHERE user_id = ?)
             AND r.id NOT IN (SELECT recipe_id FROM liked_recipes WHERE user_id = ?)
             ORDER BY RANDOM()
-            LIMIT ?
-        `, [userId, userId, limit]);
+        `, [userId, userId]);
 
-        return recipes.map(this.formatRecipe);
+        // Filter by dietary restrictions then apply limit
+        const filtered = recipes.filter(r => !this.recipeViolatesDietary(r.ingredients, excludedIngredients));
+
+        return filtered.slice(0, limit).map(this.formatRecipe);
     },
 
     getLiked(userId) {
@@ -610,6 +679,59 @@ const GroceryDB = {
     }
 };
 
+// Fridge functions
+const FridgeDB = {
+    getAll(userId) {
+        return runQuery('SELECT * FROM fridge_items WHERE user_id = ? ORDER BY added_at DESC', [userId]).map(this.formatItem);
+    },
+
+    add(userId, item) {
+        const existing = runQuery(
+            'SELECT * FROM fridge_items WHERE user_id = ? AND LOWER(name) = LOWER(?)',
+            [userId, item.name.trim()]
+        );
+
+        if (existing.length > 0) {
+            const match = existing[0];
+            const newQty = match.quantity + (item.quantity || 1);
+            runUpdate('UPDATE fridge_items SET quantity = ? WHERE id = ?', [newQty, match.id]);
+            saveDatabase();
+            return this.getById(match.id);
+        }
+
+        const id = runInsert(
+            `INSERT INTO fridge_items (user_id, name, quantity, unit, category)
+             VALUES (?, ?, ?, ?, ?)`,
+            [userId, item.name.trim(), item.quantity || 1, item.unit || '', item.category || 'Other']
+        );
+        return this.getById(id);
+    },
+
+    getById(id) {
+        const items = runQuery('SELECT * FROM fridge_items WHERE id = ?', [id]);
+        return items.length > 0 ? this.formatItem(items[0]) : null;
+    },
+
+    delete(id) {
+        runUpdate('DELETE FROM fridge_items WHERE id = ?', [id]);
+    },
+
+    clearAll(userId) {
+        runUpdate('DELETE FROM fridge_items WHERE user_id = ?', [userId]);
+    },
+
+    formatItem(item) {
+        return {
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            unit: item.unit,
+            category: item.category,
+            addedAt: item.added_at
+        };
+    }
+};
+
 // Meal plan functions
 const MealPlanDB = {
     getAll(userId) {
@@ -644,5 +766,6 @@ module.exports = {
     UserDB,
     RecipeDB,
     GroceryDB,
+    FridgeDB,
     MealPlanDB
 };

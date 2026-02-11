@@ -714,6 +714,52 @@
             border-color: var(--primary);
         }
 
+        .dietary-filter-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dietary-filter-label {
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .dietary-filter-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .dietary-chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 0.82em;
+            transition: all 0.3s;
+            user-select: none;
+            text-transform: capitalize;
+        }
+
+        .dietary-chip:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .dietary-chip.active {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+
         .discover-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1786,6 +1832,317 @@
         }
 
         /* ============================================
+           GROCERY/FRIDGE TABS
+           ============================================ */
+
+        .grocery-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 25px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .grocery-tab-btn {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            background: white;
+            font-size: 1em;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            color: #888;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .grocery-tab-btn.active {
+            color: var(--primary);
+            background: var(--light);
+        }
+
+        .grocery-tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .grocery-tab-btn:hover:not(.active) {
+            color: #555;
+            background: #fafafa;
+        }
+
+        .grocery-tab-content {
+            display: none;
+        }
+
+        .grocery-tab-content.active {
+            display: block;
+        }
+
+        /* Fridge section */
+        .fridge-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .fridge-actions form {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+
+        .fridge-actions form input {
+            flex: 1;
+            min-width: 200px;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        .fridge-actions form input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .fridge-actions form input[type="number"] {
+            max-width: 100px;
+            min-width: 100px;
+        }
+
+        .fridge-actions form button,
+        .btn-scan-fridge {
+            background: var(--gradient);
+            border: none;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 1em;
+            transition: transform 0.3s;
+            white-space: nowrap;
+        }
+
+        .fridge-actions form button:hover,
+        .btn-scan-fridge:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-scan-fridge {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44B3AA 100%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fridge-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background 0.2s;
+        }
+
+        .fridge-item:hover {
+            background: rgba(78, 205, 196, 0.03);
+        }
+
+        .fridge-item:last-child {
+            border-bottom: none;
+        }
+
+        .fridge-item .item-icon {
+            font-size: 1.4em;
+        }
+
+        .fridge-item .item-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .fridge-item .item-quantity {
+            background: #E8F8F5;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #2C7A6E;
+        }
+
+        .fridge-item .item-category {
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .fridge-item .item-delete {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 1.3em;
+            transition: color 0.2s;
+            padding: 5px;
+        }
+
+        .fridge-item .item-delete:hover {
+            color: var(--primary);
+        }
+
+        /* Scan results modal */
+        .scan-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .scan-overlay.active {
+            display: flex;
+        }
+
+        .scan-modal {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .scan-modal-header {
+            padding: 25px 25px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .scan-modal-header h2 {
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+
+        .scan-modal-header p {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .scan-modal-body {
+            padding: 15px 25px;
+        }
+
+        .scan-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .scan-item:last-child {
+            border-bottom: none;
+        }
+
+        .scan-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #4ECDC4;
+            cursor: pointer;
+        }
+
+        .scan-item .scan-item-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .scan-item .scan-item-qty {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .scan-item .scan-item-category {
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            color: #666;
+        }
+
+        .scan-modal-footer {
+            padding: 15px 25px 25px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .scan-modal-footer button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .scan-modal-footer button:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-scan-cancel {
+            background: none;
+            border: 2px solid #e0e0e0;
+            color: #888;
+        }
+
+        .btn-scan-confirm {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44B3AA 100%);
+            border: none;
+            color: white;
+        }
+
+        .scan-loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .scan-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f0f0f0;
+            border-top-color: #4ECDC4;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
            SWIPE PAGE
            ============================================ */
 
@@ -1838,6 +2195,32 @@
             font-size: 0.85em;
             font-weight: 600;
             margin-top: 8px;
+        }
+
+        .swipe-active-filters {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .swipe-filter-tag {
+            display: inline-block;
+            background: rgba(78, 205, 196, 0.15);
+            color: var(--secondary);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .swipe-no-filters {
+            display: inline-block;
+            color: #aaa;
+            font-size: 0.75em;
+            margin-top: 10px;
         }
 
         .swipe-container {
@@ -2636,8 +3019,7 @@
                     </div>
                 </div>
                 <div id="becomeAdminSection" style="display:none; margin-top:15px;">
-                    <button class="btn-become-admin" onclick="becomeAdmin()">Become Admin</button>
-                    <p style="font-size:0.8em; color:#888; margin-top:6px;">No admins exist yet. Click to become the first admin.</p>
+                    <p style="font-size:0.9em; color:#888;">Want admin access? Contact Team 10 in CS4398 to request admin privileges.</p>
                 </div>
             </section>
         </div>
@@ -2651,6 +3033,7 @@
                     <h1>What's for Dinner?</h1>
                     <p>Swipe right to save, left to skip</p>
                     <div class="swipe-counter" id="swipeCounter">0 recipes liked today</div>
+                    <div class="swipe-active-filters" id="swipeActiveFilters"></div>
                 </div>
 
                 <div class="swipe-container" id="swipeContainer">
@@ -2695,6 +3078,11 @@
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
                 </select>
+            </div>
+
+            <div class="dietary-filter-section" id="dietaryFilterSection">
+                <span class="dietary-filter-label">Dietary:</span>
+                <div class="dietary-filter-chips" id="dietaryFilterChips"></div>
             </div>
 
             <div class="filter-chips" id="cuisineChips"></div>
@@ -2745,37 +3133,70 @@
             </div>
         </div>
 
-        <!-- ========== GROCERY LIST PAGE ========== -->
+        <!-- ========== GROCERY & FRIDGE PAGE ========== -->
         <div id="page-grocery" class="page-view">
             <div class="grocery-page-header">
-                <h1>Grocery List</h1>
+                <h1 id="groceryPageTitle">Grocery List</h1>
                 <div class="grocery-header-actions">
-                    <button class="btn-clear-all" onclick="clearFullGroceryList()">Clear All</button>
+                    <button class="btn-clear-all" id="btnClearSection" onclick="clearCurrentSection()">Clear All</button>
                 </div>
             </div>
 
-            <div class="grocery-stats" id="groceryPageStats">
-                <div class="grocery-stat-card">
-                    <h3 id="groceryTotalItems">0</h3>
-                    <p>Total Items</p>
-                </div>
-                <div class="grocery-stat-card">
-                    <h3 id="groceryCheckedItems">0</h3>
-                    <p>Checked Off</p>
-                </div>
-                <div class="grocery-stat-card">
-                    <h3 id="groceryRemainingItems">0</h3>
-                    <p>Remaining</p>
-                </div>
+            <!-- Tab Switcher -->
+            <div class="grocery-tabs">
+                <button class="grocery-tab-btn active" onclick="switchGroceryTab('grocery')" id="tabGrocery">Grocery List</button>
+                <button class="grocery-tab-btn" onclick="switchGroceryTab('fridge')" id="tabFridge">My Fridge</button>
             </div>
 
-            <form class="grocery-page-form" onsubmit="addGroceryItemFull(event)">
-                <input type="text" id="newGroceryName" placeholder="Item name..." required>
-                <input type="number" id="newGroceryQty" placeholder="Qty" min="1" value="1">
-                <button type="submit">Add Item</button>
-            </form>
+            <!-- GROCERY TAB -->
+            <div class="grocery-tab-content active" id="groceryTabContent">
+                <div class="grocery-stats" id="groceryPageStats">
+                    <div class="grocery-stat-card">
+                        <h3 id="groceryTotalItems">0</h3>
+                        <p>Total Items</p>
+                    </div>
+                    <div class="grocery-stat-card">
+                        <h3 id="groceryCheckedItems">0</h3>
+                        <p>Checked Off</p>
+                    </div>
+                    <div class="grocery-stat-card">
+                        <h3 id="groceryRemainingItems">0</h3>
+                        <p>Remaining</p>
+                    </div>
+                </div>
 
-            <div class="grocery-full-list" id="groceryFullList"></div>
+                <form class="grocery-page-form" onsubmit="addGroceryItemFull(event)">
+                    <input type="text" id="newGroceryName" placeholder="Item name..." required>
+                    <input type="number" id="newGroceryQty" placeholder="Qty" min="1" value="1">
+                    <button type="submit">Add Item</button>
+                </form>
+
+                <div class="grocery-full-list" id="groceryFullList"></div>
+            </div>
+
+            <!-- FRIDGE TAB -->
+            <div class="grocery-tab-content" id="fridgeTabContent">
+                <div class="grocery-stats">
+                    <div class="grocery-stat-card">
+                        <h3 id="fridgeTotalItems">0</h3>
+                        <p>Items in Fridge</p>
+                    </div>
+                </div>
+
+                <div class="fridge-actions">
+                    <form onsubmit="addFridgeItemManual(event)">
+                        <input type="text" id="newFridgeName" placeholder="Ingredient name..." required>
+                        <input type="number" id="newFridgeQty" placeholder="Qty" min="1" value="1">
+                        <button type="submit">Add</button>
+                    </form>
+                    <button class="btn-scan-fridge" onclick="triggerFridgeScan()">
+                        <span>Scan Fridge</span>
+                    </button>
+                    <input type="file" id="fridgeImageInput" accept="image/*" capture="environment" style="display:none" onchange="handleFridgeImage(event)">
+                </div>
+
+                <div class="grocery-full-list" id="fridgeFullList"></div>
+            </div>
         </div>
 
     </main>
@@ -3109,6 +3530,23 @@
         </div>
     </div>
 
+    <!-- Fridge Scan Results Modal -->
+    <div class="scan-overlay" id="scanModal">
+        <div class="scan-modal">
+            <div class="scan-modal-header">
+                <h2>Scan Results</h2>
+                <p>We found these ingredients. Uncheck any you don't want to add.</p>
+            </div>
+            <div class="scan-modal-body" id="scanModalBody">
+                <!-- Populated by JS -->
+            </div>
+            <div class="scan-modal-footer">
+                <button class="btn-scan-cancel" onclick="closeScanModal()">Cancel</button>
+                <button class="btn-scan-confirm" onclick="confirmScanResults()">Add to Fridge</button>
+            </div>
+        </div>
+    </div>
+
     <script src="api.js"></script>
     <script>
         // ==================== AUTH CHECK ====================
@@ -3127,6 +3565,106 @@
         let mealPlanData = [];
         let pendingMealSlot = null; // { date, mealType }
 
+        // ==================== DIETARY FILTERING ====================
+        const DIETARY_EXCLUSIONS = {
+            'gluten-free': ['flour', 'bread', 'pasta', 'spaghetti', 'macaroni', 'panko', 'breadcrumbs',
+                'tortillas', 'tortilla', 'tostada shells', 'ramen noodles', 'phyllo', 'puff pastry',
+                'wontons', 'gnocchi', 'rolls', 'buns', 'noodles'],
+            'dairy-free': ['cheese', 'milk', 'cream', 'butter', 'yogurt', 'cheddar', 'mozzarella',
+                'parmesan', 'pecorino', 'gruyere', 'feta', 'paneer', 'ghee', 'bechamel'],
+            'vegetarian': ['chicken', 'beef', 'pork', 'shrimp', 'fish sauce', 'clams', 'duck',
+                'sausage', 'bacon', 'spam', 'ground beef', 'pork shoulder', 'pork belly',
+                'steak', 'sausage meat', 'chicken breast', 'chicken thighs', 'duck legs', 'duck fat'],
+            'vegan': ['chicken', 'beef', 'pork', 'shrimp', 'fish sauce', 'clams', 'duck',
+                'sausage', 'bacon', 'spam', 'ground beef', 'pork shoulder', 'pork belly',
+                'steak', 'sausage meat', 'chicken breast', 'chicken thighs', 'duck legs', 'duck fat',
+                'egg', 'egg wash', 'cheese', 'milk', 'cream', 'butter', 'yogurt', 'cheddar',
+                'mozzarella', 'parmesan', 'pecorino', 'gruyere', 'feta', 'paneer', 'ghee',
+                'bechamel', 'honey', 'dashi'],
+            'keto': ['pasta', 'spaghetti', 'macaroni', 'rice', 'basmati rice', 'cooked rice',
+                'bread', 'potatoes', 'flour', 'sugar', 'tortillas', 'tortilla', 'tostada shells',
+                'ramen noodles', 'gnocchi', 'grits', 'rolls', 'buns', 'beans', 'refried beans',
+                'noodles'],
+            'halal': ['pork', 'bacon', 'spam', 'pork shoulder', 'pork belly', 'sausage meat',
+                'red wine', 'wine', 'mirin'],
+            'kosher': ['pork', 'bacon', 'spam', 'pork shoulder', 'pork belly', 'sausage meat',
+                'shrimp', 'clams']
+        };
+
+        const ALL_DIETARY_OPTIONS = [
+            { key: 'vegetarian', label: 'Vegetarian' },
+            { key: 'vegan', label: 'Vegan' },
+            { key: 'gluten-free', label: 'Gluten-Free' },
+            { key: 'dairy-free', label: 'Dairy-Free' },
+            { key: 'keto', label: 'Keto' },
+            { key: 'halal', label: 'Halal' },
+            { key: 'kosher', label: 'Kosher' }
+        ];
+
+        // Active dietary filters for the discover page (toggleable by user)
+        let discoverDietaryFilters = new Set();
+
+        function filterByDietary(recipes, restrictions) {
+            // If restrictions passed explicitly, use those; otherwise use user profile
+            const active = restrictions
+                || (currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : []);
+            if (active.length === 0) return recipes;
+
+            const excluded = new Set();
+            for (const restriction of active) {
+                const items = DIETARY_EXCLUSIONS[restriction];
+                if (items) items.forEach(i => excluded.add(i));
+            }
+            if (excluded.size === 0) return recipes;
+
+            return recipes.filter(recipe => {
+                const ingredients = Array.isArray(recipe.ingredients)
+                    ? recipe.ingredients.map(i => i.toLowerCase())
+                    : (recipe.ingredients || '').toLowerCase().split(',').map(i => i.trim());
+                for (const ing of ingredients) {
+                    for (const excl of excluded) {
+                        if (ing.includes(excl)) return false;
+                    }
+                }
+                return true;
+            });
+        }
+
+        // Render active dietary tags on the swipe page header
+        function renderSwipeDietaryTags() {
+            const container = document.getElementById('swipeActiveFilters');
+            if (!container) return;
+            const userDietary = currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : [];
+            if (userDietary.length === 0) {
+                container.innerHTML = '<span class="swipe-no-filters">No dietary filters active</span>';
+                return;
+            }
+            container.innerHTML = userDietary.map(d =>
+                `<span class="swipe-filter-tag">${escapeHtml(d)}</span>`
+            ).join('');
+        }
+
+        // Build the dietary filter chips for the discover page
+        function renderDiscoverDietaryChips() {
+            const container = document.getElementById('dietaryFilterChips');
+            if (!container) return;
+            container.innerHTML = ALL_DIETARY_OPTIONS.map(opt => {
+                const isActive = discoverDietaryFilters.has(opt.key);
+                return `<button class="dietary-chip${isActive ? ' active' : ''}" data-dietary="${opt.key}" onclick="toggleDiscoverDietary(this, '${opt.key}')">${opt.label}</button>`;
+            }).join('');
+        }
+
+        function toggleDiscoverDietary(chip, key) {
+            if (discoverDietaryFilters.has(key)) {
+                discoverDietaryFilters.delete(key);
+                chip.classList.remove('active');
+            } else {
+                discoverDietaryFilters.add(key);
+                chip.classList.add('active');
+            }
+            filterRecipes();
+        }
+
         // ==================== PAGE NAVIGATION ====================
         function switchPage(page) {
             // Hide all pages
@@ -3143,7 +3681,7 @@
             if (page === 'swipe') loadSwipePage();
             if (page === 'discover') loadDiscoverPage();
             if (page === 'mealplan') loadMealPlanPage();
-            if (page === 'grocery') loadGroceryPage();
+            if (page === 'grocery') { loadGroceryPage(); loadFridgePage(); }
         }
 
         // ==================== DASHBOARD ====================
@@ -3507,6 +4045,7 @@
         }
 
         async function loadSwipePage() {
+            renderSwipeDietaryTags();
             try {
                 let recipes = await TenderAPI.getDiscoverRecipes(50);
                 if (!Array.isArray(recipes) || recipes.length === 0) {
@@ -3517,6 +4056,7 @@
                         recipes = [];
                     }
                 }
+                recipes = filterByDietary(recipes);
                 swipeDeckMaster = recipes.slice();
                 swipeDeck = recipes.slice();
                 renderSwipeCard();
@@ -4006,6 +4546,12 @@
                 ]);
                 likedRecipeIds = new Set(likedRecipes.map(r => r.id));
                 myRecipeIds = new Set(myRecipes.map(r => r.id));
+
+                // Initialize discover dietary filters from user profile
+                const userDietary = currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : [];
+                discoverDietaryFilters = new Set(userDietary);
+                renderDiscoverDietaryChips();
+
                 populateCuisineFilter();
                 filterRecipes();
             } catch (err) {
@@ -4048,7 +4594,11 @@
             const cuisine = document.getElementById('cuisineFilter').value;
             const difficulty = document.getElementById('difficultyFilter').value;
 
-            let filtered = allRecipes.filter(recipe => {
+            // Apply dietary filters from the toggleable chips
+            const activeDietary = [...discoverDietaryFilters];
+            let filtered = filterByDietary(allRecipes, activeDietary);
+
+            filtered = filtered.filter(recipe => {
                 const matchesSearch = !search ||
                     recipe.name.toLowerCase().includes(search) ||
                     (recipe.description && recipe.description.toLowerCase().includes(search)) ||
@@ -4756,6 +5306,210 @@
                     console.error('Failed to clear list:', err);
                 }
             }
+        }
+
+        // ==================== GROCERY/FRIDGE TABS ====================
+        let currentGroceryTab = 'grocery';
+
+        function switchGroceryTab(tab) {
+            currentGroceryTab = tab;
+            document.getElementById('tabGrocery').classList.toggle('active', tab === 'grocery');
+            document.getElementById('tabFridge').classList.toggle('active', tab === 'fridge');
+            document.getElementById('groceryTabContent').classList.toggle('active', tab === 'grocery');
+            document.getElementById('fridgeTabContent').classList.toggle('active', tab === 'fridge');
+            document.getElementById('groceryPageTitle').textContent = tab === 'grocery' ? 'Grocery List' : 'My Fridge';
+
+            if (tab === 'fridge') {
+                loadFridgePage();
+            }
+        }
+
+        function clearCurrentSection() {
+            if (currentGroceryTab === 'grocery') {
+                clearFullGroceryList();
+            } else {
+                clearFridge();
+            }
+        }
+
+        // ==================== FRIDGE PAGE ====================
+        async function loadFridgePage() {
+            try {
+                const items = await TenderAPI.getFridgeItems();
+                renderFridgePage(items);
+            } catch (err) {
+                console.error('Failed to load fridge:', err);
+            }
+        }
+
+        function renderFridgePage(items) {
+            document.getElementById('fridgeTotalItems').textContent = items.length;
+
+            const container = document.getElementById('fridgeFullList');
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 60px 20px;">
+                        <div class="icon">🧊</div>
+                        <p>Your fridge is empty.<br>Add items manually or scan a photo of your fridge!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="fridge-item">
+                    <span class="item-name">${escapeHtml(item.name)}</span>
+                    ${item.quantity > 1 ? `<span class="item-quantity">x${item.quantity}</span>` : ''}
+                    ${item.category && item.category !== 'Other' ? `<span class="item-category">${escapeHtml(item.category)}</span>` : ''}
+                    <button class="item-delete" onclick="deleteFridgeItem(${item.id})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        async function addFridgeItemManual(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('newFridgeName');
+            const qtyInput = document.getElementById('newFridgeQty');
+            const name = nameInput.value.trim();
+            const quantity = parseInt(qtyInput.value) || 1;
+
+            if (!name) return;
+
+            try {
+                await TenderAPI.addFridgeItem({ name, quantity });
+                nameInput.value = '';
+                qtyInput.value = '1';
+                loadFridgePage();
+            } catch (err) {
+                console.error('Failed to add fridge item:', err);
+            }
+        }
+
+        async function deleteFridgeItem(id) {
+            try {
+                await TenderAPI.deleteFridgeItem(id);
+                loadFridgePage();
+            } catch (err) {
+                console.error('Failed to delete fridge item:', err);
+            }
+        }
+
+        async function clearFridge() {
+            if (confirm('Are you sure you want to clear your entire fridge inventory?')) {
+                try {
+                    await TenderAPI.clearFridge();
+                    loadFridgePage();
+                } catch (err) {
+                    console.error('Failed to clear fridge:', err);
+                }
+            }
+        }
+
+        // ==================== FRIDGE SCANNING ====================
+        let scanResults = [];
+
+        function triggerFridgeScan() {
+            document.getElementById('fridgeImageInput').click();
+        }
+
+        async function handleFridgeImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Show loading state in modal
+            const modal = document.getElementById('scanModal');
+            const body = document.getElementById('scanModalBody');
+            modal.classList.add('active');
+            body.innerHTML = `
+                <div class="scan-loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing your fridge...</p>
+                    <p style="color: #aaa; font-size: 0.85em;">This may take a few seconds</p>
+                </div>
+            `;
+
+            // Convert to base64
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const base64 = event.target.result.split(',')[1]; // Remove data:image/...;base64, prefix
+
+                try {
+                    const data = await TenderAPI.scanFridgeImage(base64);
+                    scanResults = data.ingredients || [];
+                    showScanResults(scanResults);
+                } catch (err) {
+                    console.error('Scan failed:', err);
+                    body.innerHTML = `
+                        <div class="scan-loading">
+                            <div class="icon" style="font-size: 3em; margin-bottom: 15px;">⚠️</div>
+                            <p>Failed to analyze image</p>
+                            <p style="color: #aaa; font-size: 0.85em;">${escapeHtml(err.message)}</p>
+                        </div>
+                    `;
+                }
+            };
+            reader.readAsDataURL(file);
+
+            // Reset the input so the same file can be selected again
+            e.target.value = '';
+        }
+
+        function showScanResults(ingredients) {
+            const body = document.getElementById('scanModalBody');
+
+            if (ingredients.length === 0) {
+                body.innerHTML = `
+                    <div class="scan-loading">
+                        <div class="icon" style="font-size: 3em; margin-bottom: 15px;">🤔</div>
+                        <p>No ingredients found</p>
+                        <p style="color: #aaa; font-size: 0.85em;">Try taking a clearer photo with better lighting</p>
+                    </div>
+                `;
+                return;
+            }
+
+            body.innerHTML = ingredients.map((item, i) => `
+                <div class="scan-item">
+                    <input type="checkbox" checked id="scanItem${i}" data-index="${i}">
+                    <span class="scan-item-name">${escapeHtml(item.name)}</span>
+                    ${item.quantity > 1 ? `<span class="scan-item-qty">x${item.quantity}</span>` : ''}
+                    ${item.category ? `<span class="scan-item-category">${escapeHtml(item.category)}</span>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function confirmScanResults() {
+            const checkboxes = document.querySelectorAll('#scanModalBody input[type="checkbox"]');
+            const itemsToAdd = [];
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const idx = parseInt(cb.dataset.index);
+                    itemsToAdd.push(scanResults[idx]);
+                }
+            });
+
+            // Add each selected item to the fridge
+            for (const item of itemsToAdd) {
+                try {
+                    await TenderAPI.addFridgeItem({
+                        name: item.name,
+                        quantity: item.quantity || 1,
+                        category: item.category || 'Other'
+                    });
+                } catch (err) {
+                    console.error('Failed to add scanned item:', err);
+                }
+            }
+
+            closeScanModal();
+            loadFridgePage();
+        }
+
+        function closeScanModal() {
+            document.getElementById('scanModal').classList.remove('active');
+            scanResults = [];
         }
 
         // ==================== DASHBOARD GROCERY (quick actions) ====================
