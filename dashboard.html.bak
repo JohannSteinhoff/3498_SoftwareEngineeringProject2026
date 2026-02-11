@@ -190,7 +190,7 @@
         }
 
         .start-swiping-btn {
-            background: var(--bg-card);
+            background: white;
             color: var(--primary);
             border: none;
             padding: 15px 35px;
@@ -216,10 +216,10 @@
         }
 
         .stat-card {
-            background: var(--bg-card);
+            background: white;
             padding: 25px;
             border-radius: 16px;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .stat-card .icon {
@@ -240,7 +240,7 @@
         }
 
         .stat-card p {
-            color: var(--text-secondary);
+            color: #888;
             font-size: 0.9em;
         }
 
@@ -259,10 +259,10 @@
 
         /* Section Card */
         .section-card {
-            background: var(--bg-card);
+            background: white;
             border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .section-header {
@@ -348,7 +348,7 @@
 
         .recipe-info p {
             font-size: 0.8em;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .recipe-card .recipe-delete-btn {
@@ -382,7 +382,7 @@
         .empty-state {
             text-align: center;
             padding: 40px 20px;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .empty-state .icon {
@@ -401,7 +401,7 @@
             align-items: center;
             gap: 12px;
             padding: 12px;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #f0f0f0;
             transition: background 0.2s;
         }
 
@@ -421,7 +421,7 @@
 
         .grocery-item.checked span {
             text-decoration: line-through;
-            color: var(--text-tertiary);
+            color: #aaa;
         }
 
         .grocery-item span {
@@ -429,14 +429,14 @@
         }
 
         .grocery-item .quantity {
-            color: var(--text-secondary);
+            color: #888;
             font-size: 0.9em;
         }
 
         .grocery-item .delete-btn {
             background: none;
             border: none;
-            color: var(--text-tertiary);
+            color: #ccc;
             cursor: pointer;
             font-size: 1.2em;
             transition: color 0.2s;
@@ -451,13 +451,13 @@
             gap: 10px;
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px solid var(--border-light);
+            border-top: 1px solid #f0f0f0;
         }
 
         .add-grocery-form input {
             flex: 1;
             padding: 10px 15px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-family: inherit;
         }
@@ -497,7 +497,7 @@
 
         .profile-field label {
             font-size: 0.85em;
-            color: var(--text-secondary);
+            color: #888;
             display: block;
             margin-bottom: 5px;
         }
@@ -543,7 +543,7 @@
         .edit-profile-form input,
         .edit-profile-form select {
             padding: 10px 14px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-family: inherit;
             font-size: 0.95em;
@@ -635,9 +635,9 @@
         }
 
         .btn-cancel-profile {
-            background: var(--bg-card);
+            background: white;
             color: var(--dark);
-            border: 2px solid var(--border-color);
+            border: 2px solid #e0e0e0;
         }
 
         .btn-cancel-profile:hover {
@@ -663,7 +663,7 @@
         }
 
         .discover-header p {
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .btn-create-recipe {
@@ -687,7 +687,7 @@
 
         .edit-profile-form textarea {
             padding: 10px 14px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-family: inherit;
             font-size: 0.95em;
@@ -702,7 +702,7 @@
         }
 
         .image-upload-area {
-            border: 2px dashed var(--border-color);
+            border: 2px dashed #d0d0d0;
             border-radius: 12px;
             padding: 20px;
             text-align: center;
@@ -728,7 +728,7 @@
         }
 
         .image-upload-area .upload-placeholder {
-            color: var(--text-tertiary);
+            color: #999;
             font-size: 0.9em;
         }
 
@@ -778,7 +778,7 @@
             flex: 1;
             min-width: 250px;
             padding: 14px 20px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 1em;
             font-family: inherit;
@@ -792,11 +792,11 @@
 
         .search-bar select {
             padding: 14px 20px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 1em;
             font-family: inherit;
-            background: var(--bg-card);
+            background: white;
             cursor: pointer;
             min-width: 160px;
         }
@@ -816,9 +816,8 @@
         .filter-chip {
             padding: 8px 18px;
             border-radius: 20px;
-            border: 2px solid var(--border-color);
-            background: var(--bg-card);
-            color: var(--text-primary);
+            border: 2px solid #e0e0e0;
+            background: white;
             cursor: pointer;
             font-family: inherit;
             font-weight: 500;
@@ -848,7 +847,7 @@
         .dietary-filter-label {
             font-weight: 600;
             font-size: 0.9em;
-            color: var(--text-secondary);
+            color: #555;
             white-space: nowrap;
         }
 
@@ -861,9 +860,8 @@
         .dietary-chip {
             padding: 6px 14px;
             border-radius: 20px;
-            border: 2px solid var(--border-color);
-            background: var(--bg-card);
-            color: var(--text-primary);
+            border: 2px solid #e0e0e0;
+            background: white;
             cursor: pointer;
             font-family: inherit;
             font-weight: 500;
@@ -919,13 +917,13 @@
         }
 
         .favorites-header p {
-            color: var(--text-secondary);
+            color: #888;
             margin-top: 4px;
         }
 
         .favorites-back-btn {
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
+            background: white;
+            border: 2px solid #e0e0e0;
             border-radius: 12px;
             padding: 10px 20px;
             font-family: inherit;
@@ -949,7 +947,7 @@
         .favorites-empty {
             text-align: center;
             padding: 80px 20px;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .favorites-empty .empty-icon {
@@ -959,7 +957,7 @@
 
         .favorites-empty h2 {
             margin-bottom: 8px;
-            color: var(--text-secondary);
+            color: #555;
         }
 
         .discover-grid {
@@ -969,10 +967,10 @@
         }
 
         .discover-recipe-card {
-            background: var(--bg-card);
+            background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
@@ -1018,7 +1016,7 @@
             position: absolute;
             top: 12px;
             right: 12px;
-            background: var(--overlay-bg);
+            background: rgba(0,0,0,0.5);
             color: white;
             padding: 4px 12px;
             border-radius: 20px;
@@ -1051,7 +1049,7 @@
 
         .discover-recipe-body .description {
             font-size: 0.9em;
-            color: var(--text-secondary);
+            color: #888;
             margin-bottom: 12px;
             line-height: 1.5;
         }
@@ -1060,7 +1058,7 @@
             display: flex;
             gap: 15px;
             font-size: 0.85em;
-            color: var(--text-secondary);
+            color: #888;
             margin-bottom: 12px;
         }
 
@@ -1115,7 +1113,7 @@
         .no-results {
             text-align: center;
             padding: 60px 20px;
-            color: var(--text-secondary);
+            color: #888;
             grid-column: 1 / -1;
         }
 
@@ -1132,7 +1130,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--overlay-bg);
+            background: rgba(0,0,0,0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -1144,7 +1142,7 @@
         }
 
         .modal {
-            background: var(--bg-card);
+            background: white;
             border-radius: 20px;
             max-width: 600px;
             width: 100%;
@@ -1206,7 +1204,7 @@
 
         .modal-body ul li {
             padding: 8px 0;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #f0f0f0;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -1223,7 +1221,7 @@
 
         .modal-body .instructions {
             line-height: 1.8;
-            color: var(--text-secondary);
+            color: #555;
         }
 
         .modal-actions {
@@ -1351,7 +1349,7 @@
         .admin-promote-form input {
             flex: 1;
             padding: 10px 14px;
-            border: 1px solid var(--border-color);
+            border: 1px solid #ddd;
             border-radius: 8px;
             font-family: inherit;
             font-size: 0.9em;
@@ -1392,13 +1390,13 @@
         .admin-users-table td {
             padding: 10px 12px;
             text-align: left;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
         }
 
         .admin-users-table th {
             background: rgba(255, 107, 107, 0.08);
             font-weight: 600;
-            color: var(--text-secondary);
+            color: #555;
             font-size: 0.85em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1420,8 +1418,8 @@
 
         .admin-users-table .user-tag {
             display: inline-block;
-            background: var(--border-color);
-            color: var(--text-secondary);
+            background: #e0e0e0;
+            color: #666;
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 0.8em;
@@ -1470,7 +1468,7 @@
 
         .admin-user-count {
             font-size: 0.8em;
-            color: var(--text-tertiary);
+            color: #999;
             margin-top: 8px;
         }
 
@@ -1498,9 +1496,8 @@
         }
 
         .mealplan-nav button {
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
+            background: white;
+            border: 2px solid #e0e0e0;
             border-radius: 10px;
             padding: 8px 16px;
             cursor: pointer;
@@ -1540,9 +1537,9 @@
         }
 
         .mealplan-day {
-            background: var(--bg-card);
+            background: white;
             border-radius: 16px;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             overflow: hidden;
             min-height: 280px;
         }
@@ -1567,7 +1564,7 @@
         .mealplan-day-header .date {
             font-weight: 400;
             font-size: 0.85em;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .mealplan-day.today .mealplan-day-header .date {
@@ -1576,7 +1573,7 @@
 
         .meal-slot {
             padding: 10px 15px;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #f5f5f5;
         }
 
         .meal-slot:last-child {
@@ -1586,7 +1583,7 @@
         .meal-slot-label {
             font-size: 0.75em;
             font-weight: 600;
-            color: var(--text-tertiary);
+            color: #aaa;
             text-transform: uppercase;
             margin-bottom: 6px;
         }
@@ -1611,7 +1608,7 @@
         .meal-slot-content .remove-meal {
             background: none;
             border: none;
-            color: var(--text-tertiary);
+            color: #ccc;
             cursor: pointer;
             font-size: 1em;
             transition: color 0.2s;
@@ -1630,12 +1627,12 @@
 
         .add-meal-btn {
             background: none;
-            border: 2px dashed var(--border-color);
+            border: 2px dashed #ddd;
             border-radius: 8px;
             padding: 8px;
             width: 100%;
             cursor: pointer;
-            color: var(--text-tertiary);
+            color: #bbb;
             font-family: inherit;
             font-size: 0.8em;
             transition: all 0.3s;
@@ -1688,15 +1685,15 @@
 
         .recipe-select-item .time {
             font-size: 0.85em;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         /* Meal Plan Summary */
         .mealplan-summary {
-            background: var(--bg-card);
+            background: white;
             border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .mealplan-summary h2 {
@@ -1711,7 +1708,7 @@
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .summary-stat:last-child {
@@ -1719,7 +1716,7 @@
         }
 
         .summary-stat .label {
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .summary-stat .value {
@@ -1775,7 +1772,7 @@
         }
 
         .mealplan-day.selected .select-check {
-            background: var(--bg-card);
+            background: white;
             border-color: white;
             color: var(--secondary);
         }
@@ -1784,7 +1781,7 @@
         .ingredient-action-bar {
             position: sticky;
             bottom: 20px;
-            background: var(--bg-card);
+            background: white;
             border-radius: 16px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.15);
             padding: 16px 24px;
@@ -1818,7 +1815,7 @@
 
         .ingredient-bar-info .bar-subtitle {
             font-size: 0.82em;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         .ingredient-bar-actions {
@@ -1849,7 +1846,7 @@
         .btn-clear-selection {
             background: none;
             border: none;
-            color: var(--text-secondary);
+            color: #888;
             cursor: pointer;
             font-family: inherit;
             font-size: 0.85em;
@@ -1904,8 +1901,8 @@
 
         .btn-clear-all {
             background: none;
-            border: 2px solid var(--border-color);
-            color: var(--text-secondary);
+            border: 2px solid #e0e0e0;
+            color: #888;
         }
 
         .btn-clear-all:hover {
@@ -1924,7 +1921,7 @@
             flex: 1;
             min-width: 250px;
             padding: 14px 20px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 1em;
             font-family: inherit;
@@ -1958,9 +1955,9 @@
         }
 
         .grocery-full-list {
-            background: var(--bg-card);
+            background: white;
             border-radius: 16px;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             overflow: hidden;
         }
 
@@ -1980,7 +1977,7 @@
             align-items: center;
             gap: 15px;
             padding: 15px 20px;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #f5f5f5;
             transition: background 0.2s;
         }
 
@@ -2001,7 +1998,7 @@
 
         .grocery-full-item.checked .item-name {
             text-decoration: line-through;
-            color: var(--text-tertiary);
+            color: #aaa;
         }
 
         .grocery-full-item .item-name {
@@ -2014,13 +2011,13 @@
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.85em;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .grocery-full-item .item-delete {
             background: none;
             border: none;
-            color: var(--text-tertiary);
+            color: #ccc;
             cursor: pointer;
             font-size: 1.3em;
             transition: color 0.2s;
@@ -2039,10 +2036,10 @@
         }
 
         .grocery-stat-card {
-            background: var(--bg-card);
+            background: white;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             text-align: center;
         }
 
@@ -2053,7 +2050,7 @@
 
         .grocery-stat-card p {
             font-size: 0.85em;
-            color: var(--text-secondary);
+            color: #888;
         }
 
         /* ============================================
@@ -2064,22 +2061,22 @@
             display: flex;
             gap: 0;
             margin-bottom: 25px;
-            background: var(--bg-card);
+            background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         .grocery-tab-btn {
             flex: 1;
             padding: 16px 20px;
             border: none;
-            background: var(--bg-card);
+            background: white;
             font-size: 1em;
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
-            color: var(--text-secondary);
+            color: #888;
             transition: all 0.3s;
             position: relative;
         }
@@ -2100,8 +2097,8 @@
         }
 
         .grocery-tab-btn:hover:not(.active) {
-            color: var(--text-secondary);
-            background: var(--bg-card-hover);
+            color: #555;
+            background: #fafafa;
         }
 
         .grocery-tab-content {
@@ -2131,7 +2128,7 @@
             flex: 1;
             min-width: 200px;
             padding: 14px 20px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 1em;
             font-family: inherit;
@@ -2179,7 +2176,7 @@
             align-items: center;
             gap: 15px;
             padding: 15px 20px;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #f5f5f5;
             transition: background 0.2s;
         }
 
@@ -2209,17 +2206,17 @@
         }
 
         .fridge-item .item-category {
-            background: var(--border-light);
+            background: #f0f0f0;
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 0.8em;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .fridge-item .item-delete {
             background: none;
             border: none;
-            color: var(--text-tertiary);
+            color: #ccc;
             cursor: pointer;
             font-size: 1.3em;
             transition: color 0.2s;
@@ -2238,7 +2235,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: var(--overlay-bg);
+            background: rgba(0,0,0,0.5);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -2250,7 +2247,7 @@
         }
 
         .scan-modal {
-            background: var(--bg-card);
+            background: white;
             border-radius: 20px;
             width: 90%;
             max-width: 500px;
@@ -2261,7 +2258,7 @@
 
         .scan-modal-header {
             padding: 25px 25px 15px;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .scan-modal-header h2 {
@@ -2270,7 +2267,7 @@
         }
 
         .scan-modal-header p {
-            color: var(--text-secondary);
+            color: #888;
             font-size: 0.9em;
         }
 
@@ -2283,7 +2280,7 @@
             align-items: center;
             gap: 12px;
             padding: 12px 0;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #f5f5f5;
         }
 
         .scan-item:last-child {
@@ -2303,16 +2300,16 @@
         }
 
         .scan-item .scan-item-qty {
-            color: var(--text-secondary);
+            color: #888;
             font-size: 0.9em;
         }
 
         .scan-item .scan-item-category {
-            background: var(--border-light);
+            background: #f0f0f0;
             padding: 3px 8px;
             border-radius: 10px;
             font-size: 0.75em;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .scan-modal-footer {
@@ -2338,8 +2335,8 @@
 
         .btn-scan-cancel {
             background: none;
-            border: 2px solid var(--border-color);
-            color: var(--text-secondary);
+            border: 2px solid #e0e0e0;
+            color: #888;
         }
 
         .btn-scan-confirm {
@@ -2356,7 +2353,7 @@
         .scan-loading .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid var(--border-light);
+            border: 4px solid #f0f0f0;
             border-top-color: #4ECDC4;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -2407,7 +2404,7 @@
         }
 
         .swipe-header p {
-            color: var(--text-secondary);
+            color: #888;
             font-size: 0.95em;
         }
 
@@ -2443,7 +2440,7 @@
 
         .swipe-no-filters {
             display: inline-block;
-            color: var(--text-tertiary);
+            color: #aaa;
             font-size: 0.75em;
             margin-top: 10px;
         }
@@ -2459,7 +2456,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: var(--bg-card);
+            background: white;
             border-radius: 24px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.12);
             overflow: hidden;
@@ -2612,7 +2609,7 @@
         }
 
         .swipe-card-desc {
-            color: var(--text-secondary);
+            color: #888;
             font-size: 0.9em;
             margin-bottom: 14px;
             display: -webkit-box;
@@ -2632,7 +2629,7 @@
             align-items: center;
             gap: 6px;
             font-size: 0.88em;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         .swipe-card-stat .stat-icon {
@@ -2651,7 +2648,7 @@
             padding: 3px 10px;
             border-radius: 12px;
             font-size: 0.75em;
-            color: var(--text-secondary);
+            color: #666;
         }
 
         /* Swipe stamp overlays */
@@ -2729,7 +2726,7 @@
         }
 
         .swipe-btn-nope {
-            background: var(--bg-card);
+            background: white;
             box-shadow: 0 4px 20px rgba(255, 107, 107, 0.25);
             color: var(--primary);
         }
@@ -2746,9 +2743,9 @@
         .swipe-btn-info {
             width: 52px;
             height: 52px;
-            background: var(--bg-card);
+            background: white;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            color: var(--text-tertiary);
+            color: #aaa;
             font-size: 1.2em;
         }
 
@@ -2758,7 +2755,7 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
 
-        .swipe-btn-info::after { color: var(--text-secondary); }
+        .swipe-btn-info::after { color: #888; }
 
         .swipe-btn-like {
             background: var(--secondary);
@@ -2776,7 +2773,7 @@
         .swipe-btn-superlike {
             width: 52px;
             height: 52px;
-            background: var(--bg-card);
+            background: white;
             box-shadow: 0 4px 15px rgba(255, 230, 109, 0.3);
             color: #f0c000;
             font-size: 1.2em;
@@ -2794,7 +2791,7 @@
         .swipe-empty {
             text-align: center;
             padding: 60px 30px;
-            background: var(--bg-card);
+            background: white;
             border-radius: 24px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.08);
             max-width: 380px;
@@ -2812,7 +2809,7 @@
         }
 
         .swipe-empty p {
-            color: var(--text-secondary);
+            color: #888;
             margin-bottom: 20px;
         }
 
@@ -2868,9 +2865,9 @@
             flex-direction: column;
             align-items: center;
             padding: 10px 4px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #eee;
             border-radius: 12px;
-            background: var(--bg-card);
+            background: white;
             cursor: pointer;
             font-family: inherit;
             transition: all 0.2s;
@@ -2905,7 +2902,7 @@
             font-size: 0.7em;
             font-weight: 600;
             text-transform: uppercase;
-            color: var(--text-secondary);
+            color: #888;
             margin-bottom: 2px;
         }
 
@@ -2929,7 +2926,7 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: var(--border-color);
+            background: #ddd;
         }
 
         .schedule-day-btn .day-dot.filled {
@@ -2952,7 +2949,7 @@
         .schedule-day-preview-title {
             font-size: 0.8em;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: #888;
             text-transform: uppercase;
             letter-spacing: 0.03em;
             margin-bottom: 8px;
@@ -2960,7 +2957,7 @@
 
         .schedule-day-preview-empty {
             font-size: 0.85em;
-            color: var(--text-tertiary);
+            color: #aaa;
             font-style: italic;
         }
 
@@ -2972,13 +2969,13 @@
         }
 
         .schedule-preview-slot + .schedule-preview-slot {
-            border-top: 1px solid var(--border-light);
+            border-top: 1px solid rgba(0,0,0,0.06);
         }
 
         .schedule-preview-slot .slot-time {
             font-size: 0.75em;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: #888;
             text-transform: uppercase;
             width: 65px;
             flex-shrink: 0;
@@ -2997,7 +2994,7 @@
 
         .schedule-preview-slot .slot-empty {
             font-size: 0.85em;
-            color: var(--text-tertiary);
+            color: #ccc;
         }
 
         /* Meal picker buttons */
@@ -3009,9 +3006,9 @@
         .schedule-meal-btn {
             flex: 1;
             padding: 12px 8px 10px;
-            border: 2px solid var(--border-color);
+            border: 2px solid #eee;
             border-radius: 12px;
-            background: var(--bg-card);
+            background: white;
             cursor: pointer;
             font-family: inherit;
             font-weight: 600;
@@ -3043,7 +3040,7 @@
             display: block;
             font-size: 0.78em;
             font-weight: 400;
-            color: var(--text-tertiary);
+            color: #999;
             margin-top: 3px;
             white-space: nowrap;
             overflow: hidden;
@@ -3118,7 +3115,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background: var(--bg-card);
+            background: white;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 100;
             justify-content: space-around;
@@ -3130,7 +3127,7 @@
             flex-direction: column;
             align-items: center;
             text-decoration: none;
-            color: var(--text-secondary);
+            color: #888;
             font-size: 0.7em;
             padding: 5px;
             cursor: pointer;
@@ -3150,134 +3147,6 @@
                 padding-bottom: 80px;
             }
         }
-
-        /* Theme toggle button */
-        .theme-toggle-btn {
-            background: none;
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1em;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        .theme-toggle-btn:hover {
-            border-color: var(--primary);
-            background: rgba(255, 107, 107, 0.1);
-        }
-
-        .theme-toggle-btn .theme-icon {
-            line-height: 1;
-            color: currentColor;
-        }
-
-        .mobile-theme-toggle {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-theme-toggle {
-                display: flex;
-                position: fixed;
-                right: 16px;
-                bottom: 74px;
-                z-index: 110;
-                background: var(--bg-card);
-                box-shadow: 0 4px 14px var(--shadow-color);
-            }
-        }
-
-        /* Dark mode specific overrides */
-        html.dark-mode nav {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        html.dark-mode .theme-toggle-btn {
-            color: var(--accent);
-        }
-
-        html.dark-mode .mobile-nav {
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
-        }
-
-        html.dark-mode input,
-        html.dark-mode select,
-        html.dark-mode textarea {
-            background: var(--bg-input);
-            color: var(--text-primary);
-            border-color: var(--border-color);
-        }
-
-        html.dark-mode input::placeholder,
-        html.dark-mode textarea::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        html.dark-mode .swipe-card {
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-
-        html.dark-mode .swipe-card-cuisine {
-            background: rgba(30, 42, 71, 0.92);
-            color: var(--text-primary);
-        }
-
-        html.dark-mode .swipe-btn-nope,
-        html.dark-mode .swipe-btn-info,
-        html.dark-mode .swipe-btn-superlike {
-            background: var(--bg-card);
-        }
-
-        html.dark-mode .admin-users-table th {
-            color: var(--text-secondary);
-        }
-
-        html.dark-mode .fridge-item .item-quantity {
-            background: rgba(78, 205, 196, 0.15);
-            color: #4ECDC4;
-        }
-
-        html.dark-mode .fridge-item .item-category,
-        html.dark-mode .scan-item .scan-item-category {
-            background: var(--border-color);
-            color: var(--text-secondary);
-        }
-
-        html.dark-mode .grocery-full-item .item-quantity {
-            background: var(--border-light);
-            color: var(--text-secondary);
-        }
-
-        html.dark-mode .recipe-delete-btn,
-        html.dark-mode .emoji-badge {
-            background: rgba(30, 42, 71, 0.9);
-        }
-
-        html.dark-mode .discover-recipe-image .emoji-badge,
-        html.dark-mode .discover-recipe-image .cuisine-badge {
-            background: rgba(30, 42, 71, 0.9);
-            color: var(--text-primary);
-        }
-
-        html.dark-mode .admin-users-table .user-tag {
-            background: var(--border-color);
-            color: var(--text-secondary);
-        }
-
-        html.dark-mode .admin-users-table .password-cell {
-            background: rgba(255,255,255,0.05);
-        }
-
-        html.dark-mode .scan-loading .spinner {
-            border-color: var(--border-color);
-            border-top-color: #4ECDC4;
-        }
     </style>
 </head>
 <body>
@@ -3293,9 +3162,6 @@
             <a onclick="switchPage('grocery')" data-page="grocery">Grocery List</a>
         </div>
         <div class="user-menu">
-            <button class="theme-toggle-btn js-theme-toggle" type="button" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">
-                <span class="theme-icon" aria-hidden="true">&#9790;</span>
-            </button>
             <div class="user-avatar" id="userAvatar"></div>
             <button class="logout-btn" onclick="logout()">Log Out</button>
         </div>
@@ -3319,9 +3185,6 @@
             <span class="mob-icon">🛒</span> Grocery
         </a>
     </div>
-    <button class="theme-toggle-btn mobile-theme-toggle js-theme-toggle" type="button" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">
-        <span class="theme-icon" aria-hidden="true">&#9790;</span>
-    </button>
 
     <main class="main-content">
 
@@ -3615,15 +3478,16 @@
     <div class="modal-overlay" id="recipeModal">
         <div class="modal" style="position:relative;">
             <button class="modal-close" onclick="closeRecipeModal()">✕</button>
+            <div id="modalImageBanner" style="display:none; width:100%; height:200px; border-radius:16px 16px 0 0; overflow:hidden; margin:-30px -30px 15px -30px; width:calc(100% + 60px); position:relative;">
+                <img id="modalBannerImg" style="width:100%; height:100%; object-fit:cover;">
+                <span id="modalBannerEmoji" style="position:absolute; bottom:10px; right:14px; font-size:2em; background:rgba(255,255,255,0.9); border-radius:10px; padding:2px 8px; line-height:1;"></span>
+            </div>
             <div class="modal-header" id="modalHeader">
                 <span class="emoji" id="modalEmoji"></span>
                 <div>
                     <h2 id="modalTitle"></h2>
                     <p id="modalMeta"></p>
                 </div>
-            </div>
-            <div id="modalImageBanner" style="display:none; width:100%; margin:14px 0 10px; border-radius:12px; overflow:hidden; background:#111;">
-                <img id="modalBannerImg" style="display:block; width:100%; height:auto; max-height:52vh; object-fit:contain;">
             </div>
             <div class="modal-body" id="modalBody"></div>
             <div class="modal-actions" id="modalActions"></div>
@@ -3998,26 +3862,6 @@
         let mealPlanData = [];
         let pendingMealSlot = null; // { date, mealType }
 
-        // ==================== THEME ====================
-        function updateThemeToggleUI() {
-            const isDarkMode = document.documentElement.classList.contains('dark-mode');
-            document.querySelectorAll('.js-theme-toggle .theme-icon').forEach(icon => {
-                icon.innerHTML = isDarkMode ? '&#9728;' : '&#9790;';
-            });
-            document.querySelectorAll('.js-theme-toggle').forEach(btn => {
-                btn.setAttribute('aria-label', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
-                btn.setAttribute('title', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
-            });
-        }
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            html.classList.toggle('dark-mode');
-            const isDarkMode = html.classList.contains('dark-mode');
-            localStorage.setItem('tender_theme', isDarkMode ? 'dark' : 'light');
-            updateThemeToggleUI();
-        }
-
         // ==================== DIETARY FILTERING ====================
         const DIETARY_EXCLUSIONS = {
             'gluten-free': ['flour', 'bread', 'pasta', 'spaghetti', 'macaroni', 'panko', 'breadcrumbs',
@@ -4222,7 +4066,7 @@
                         <div class="recipe-card" onclick="switchPage('discover')">
                             <div class="recipe-image${recipe.image ? ' has-img' : ''}" style="position:relative;">
                                 ${recipe.image
-                                    ? `<img src="${recipe.image}" alt="" style="width:100%;height:100%;object-fit:cover;">`
+                                    ? `<img src="${recipe.image}" alt="" style="width:100%;height:100%;object-fit:cover;"><span class="emoji-badge">${recipe.emoji || '🍽️'}</span>`
                                     : (recipe.emoji || '🍽️')}
                             </div>
                             <div class="recipe-info">
@@ -4242,7 +4086,7 @@
                     <div class="recipe-card" onclick="openRecipeModal(${recipe.id})">
                         <div class="recipe-image${recipe.image ? ' has-img' : ''}" style="position:relative;">
                             ${recipe.image
-                                ? `<img src="${recipe.image}" alt="" style="width:100%;height:100%;object-fit:cover;">`
+                                ? `<img src="${recipe.image}" alt="" style="width:100%;height:100%;object-fit:cover;"><span class="emoji-badge">${recipe.emoji || '🍽️'}</span>`
                                 : (recipe.emoji || '🍽️')}
                         </div>
                         <div class="recipe-info">
@@ -4287,7 +4131,7 @@
                     <div class="discover-recipe-card" onclick="openRecipeModal(${recipe.id})">
                         <div class="discover-recipe-image${recipe.image ? ' has-img' : ''}">
                             ${recipe.image
-                                ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name)}">`
+                                ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name)}"><span class="emoji-badge">${recipe.emoji || '🍽️'}</span>`
                                 : (recipe.emoji || '🍽️')}
                             ${recipe.cuisine ? `<span class="cuisine-badge">${capitalizeFirst(recipe.cuisine)}</span>` : ''}
                             <span class="difficulty-badge">${capitalizeFirst(recipe.difficulty || 'medium')}</span>
@@ -5244,7 +5088,7 @@
                 <div class="discover-recipe-card" onclick="openRecipeModal(${recipe.id})">
                     <div class="discover-recipe-image${recipe.image ? ' has-img' : ''}">
                         ${recipe.image
-                            ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name)}">`
+                            ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name)}"><span class="emoji-badge">${recipe.emoji || '🍽️'}</span>`
                             : (recipe.emoji || '🍽️')}
                         ${recipe.cuisine ? `<span class="cuisine-badge">${capitalizeFirst(recipe.cuisine)}</span>` : ''}
                         <span class="difficulty-badge">${capitalizeFirst(recipe.difficulty || 'medium')}</span>
@@ -5307,6 +5151,7 @@
             if (recipe.image) {
                 banner.style.display = 'block';
                 document.getElementById('modalBannerImg').src = recipe.image;
+                document.getElementById('modalBannerEmoji').textContent = recipe.emoji || '🍽️';
                 document.getElementById('modalEmoji').style.display = 'none';
             } else {
                 banner.style.display = 'none';
@@ -6251,7 +6096,6 @@
         });
 
         // ==================== INITIALIZE ====================
-        updateThemeToggleUI();
         loadDashboard();
     </script>
 </body>

@@ -182,7 +182,7 @@ app.delete('/api/users/account', authenticate, (req, res) => {
 // Create a recipe
 app.post('/api/recipes', authenticate, (req, res) => {
     try {
-        const { name, description, cookTime, servings, difficulty, cuisine, emoji, ingredients, instructions } = req.body;
+        const { name, description, cookTime, servings, difficulty, cuisine, emoji, image, ingredients, instructions } = req.body;
         if (!name) {
             return res.status(400).json({ error: 'Recipe name is required' });
         }
@@ -195,6 +195,7 @@ app.post('/api/recipes', authenticate, (req, res) => {
             difficulty,
             cuisine,
             emoji,
+            image,
             ingredients: ingredientsStr,
             instructions
         });
@@ -311,7 +312,7 @@ app.put('/api/recipes/:id', authenticate, (req, res) => {
         if (recipe.createdBy !== req.userId && !user.isAdmin) {
             return res.status(403).json({ error: 'You can only edit your own recipes' });
         }
-        const { name, description, cookTime, servings, difficulty, cuisine, emoji, ingredients, instructions } = req.body;
+        const { name, description, cookTime, servings, difficulty, cuisine, emoji, image, ingredients, instructions } = req.body;
         const ingredientsStr = Array.isArray(ingredients) ? ingredients.join(',') : (ingredients || undefined);
         const updated = RecipeDB.update(parseInt(req.params.id), {
             name,
@@ -321,6 +322,7 @@ app.put('/api/recipes/:id', authenticate, (req, res) => {
             difficulty,
             cuisine,
             emoji,
+            image,
             ingredients: ingredientsStr,
             instructions
         });

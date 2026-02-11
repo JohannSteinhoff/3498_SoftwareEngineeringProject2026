@@ -4,7 +4,8 @@
       "Bash(timeout 5 node:*)",
       "Bash(git rm:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd .gitignore and remove node_modules from tracking\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd .gitignore and remove node_modules from tracking\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(python3:*)"
     ]
   }
 }

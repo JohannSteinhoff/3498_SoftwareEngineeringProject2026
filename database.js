@@ -69,11 +69,19 @@ async function initDatabase() {
             difficulty TEXT DEFAULT 'medium',
             cuisine TEXT,
             emoji TEXT DEFAULT '🍽️',
+            image TEXT,
             ingredients TEXT,
             instructions TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
+
+    // Migration: add image column to existing databases
+    try {
+        db.run(`ALTER TABLE recipes ADD COLUMN image TEXT`);
+    } catch (e) {
+        // Column already exists, ignore
+    }
 
     db.run(`
         CREATE TABLE IF NOT EXISTS liked_recipes (
@@ -528,8 +536,8 @@ const RecipeDB = {
 
     create(userId, data) {
         const id = runInsert(
-            `INSERT INTO recipes (name, description, cook_time, servings, difficulty, cuisine, emoji, ingredients, instructions, created_by)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO recipes (name, description, cook_time, servings, difficulty, cuisine, emoji, image, ingredients, instructions, created_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 data.name,
                 data.description || '',
@@ -538,6 +546,7 @@ const RecipeDB = {
                 data.difficulty || 'medium',
                 data.cuisine || '',
                 data.emoji || '🍽️',
+                data.image || null,
                 data.ingredients || '',
                 data.instructions || '',
                 userId
@@ -558,6 +567,7 @@ const RecipeDB = {
         if (data.difficulty) { updates.push('difficulty = ?'); values.push(data.difficulty); }
         if (data.cuisine !== undefined) { updates.push('cuisine = ?'); values.push(data.cuisine); }
         if (data.emoji) { updates.push('emoji = ?'); values.push(data.emoji); }
+        if (data.image !== undefined) { updates.push('image = ?'); values.push(data.image); }
         if (data.ingredients !== undefined) { updates.push('ingredients = ?'); values.push(data.ingredients); }
         if (data.instructions !== undefined) { updates.push('instructions = ?'); values.push(data.instructions); }
 
@@ -595,6 +605,7 @@ const RecipeDB = {
             difficulty: recipe.difficulty,
             cuisine: recipe.cuisine,
             emoji: recipe.emoji,
+            image: recipe.image || null,
             ingredients: recipe.ingredients ? recipe.ingredients.split(',') : [],
             instructions: recipe.instructions,
             createdBy: recipe.created_by || null,
