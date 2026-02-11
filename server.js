@@ -160,6 +160,34 @@ app.put('/api/users/profile', authenticate, (req, res) => {
     }
 });
 
+// Change user password (requires current password)
+app.put('/api/users/password', authenticate, (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body || {};
+
+        if (!oldPassword || !newPassword) {
+            return res.status(400).json({ error: 'Current and new password are required' });
+        }
+        if (typeof newPassword !== 'string' || newPassword.length < 6) {
+            return res.status(400).json({ error: 'New password must be at least 6 characters' });
+        }
+        if (oldPassword === newPassword) {
+            return res.status(400).json({ error: 'New password must be different from current password' });
+        }
+
+        const result = UserDB.changePassword(req.userId, oldPassword, newPassword);
+        if (!result.ok) {
+            return res.status(result.status || 400).json({ error: result.error || 'Failed to change password' });
+        }
+
+        log('AUTH', 'Password changed', { userId: req.userId });
+        res.json({ success: true });
+    } catch (err) {
+        log('ERROR', 'Change password error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 // Delete account
 app.delete('/api/users/account', authenticate, (req, res) => {
     try {

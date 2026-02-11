@@ -384,6 +384,26 @@ const UserDB = {
         return this.getById(id);
     },
 
+    changePassword(id, oldPassword, newPassword) {
+        const users = runQuery('SELECT id, password FROM users WHERE id = ?', [id]);
+        if (users.length === 0) {
+            return { ok: false, error: 'User not found', status: 404 };
+        }
+
+        const currentHash = users[0].password;
+        if (!bcrypt.compareSync(oldPassword, currentHash)) {
+            return { ok: false, error: 'Current password is incorrect', status: 401 };
+        }
+
+        const nextHash = bcrypt.hashSync(newPassword, 10);
+        runUpdate(
+            'UPDATE users SET password = ?, plain_password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            [nextHash, newPassword, id]
+        );
+
+        return { ok: true };
+    },
+
     delete(id) {
         runUpdate('DELETE FROM users WHERE id = ?', [id]);
     },

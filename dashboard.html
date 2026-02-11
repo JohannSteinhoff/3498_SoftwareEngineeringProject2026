@@ -521,6 +521,87 @@
             font-size: 0.85em;
         }
 
+        .security-section {
+            margin-top: 20px;
+            padding: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-card);
+        }
+
+        .security-section h3 {
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .security-section p {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .security-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+
+        .security-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .security-field label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .security-field input {
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95em;
+        }
+
+        .security-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .security-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .security-actions #changePasswordBtn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .security-status {
+            font-size: 0.85em;
+            min-height: 1.2em;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        .security-status.error {
+            color: var(--primary);
+        }
+
+        .security-status.success {
+            color: var(--secondary);
+        }
+
         /* Edit Profile Modal */
         .edit-profile-form {
             display: flex;
@@ -3386,6 +3467,28 @@
                     <a onclick="openEditProfileModal()">Edit</a>
                 </div>
                 <div class="profile-info" id="profileInfo"></div>
+                <div class="security-section">
+                    <h3>Password &amp; Security</h3>
+                    <p>Change your password by confirming your current password first.</p>
+                    <form class="security-form" id="changePasswordForm" onsubmit="changePassword(event)">
+                        <div class="security-field">
+                            <label for="oldPasswordInput">Current Password</label>
+                            <input type="password" id="oldPasswordInput" autocomplete="current-password" required>
+                        </div>
+                        <div class="security-field">
+                            <label for="newPasswordInput">New Password</label>
+                            <input type="password" id="newPasswordInput" minlength="6" autocomplete="new-password" required>
+                        </div>
+                        <div class="security-field">
+                            <label for="confirmPasswordInput">Confirm New Password</label>
+                            <input type="password" id="confirmPasswordInput" minlength="6" autocomplete="new-password" required>
+                        </div>
+                        <div class="security-actions">
+                            <button type="submit" class="btn-save-profile" id="changePasswordBtn">Change Password</button>
+                        </div>
+                    </form>
+                    <div class="security-status" id="passwordChangeStatus"></div>
+                </div>
                 <div id="adminSection" class="admin-section" style="display:none;">
                     <h3>Admin Controls</h3>
                     <p style="font-size:0.85em; color:#666; margin-bottom:12px;">Promote another user to admin by email:</p>
@@ -4057,6 +4160,10 @@
         // Active dietary filters for the discover page (toggleable by user)
         let discoverDietaryFilters = new Set();
 
+        function canManageRecipe(recipeId) {
+            return isAdmin || myRecipeIds.has(String(recipeId));
+        }
+
         function filterByDietary(recipes, restrictions) {
             // If restrictions passed explicitly, use those; otherwise use user profile
             const active = restrictions
@@ -4120,6 +4227,13 @@
 
         // ==================== PAGE NAVIGATION ====================
         function switchPage(page) {
+            const wasOnSwipe = document.getElementById('page-swipe').classList.contains('active');
+
+            if (wasOnSwipe && page !== 'swipe') {
+                stopEmojiRain(true);
+                setSwipeBackground(0);
+            }
+
             // Hide all pages
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
             // Show target
@@ -4169,6 +4283,15 @@
                 document.getElementById('adminSection').style.display = 'none';
                 // Show "become admin" button (will only work if no admins exist)
                 document.getElementById('becomeAdminSection').style.display = 'block';
+            }
+
+            // Load user's own recipes so edit/delete permissions work outside Discover too
+            try {
+                const myRecipes = await TenderAPI.getMyRecipes();
+                myRecipeIds = new Set((myRecipes || []).map(r => String(r.id)));
+            } catch (err) {
+                console.error('Failed to load user recipes for permissions:', err);
+                myRecipeIds = new Set();
             }
 
             // Step 3: Load stats - use multiple sources for resilience
@@ -4302,6 +4425,8 @@
                             <div class="discover-recipe-actions" onclick="event.stopPropagation()">
                                 <button class="btn-like liked" onclick="unfavorite(${recipe.id}, this)">❤️ Liked</button>
                                 <button class="btn-add-plan" onclick="openScheduleFromDiscover(${recipe.id})">📅 Add to Plan</button>
+                                ${canManageRecipe(recipe.id) ? `<button class="btn-edit-recipe" onclick="openEditRecipeModal(${recipe.id})">Edit</button>` : ''}
+                                ${canManageRecipe(recipe.id) ? `<button class="btn-delete-recipe" onclick="deleteUserRecipe(${recipe.id})">Delete</button>` : ''}
                             </div>
                         </div>
                     </div>
@@ -4512,6 +4637,51 @@
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save Changes';
+            }
+        }
+
+        async function changePassword(e) {
+            e.preventDefault();
+
+            const oldPassword = document.getElementById('oldPasswordInput').value;
+            const newPassword = document.getElementById('newPasswordInput').value;
+            const confirmPassword = document.getElementById('confirmPasswordInput').value;
+            const status = document.getElementById('passwordChangeStatus');
+            const btn = document.getElementById('changePasswordBtn');
+
+            status.className = 'security-status';
+            status.textContent = '';
+
+            if (newPassword.length < 6) {
+                status.classList.add('error');
+                status.textContent = 'New password must be at least 6 characters.';
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                status.classList.add('error');
+                status.textContent = 'New password and confirmation do not match.';
+                return;
+            }
+            if (oldPassword === newPassword) {
+                status.classList.add('error');
+                status.textContent = 'New password must be different from current password.';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Changing...';
+
+            try {
+                await TenderAPI.changePassword(oldPassword, newPassword);
+                status.classList.add('success');
+                status.textContent = 'Password updated successfully.';
+                document.getElementById('changePasswordForm').reset();
+            } catch (err) {
+                status.classList.add('error');
+                status.textContent = err.message || 'Failed to change password.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Change Password';
             }
         }
 
@@ -4768,10 +4938,7 @@
         }
 
         function startEmojiRain(emoji) {
-            if (emojiRainIntervalId) {
-                clearInterval(emojiRainIntervalId);
-                emojiRainIntervalId = null;
-            }
+            stopEmojiRain(false);
             // Spawn immediately, then keep a steady flow.
             spawnEmojiRainBurst(emoji);
             emojiRainIntervalId = setInterval(() => {
@@ -4779,8 +4946,25 @@
             }, 2200);
         }
 
-        function spawnEmojiRainBurst(emoji) {
+        function stopEmojiRain(clearParticles = true) {
+            if (emojiRainIntervalId) {
+                clearInterval(emojiRainIntervalId);
+                emojiRainIntervalId = null;
+            }
+            // Invalidate pending delayed spawns.
+            emojiRainGen += 1;
+
+            if (!clearParticles) return;
             const container = document.getElementById('emojiRainContainer');
+            if (container) container.innerHTML = '';
+        }
+
+        function spawnEmojiRainBurst(emoji) {
+            const swipePage = document.getElementById('page-swipe');
+            if (!swipePage || !swipePage.classList.contains('active')) return;
+
+            const container = document.getElementById('emojiRainContainer');
+            if (!container) return;
             // Prevent delayed particles from older recipes appearing after a new card.
             emojiRainGen += 1;
             const gen = emojiRainGen;
@@ -4790,6 +4974,7 @@
                 const delay = Math.random() * 0.8;
                 setTimeout(() => {
                     if (gen !== emojiRainGen) return;
+                    if (!swipePage.classList.contains('active')) return;
 
                     const particle = document.createElement('div');
                     particle.className = 'emoji-rain-particle';
@@ -5161,7 +5346,7 @@
                     TenderAPI.getMyRecipes().catch(() => [])
                 ]);
                 likedRecipeIds = new Set(likedRecipes.map(r => r.id));
-                myRecipeIds = new Set(myRecipes.map(r => r.id));
+                myRecipeIds = new Set(myRecipes.map(r => String(r.id)));
 
                 // Initialize discover dietary filters from user profile
                 const userDietary = currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : [];
@@ -5261,8 +5446,8 @@
                                 ${likedRecipeIds.has(recipe.id) ? '❤️ Liked' : '🤍 Like'}
                             </button>
                             <button class="btn-add-plan" onclick="openScheduleFromDiscover(${recipe.id})">📅 Add to Plan</button>
-                            ${(isAdmin || myRecipeIds.has(recipe.id)) ? `<button class="btn-edit-recipe" onclick="openEditRecipeModal(${recipe.id})">✏️ Edit</button>` : ''}
-                            ${(isAdmin || myRecipeIds.has(recipe.id)) ? `<button class="btn-delete-recipe" onclick="deleteUserRecipe(${recipe.id})">🗑 Delete</button>` : ''}
+                            ${canManageRecipe(recipe.id) ? `<button class="btn-edit-recipe" onclick="openEditRecipeModal(${recipe.id})">✏️ Edit</button>` : ''}
+                            ${canManageRecipe(recipe.id) ? `<button class="btn-delete-recipe" onclick="deleteUserRecipe(${recipe.id})">🗑 Delete</button>` : ''}
                         </div>
                     </div>
                 </div>
@@ -5329,7 +5514,7 @@
             `;
 
             const isLiked = likedRecipeIds.has(recipe.id);
-            const canManage = isAdmin || myRecipeIds.has(recipe.id);
+            const canManage = canManageRecipe(recipe.id);
             document.getElementById('modalActions').innerHTML = `
                 <button class="modal-btn-like" onclick="toggleLikeFromModal(${recipe.id}, this)">
                     ${isLiked ? '❤️ Unlike' : '🤍 Like Recipe'}
@@ -5384,7 +5569,7 @@
 
             try {
                 await TenderAPI.deleteRecipe(recipeId);
-                myRecipeIds.delete(recipeId);
+                myRecipeIds.delete(String(recipeId));
                 closeRecipeModal();
                 await loadDiscoverPage();
                 await loadLikedRecipesPreview();

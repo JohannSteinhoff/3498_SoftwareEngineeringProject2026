@@ -100,6 +100,13 @@ const TenderAPI = {
         });
     },
 
+    async changePassword(oldPassword, newPassword) {
+        return this.request('/users/password', {
+            method: 'PUT',
+            body: { oldPassword, newPassword },
+        });
+    },
+
     async deleteAccount() {
         await this.request('/users/account', { method: 'DELETE' });
         this.clearToken();
