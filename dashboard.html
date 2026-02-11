@@ -1740,6 +1740,36 @@
             margin-bottom: 15px;
         }
 
+        .add-meal-filter-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .add-meal-filter-btn {
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .add-meal-filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .add-meal-filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
         .recipe-select-list {
             max-height: 300px;
             overflow-y: auto;
@@ -1757,6 +1787,16 @@
 
         .recipe-select-item:hover {
             background: var(--light);
+        }
+
+        .recipe-select-empty {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 18px 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 0.9em;
+            background: var(--bg-card);
         }
 
         .recipe-select-item .emoji {
@@ -3739,6 +3779,10 @@
             <button class="modal-close" onclick="closeAddMealModal()">✕</button>
             <div class="modal-body">
                 <h3 id="addMealTitle">Select a Recipe</h3>
+                <div class="add-meal-filter-row">
+                    <button type="button" class="add-meal-filter-btn active" id="addMealFilterLiked" onclick="setAddMealRecipeFilter('liked')">Liked Only</button>
+                    <button type="button" class="add-meal-filter-btn" id="addMealFilterAll" onclick="setAddMealRecipeFilter('all')">All Recipes</button>
+                </div>
                 <div class="recipe-select-list" id="recipeSelectList"></div>
             </div>
         </div>
@@ -4100,6 +4144,8 @@
         let currentWeekStart = getMonday(new Date());
         let mealPlanData = [];
         let pendingMealSlot = null; // { date, mealType }
+        let addMealFilterMode = 'liked'; // 'liked' | 'all'
+        let addMealLikedRecipes = [];
 
         // ==================== THEME ====================
         function updateThemeToggleUI() {
@@ -5972,23 +6018,76 @@
                 btn.textContent = '🛒 Add All Ingredients';
             }
         }
+        function setAddMealRecipeFilter(mode) {
+            addMealFilterMode = mode === 'all' ? 'all' : 'liked';
 
-        function openAddMealModal(date, mealType) {
+            const likedBtn = document.getElementById('addMealFilterLiked');
+            const allBtn = document.getElementById('addMealFilterAll');
+            if (likedBtn && allBtn) {
+                likedBtn.classList.toggle('active', addMealFilterMode === 'liked');
+                allBtn.classList.toggle('active', addMealFilterMode === 'all');
+            }
+
+            renderAddMealRecipeList();
+        }
+
+        function renderAddMealRecipeList() {
+            const list = document.getElementById('recipeSelectList');
+            if (!list) return;
+
+            const sourceRecipes = addMealFilterMode === 'liked' ? addMealLikedRecipes : allRecipes;
+            const recipes = Array.isArray(sourceRecipes) ? sourceRecipes : [];
+
+            if (recipes.length === 0) {
+                if (addMealFilterMode === 'liked') {
+                    list.innerHTML = `
+                        <div class="recipe-select-empty">
+                            Please like recipes to see them here.
+                        </div>
+                    `;
+                } else {
+                    list.innerHTML = `
+                        <div class="recipe-select-empty">
+                            No recipes available right now.
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            list.innerHTML = recipes.map(recipe => `
+                <div class="recipe-select-item" onclick="selectMealRecipe(${recipe.id})">
+                    <span class="emoji">${recipe.emoji || '&#127869;'}</span>
+                    <div>
+                        <div class="name">${escapeHtml(recipe.name)}</div>
+                        <div class="time">${recipe.cookTime || '?'} min - ${capitalizeFirst(recipe.difficulty || 'medium')}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function openAddMealModal(date, mealType) {
             pendingMealSlot = { date, mealType };
             document.getElementById('addMealTitle').textContent =
                 `Add ${capitalizeFirst(mealType)} for ${new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}`;
 
-            const list = document.getElementById('recipeSelectList');
-            list.innerHTML = allRecipes.map(recipe => `
-                <div class="recipe-select-item" onclick="selectMealRecipe(${recipe.id})">
-                    <span class="emoji">${recipe.emoji}</span>
-                    <div>
-                        <div class="name">${escapeHtml(recipe.name)}</div>
-                        <div class="time">${recipe.cookTime} min • ${capitalizeFirst(recipe.difficulty || 'medium')}</div>
-                    </div>
-                </div>
-            `).join('');
+            // Ensure recipe pools are ready, then default picker to liked recipes.
+            if (allRecipes.length === 0) {
+                try {
+                    allRecipes = await TenderAPI.getRecipes();
+                } catch (err) {
+                    console.error('Failed to load recipes for meal picker:', err);
+                    allRecipes = [];
+                }
+            }
+            try {
+                addMealLikedRecipes = await TenderAPI.getLikedRecipes();
+            } catch (err) {
+                console.error('Failed to load liked recipes for meal picker:', err);
+                addMealLikedRecipes = [];
+            }
 
+            setAddMealRecipeFilter('liked');
             document.getElementById('addMealModal').classList.add('active');
         }
 
