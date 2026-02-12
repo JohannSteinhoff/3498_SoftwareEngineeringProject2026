@@ -1151,6 +1151,11 @@
             gap: 4px;
         }
 
+        .discover-recipe-meta .likes-count {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
         .discover-recipe-actions {
             display: flex;
             gap: 10px;
@@ -4453,7 +4458,7 @@
                 }
 
                 grid.innerHTML = likedRecipes.map(recipe => `
-                    <div class="discover-recipe-card" onclick="openRecipeModal(${recipe.id})">
+                    <div class="discover-recipe-card" data-recipe-id="${recipe.id}" onclick="openRecipeModal(${recipe.id})">
                         <div class="discover-recipe-image${recipe.image ? ' has-img' : ''}">
                             ${recipe.image
                                 ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name)}">`
@@ -4467,6 +4472,7 @@
                             <div class="discover-recipe-meta">
                                 <span>⏱ ${recipe.cookTime || '?'} min</span>
                                 <span>🍽 ${recipe.servings || '?'} servings</span>
+                            <span class="likes-count">&#10084; ${recipe.likesCount || 0} likes</span>
                             </div>
                             <div class="discover-recipe-actions" onclick="event.stopPropagation()">
                                 <button class="btn-like liked" onclick="unfavorite(${recipe.id}, this)">❤️ Liked</button>
@@ -5455,6 +5461,14 @@
                 return matchesSearch && matchesCuisine && matchesDifficulty;
             });
 
+            // Most-liked recipes first.
+            filtered.sort((a, b) => {
+                const likesA = Number(a.likesCount || 0);
+                const likesB = Number(b.likesCount || 0);
+                if (likesB !== likesA) return likesB - likesA;
+                return Number(a.id || 0) - Number(b.id || 0);
+            });
+
             renderDiscoverGrid(filtered);
         }
 
@@ -5472,7 +5486,7 @@
             }
 
             grid.innerHTML = recipes.map(recipe => `
-                <div class="discover-recipe-card" onclick="openRecipeModal(${recipe.id})">
+                <div class="discover-recipe-card" data-recipe-id="${recipe.id}" onclick="openRecipeModal(${recipe.id})">
                     <div class="discover-recipe-image${recipe.image ? ' has-img' : ''}">
                         ${recipe.image
                             ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name)}">`
@@ -5486,6 +5500,7 @@
                         <div class="discover-recipe-meta">
                             <span>⏱ ${recipe.cookTime} min</span>
                             <span>🍽 ${recipe.servings} servings</span>
+                            <span class="likes-count">&#10084; ${recipe.likesCount || 0} likes</span>
                         </div>
                         <div class="discover-recipe-actions" onclick="event.stopPropagation()">
                             <button class="btn-like ${likedRecipeIds.has(recipe.id) ? 'liked' : ''}" onclick="toggleLike(${recipe.id}, this)">
@@ -5500,16 +5515,31 @@
             `).join('');
         }
 
+        function applyRecipeLikeDelta(recipeId, delta) {
+            const recipe = allRecipes.find(r => Number(r.id) === Number(recipeId));
+            if (recipe) {
+                recipe.likesCount = Math.max(0, Number(recipe.likesCount || 0) + delta);
+            }
+
+            document.querySelectorAll(`.discover-recipe-card[data-recipe-id="${recipeId}"] .likes-count`).forEach(el => {
+                const current = Number((el.textContent.match(/\d+/) || ['0'])[0]);
+                const next = Math.max(0, current + delta);
+                el.innerHTML = `&#10084; ${next} likes`;
+            });
+        }
+
         async function toggleLike(recipeId, btn) {
             try {
                 if (likedRecipeIds.has(recipeId)) {
                     await TenderAPI.unlikeRecipe(recipeId);
                     likedRecipeIds.delete(recipeId);
+                    applyRecipeLikeDelta(recipeId, -1);
                     btn.classList.remove('liked');
                     btn.innerHTML = '🤍 Like';
                 } else {
                     await TenderAPI.likeRecipe(recipeId);
                     likedRecipeIds.add(recipeId);
+                    applyRecipeLikeDelta(recipeId, 1);
                     btn.classList.add('liked');
                     btn.innerHTML = '❤️ Liked';
                 }
@@ -5584,10 +5614,12 @@
                 if (likedRecipeIds.has(recipeId)) {
                     await TenderAPI.unlikeRecipe(recipeId);
                     likedRecipeIds.delete(recipeId);
+                    applyRecipeLikeDelta(recipeId, -1);
                     btn.innerHTML = '🤍 Like Recipe';
                 } else {
                     await TenderAPI.likeRecipe(recipeId);
                     likedRecipeIds.add(recipeId);
+                    applyRecipeLikeDelta(recipeId, 1);
                     btn.innerHTML = '❤️ Unlike';
                 }
             } catch (err) {

@@ -457,11 +457,21 @@ const UserDB = {
 // Recipe functions
 const RecipeDB = {
     getAll() {
-        return runQuery('SELECT * FROM recipes ORDER BY id').map(this.formatRecipe);
+        return runQuery(`
+            SELECT r.*,
+                   (SELECT COUNT(*) FROM liked_recipes lr WHERE lr.recipe_id = r.id) AS likes_count
+            FROM recipes r
+            ORDER BY r.id
+        `).map(this.formatRecipe);
     },
 
     getById(id) {
-        const recipes = runQuery('SELECT * FROM recipes WHERE id = ?', [id]);
+        const recipes = runQuery(`
+            SELECT r.*,
+                   (SELECT COUNT(*) FROM liked_recipes lr WHERE lr.recipe_id = r.id) AS likes_count
+            FROM recipes r
+            WHERE r.id = ?
+        `, [id]);
         return recipes.length > 0 ? this.formatRecipe(recipes[0]) : null;
     },
 
@@ -521,7 +531,9 @@ const RecipeDB = {
 
         // Get candidate recipes (excluding already liked/disliked)
         const recipes = runQuery(`
-            SELECT r.* FROM recipes r
+            SELECT r.*,
+                   (SELECT COUNT(*) FROM liked_recipes lr WHERE lr.recipe_id = r.id) AS likes_count
+            FROM recipes r
             WHERE r.id NOT IN (SELECT recipe_id FROM disliked_recipes WHERE user_id = ?)
             AND r.id NOT IN (SELECT recipe_id FROM liked_recipes WHERE user_id = ?)
             ORDER BY RANDOM()
@@ -535,7 +547,10 @@ const RecipeDB = {
 
     getLiked(userId) {
         const recipes = runQuery(`
-            SELECT r.*, lr.liked_at FROM recipes r
+            SELECT r.*,
+                   lr.liked_at,
+                   (SELECT COUNT(*) FROM liked_recipes lrx WHERE lrx.recipe_id = r.id) AS likes_count
+            FROM recipes r
             JOIN liked_recipes lr ON r.id = lr.recipe_id
             WHERE lr.user_id = ?
             ORDER BY lr.liked_at DESC
@@ -604,7 +619,13 @@ const RecipeDB = {
     },
 
     getByUser(userId) {
-        const recipes = runQuery('SELECT * FROM recipes WHERE created_by = ? ORDER BY created_at DESC', [userId]);
+        const recipes = runQuery(`
+            SELECT r.*,
+                   (SELECT COUNT(*) FROM liked_recipes lr WHERE lr.recipe_id = r.id) AS likes_count
+            FROM recipes r
+            WHERE r.created_by = ?
+            ORDER BY r.created_at DESC
+        `, [userId]);
         return recipes.map(this.formatRecipe);
     },
 
@@ -628,6 +649,7 @@ const RecipeDB = {
             image: recipe.image || null,
             ingredients: recipe.ingredients ? recipe.ingredients.split(',') : [],
             instructions: recipe.instructions,
+            likesCount: Number(recipe.likes_count || 0),
             createdBy: recipe.created_by || null,
             createdAt: recipe.created_at
         };
