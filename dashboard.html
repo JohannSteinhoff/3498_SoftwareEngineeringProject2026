@@ -4862,6 +4862,14 @@
         });
 
         // ==================== SWIPE PAGE ====================
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
         let swipeDeck = [];
         let swipeDeckMaster = [];
         let swipeLikedToday = 0;
@@ -4881,6 +4889,7 @@
 
         async function loadSwipePage() {
             renderSwipeDietaryTags();
+            if (swipeDeck.length > 0) { renderSwipeCard(); return; }
             try {
                 let recipes = await TenderAPI.getDiscoverRecipes(50);
                 if (!Array.isArray(recipes) || recipes.length === 0) {
@@ -4892,6 +4901,7 @@
                     }
                 }
                 recipes = filterByDietary(recipes);
+                shuffleArray(recipes);
                 swipeDeckMaster = recipes.slice();
                 swipeDeck = recipes.slice();
                 renderSwipeCard();
@@ -4911,7 +4921,7 @@
 
             if (swipeDeck.length === 0) {
                 if (swipeDeckMaster.length > 0) {
-                    swipeDeck = swipeDeckMaster.slice();
+                    swipeDeck = shuffleArray(swipeDeckMaster.slice());
                     renderSwipeCard();
                     return;
                 }
