@@ -70,6 +70,7 @@ async function initDatabase() {
             cuisine TEXT,
             emoji TEXT DEFAULT '🍽️',
             image TEXT,
+            source_link TEXT,
             ingredients TEXT,
             instructions TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -79,6 +80,13 @@ async function initDatabase() {
     // Migration: add image column to existing databases
     try {
         db.run(`ALTER TABLE recipes ADD COLUMN image TEXT`);
+    } catch (e) {
+        // Column already exists, ignore
+    }
+
+    // Migration: add source_link column to existing databases
+    try {
+        db.run(`ALTER TABLE recipes ADD COLUMN source_link TEXT`);
     } catch (e) {
         // Column already exists, ignore
     }
@@ -571,8 +579,8 @@ const RecipeDB = {
 
     create(userId, data) {
         const id = runInsert(
-            `INSERT INTO recipes (name, description, cook_time, servings, difficulty, cuisine, emoji, image, ingredients, instructions, created_by)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO recipes (name, description, cook_time, servings, difficulty, cuisine, emoji, image, source_link, ingredients, instructions, created_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 data.name,
                 data.description || '',
@@ -582,6 +590,7 @@ const RecipeDB = {
                 data.cuisine || '',
                 data.emoji || '🍽️',
                 data.image || null,
+                data.source_link || null,
                 data.ingredients || '',
                 data.instructions || '',
                 userId
@@ -603,6 +612,7 @@ const RecipeDB = {
         if (data.cuisine !== undefined) { updates.push('cuisine = ?'); values.push(data.cuisine); }
         if (data.emoji) { updates.push('emoji = ?'); values.push(data.emoji); }
         if (data.image !== undefined) { updates.push('image = ?'); values.push(data.image); }
+        if (data.source_link !== undefined) { updates.push('source_link = ?'); values.push(data.source_link); }
         if (data.ingredients !== undefined) { updates.push('ingredients = ?'); values.push(data.ingredients); }
         if (data.instructions !== undefined) { updates.push('instructions = ?'); values.push(data.instructions); }
 
@@ -637,6 +647,15 @@ const RecipeDB = {
     },
 
     formatRecipe(recipe) {
+        const rawIngredients = recipe.ingredients || '';
+        const ingredients = rawIngredients
+            ? (rawIngredients.includes('\n')
+                ? rawIngredients.split(/\r?\n/)
+                : rawIngredients.split(','))
+                .map(i => i.trim())
+                .filter(Boolean)
+            : [];
+
         return {
             id: recipe.id,
             name: recipe.name,
@@ -647,7 +666,10 @@ const RecipeDB = {
             cuisine: recipe.cuisine,
             emoji: recipe.emoji,
             image: recipe.image || null,
-            ingredients: recipe.ingredients ? recipe.ingredients.split(',') : [],
+            sourceLink: recipe.source_link || null,
+            sourceUrl: recipe.source_link || null,
+            link: recipe.source_link || null,
+            ingredients,
             instructions: recipe.instructions,
             likesCount: Number(recipe.likes_count || 0),
             createdBy: recipe.created_by || null,
@@ -923,3 +945,4 @@ module.exports = {
     MealPlanDB,
     AdminDB
 };
+

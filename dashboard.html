@@ -766,6 +766,100 @@
            DISCOVER PAGE
            ============================================ */
 
+        .discover-carousel {
+            position: relative;
+            margin-bottom: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            background: linear-gradient(180deg, rgba(78, 205, 196, 0.08), rgba(255, 107, 107, 0.06));
+            overflow: hidden;
+            padding: 14px 0;
+        }
+
+        .discover-carousel::before,
+        .discover-carousel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 42px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .discover-carousel::before {
+            left: 0;
+            background: linear-gradient(90deg, var(--bg-primary) 10%, transparent 100%);
+        }
+
+        .discover-carousel::after {
+            right: 0;
+            background: linear-gradient(270deg, var(--bg-primary) 10%, transparent 100%);
+        }
+
+        .discover-carousel-track {
+            --discover-carousel-duration: 18s;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: max-content;
+            padding: 0 14px;
+            animation: discover-carousel-scroll var(--discover-carousel-duration) linear infinite;
+            will-change: transform;
+        }
+
+        .discover-carousel-item {
+            width: 230px;
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px;
+            min-height: 86px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .discover-carousel-thumb {
+            width: 92px;
+            height: 66px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .discover-carousel-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .discover-carousel-name {
+            color: var(--text-primary);
+            font-size: 0.92em;
+            font-weight: 600;
+            line-height: 1.25;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        @keyframes discover-carousel-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
         .discover-header {
             margin-bottom: 30px;
             display: flex;
@@ -1093,6 +1187,9 @@
             box-shadow: 0 4px 15px var(--shadow-color);
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .discover-recipe-card:hover {
@@ -1160,11 +1257,22 @@
 
         .discover-recipe-body {
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .discover-recipe-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 6px;
         }
 
         .discover-recipe-body h3 {
             font-size: 1.15em;
-            margin-bottom: 6px;
+            margin: 0;
         }
 
         .discover-recipe-body .description {
@@ -1193,17 +1301,66 @@
             font-weight: 600;
         }
 
-        .discover-recipe-actions {
+        .discover-admin-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .card-icon-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+        }
+
+        .card-icon-btn.edit {
+            background: rgba(78, 205, 196, 0.14);
+            color: var(--secondary);
+        }
+
+        .card-icon-btn.edit:hover {
+            background: var(--secondary);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(78, 205, 196, 0.3);
+        }
+
+        .card-icon-btn.delete {
+            background: rgba(220, 53, 69, 0.12);
+            color: #dc3545;
+        }
+
+        .card-icon-btn.delete:hover {
+            background: #dc3545;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(220, 53, 69, 0.3);
+        }
+
+        .discover-recipe-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: auto;
+            padding-top: 16px;
         }
 
         .btn-like, .btn-add-plan {
-            flex: 1;
-            padding: 10px;
+            min-height: 52px;
+            padding: 0 14px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 600;
             font-family: inherit;
             font-size: 0.9em;
@@ -1298,6 +1455,57 @@
             font-size: 1.5em;
         }
 
+        #recipeModal .modal-header {
+            align-items: flex-start;
+        }
+
+        #recipeModal .modal-header .header-content {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+            padding-right: 48px;
+        }
+
+        #recipeModal .modal-header .header-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        #recipeModal .modal-header .header-text h2 {
+            margin: 0 0 4px;
+            overflow-wrap: anywhere;
+        }
+
+        .modal-source-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            border-radius: 999px;
+            border: 1px solid var(--secondary);
+            background: var(--secondary);
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: background 0.2s, border-color 0.2s;
+            white-space: nowrap;
+        }
+
+        #recipeModal .modal-source-link {
+            margin-left: auto;
+            align-self: flex-start;
+            flex-shrink: 0;
+        }
+
+        .modal-source-link:hover {
+            background: #3ab5ad;
+            border-color: #3ab5ad;
+        }
+
         .modal-header p {
             opacity: 0.9;
             font-size: 0.9em;
@@ -1352,6 +1560,7 @@
         .modal-body .instructions {
             line-height: 1.8;
             color: var(--text-secondary);
+            white-space: pre-line;
         }
 
         .modal-actions {
@@ -3255,6 +3464,16 @@
                 grid-template-columns: 1fr;
             }
 
+            .discover-carousel-item {
+                width: 200px;
+                min-height: 78px;
+            }
+
+            .discover-carousel-thumb {
+                width: 78px;
+                height: 56px;
+            }
+
             .swipe-container {
                 width: min(380px, calc(100vw - 40px));
                 height: min(520px, calc(100vh - 300px));
@@ -3992,6 +4211,10 @@
 
         <!-- ========== DISCOVER PAGE ========== -->
         <div id="page-discover" class="page-view">
+            <div class="discover-carousel" id="discoverCarousel" style="display:none;">
+                <div class="discover-carousel-track" id="discoverCarouselTrack"></div>
+            </div>
+
             <div class="discover-header">
                 <div>
                     <h1>Discover Recipes</h1>
@@ -4216,9 +4439,12 @@
             <button class="modal-close" onclick="closeRecipeModal()">✕</button>
             <div class="modal-header" id="modalHeader">
                 <span class="emoji" id="modalEmoji"></span>
-                <div>
-                    <h2 id="modalTitle"></h2>
-                    <p id="modalMeta"></p>
+                <div class="header-content">
+                    <div class="header-text">
+                        <h2 id="modalTitle"></h2>
+                        <p id="modalMeta"></p>
+                    </div>
+                    <a id="modalSourceLink" class="modal-source-link" style="display:none;" target="_blank" rel="noopener noreferrer">Original Recipe Link</a>
                 </div>
             </div>
             <div id="modalImageBanner" style="display:none; width:100%; margin:14px 0 10px; border-radius:12px; overflow:hidden; background:#111;">
@@ -4400,6 +4626,11 @@
                         <input type="text" id="newRecipeDescription" placeholder="A short description of your recipe">
                     </div>
 
+                    <div class="form-group">
+                        <label for="newRecipeSourceLink">Original Recipe URL (optional)</label>
+                        <input type="url" id="newRecipeSourceLink" placeholder="https://example.com/recipe">
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="newRecipeEmoji">Emoji</label>
@@ -4495,6 +4726,10 @@
                     <div class="form-group">
                         <label for="editRecipeDescription">Description</label>
                         <input type="text" id="editRecipeDescription">
+                    </div>
+                    <div class="form-group">
+                        <label for="editRecipeSourceLink">Original Recipe URL (optional)</label>
+                        <input type="url" id="editRecipeSourceLink" placeholder="https://example.com/recipe">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -4914,8 +5149,16 @@
                             ${recipe.cuisine ? `<span class="cuisine-badge">${capitalizeFirst(recipe.cuisine)}</span>` : ''}
                             <span class="difficulty-badge">${capitalizeFirst(recipe.difficulty || 'medium')}</span>
                         </div>
-                        <div class="discover-recipe-body">
-                            <h3>${escapeHtml(recipe.name)}</h3>
+                    <div class="discover-recipe-body">
+                            <div class="discover-recipe-top">
+                                <h3>${escapeHtml(recipe.name)}</h3>
+                                ${canManageRecipe(recipe.id) ? `
+                                    <div class="discover-admin-actions" onclick="event.stopPropagation()">
+                                        <button class="card-icon-btn edit" title="Edit recipe" aria-label="Edit recipe" onclick="event.stopPropagation(); openEditRecipeModal(${recipe.id})">✏️</button>
+                                        <button class="card-icon-btn delete" title="Delete recipe" aria-label="Delete recipe" onclick="event.stopPropagation(); deleteUserRecipe(${recipe.id})">🗑</button>
+                                    </div>
+                                ` : ''}
+                            </div>
                             <p class="description">${escapeHtml(recipe.description || '')}</p>
                             <div class="discover-recipe-meta">
                                 <span>⏱ ${recipe.cookTime || '?'} min</span>
@@ -4925,8 +5168,6 @@
                             <div class="discover-recipe-actions" onclick="event.stopPropagation()">
                                 <button class="btn-like liked" onclick="unfavorite(${recipe.id}, this)">❤️ Liked</button>
                                 <button class="btn-add-plan" onclick="openScheduleFromDiscover(${recipe.id})">📅 Add to Plan</button>
-                                ${canManageRecipe(recipe.id) ? `<button class="btn-edit-recipe" onclick="openEditRecipeModal(${recipe.id})">Edit</button>` : ''}
-                                ${canManageRecipe(recipe.id) ? `<button class="btn-delete-recipe" onclick="deleteUserRecipe(${recipe.id})">Delete</button>` : ''}
                             </div>
                         </div>
                     </div>
@@ -5276,6 +5517,12 @@
                 const ingredients = ingredientsText
                     ? ingredientsText.split('\n').map(l => l.trim()).filter(Boolean)
                     : [];
+                const sourceLinkInput = document.getElementById('newRecipeSourceLink').value.trim();
+                const sourceLink = sourceLinkInput ? normalizeRecipeLink(sourceLinkInput) : null;
+                if (sourceLinkInput && !sourceLink) {
+                    alert('Please enter a valid URL starting with http:// or https://');
+                    return;
+                }
 
                 const imageData = document.getElementById('newRecipeImageData').value || null;
                 const data = {
@@ -5283,6 +5530,7 @@
                     description: document.getElementById('newRecipeDescription').value.trim(),
                     emoji: document.getElementById('newRecipeEmoji').value.trim() || '🍽️',
                     image: imageData,
+                    sourceLink,
                     cookTime: parseInt(document.getElementById('newRecipeCookTime').value) || 30,
                     servings: parseInt(document.getElementById('newRecipeServings').value) || 4,
                     difficulty: document.getElementById('newRecipeDifficulty').value,
@@ -5863,10 +6111,13 @@
                 discoverDietaryFilters = new Set(userDietary);
                 renderDiscoverDietaryChips();
 
+                renderDiscoverCarousel(allRecipes);
                 populateCuisineFilter();
                 filterRecipes();
             } catch (err) {
                 console.error('Failed to load discover:', err);
+                const carousel = document.getElementById('discoverCarousel');
+                if (carousel) carousel.style.display = 'none';
                 document.getElementById('discoverGrid').innerHTML = `
                     <div class="no-results">
                         <div class="icon">⚠️</div>
@@ -5891,6 +6142,39 @@
             cuisines.forEach(c => {
                 chipsContainer.innerHTML += `<button class="filter-chip" onclick="selectCuisineChip(this, '${c}')">${capitalizeFirst(c)}</button>`;
             });
+        }
+
+        function renderDiscoverCarousel(recipes) {
+            const carousel = document.getElementById('discoverCarousel');
+            const track = document.getElementById('discoverCarouselTrack');
+            if (!carousel || !track) return;
+
+            const source = (Array.isArray(recipes) ? recipes : []).filter(r => r && r.id).slice(0, 20);
+            if (source.length < 2) {
+                carousel.style.display = 'none';
+                track.innerHTML = '';
+                return;
+            }
+
+            carousel.style.display = 'block';
+
+            const itemHtml = source.map(recipe => `
+                <div class="discover-carousel-item" onclick="openRecipeModal(${recipe.id})" title="${escapeHtml(recipe.name || 'Recipe')}">
+                    <div class="discover-carousel-thumb">
+                        ${recipe.image
+                            ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name || 'Recipe')}">`
+                            : (recipe.emoji || '🍽️')}
+                    </div>
+                    <div class="discover-carousel-name">${escapeHtml(recipe.name || 'Untitled Recipe')}</div>
+                </div>
+            `).join('');
+
+            // Duplicate for seamless infinite scrolling.
+            track.innerHTML = itemHtml + itemHtml;
+
+            // Fast, but still readable speed. Scale with item count.
+            const durationSec = Math.max(14, Math.min(36, source.length * 1.4));
+            track.style.setProperty('--discover-carousel-duration', `${durationSec}s`);
         }
 
         function selectCuisineChip(chip, cuisine) {
@@ -5953,7 +6237,15 @@
                         <span class="difficulty-badge">${capitalizeFirst(recipe.difficulty || 'medium')}</span>
                     </div>
                     <div class="discover-recipe-body">
-                        <h3>${escapeHtml(recipe.name)}</h3>
+                        <div class="discover-recipe-top">
+                            <h3>${escapeHtml(recipe.name)}</h3>
+                            ${canManageRecipe(recipe.id) ? `
+                                <div class="discover-admin-actions" onclick="event.stopPropagation()">
+                                    <button class="card-icon-btn edit" title="Edit recipe" aria-label="Edit recipe" onclick="event.stopPropagation(); openEditRecipeModal(${recipe.id})">✏️</button>
+                                    <button class="card-icon-btn delete" title="Delete recipe" aria-label="Delete recipe" onclick="event.stopPropagation(); deleteUserRecipe(${recipe.id})">🗑</button>
+                                </div>
+                            ` : ''}
+                        </div>
                         <p class="description">${escapeHtml(recipe.description || '')}</p>
                         <div class="discover-recipe-meta">
                             <span>⏱ ${recipe.cookTime} min</span>
@@ -5965,8 +6257,6 @@
                                 ${likedRecipeIds.has(recipe.id) ? '❤️ Liked' : '🤍 Like'}
                             </button>
                             <button class="btn-add-plan" onclick="openScheduleFromDiscover(${recipe.id})">📅 Add to Plan</button>
-                            ${canManageRecipe(recipe.id) ? `<button class="btn-edit-recipe" onclick="openEditRecipeModal(${recipe.id})">✏️ Edit</button>` : ''}
-                            ${canManageRecipe(recipe.id) ? `<button class="btn-delete-recipe" onclick="deleteUserRecipe(${recipe.id})">🗑 Delete</button>` : ''}
                         </div>
                     </div>
                 </div>
@@ -6021,6 +6311,52 @@
             showRecipeModal(recipe);
         }
 
+        function extractFirstUrl(text) {
+            if (typeof text !== 'string') return null;
+            const match = text.match(/https?:\/\/[^\s<>"')]+/i);
+            if (!match) return null;
+            return match[0].replace(/[.,;!?]+$/, '');
+        }
+
+        function normalizeRecipeLink(value) {
+            if (typeof value !== 'string' || !value.trim()) return null;
+            try {
+                const url = new URL(value.trim());
+                if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+                return url.href;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function getRecipeSourceLink(recipe) {
+            if (!recipe || typeof recipe !== 'object') return null;
+
+            const directCandidates = [
+                recipe.link,
+                recipe.sourceLink,
+                recipe.sourceUrl,
+                recipe.source_url
+            ];
+
+            for (const candidate of directCandidates) {
+                const normalized = normalizeRecipeLink(candidate);
+                if (normalized) return normalized;
+            }
+
+            const extractedCandidates = [
+                extractFirstUrl(recipe.instructions || ''),
+                extractFirstUrl(recipe.description || '')
+            ];
+
+            for (const candidate of extractedCandidates) {
+                const normalized = normalizeRecipeLink(candidate);
+                if (normalized) return normalized;
+            }
+
+            return null;
+        }
+
         function showRecipeModal(recipe) {
             const banner = document.getElementById('modalImageBanner');
             if (recipe.image) {
@@ -6034,6 +6370,15 @@
             document.getElementById('modalEmoji').textContent = recipe.emoji;
             document.getElementById('modalTitle').textContent = recipe.name;
             document.getElementById('modalMeta').textContent = `${recipe.cookTime} min • ${recipe.servings} servings • ${capitalizeFirst(recipe.difficulty || 'medium')}`;
+            const sourceLink = getRecipeSourceLink(recipe);
+            const sourceLinkEl = document.getElementById('modalSourceLink');
+            if (sourceLink) {
+                sourceLinkEl.href = sourceLink;
+                sourceLinkEl.style.display = 'inline-flex';
+            } else {
+                sourceLinkEl.removeAttribute('href');
+                sourceLinkEl.style.display = 'none';
+            }
 
             const ingredients = recipe.ingredients || [];
             const instructions = recipe.instructions || '';
@@ -6128,6 +6473,7 @@
             document.getElementById('editRecipeServings').value = recipe.servings || '';
             document.getElementById('editRecipeDifficulty').value = recipe.difficulty || 'medium';
             document.getElementById('editRecipeCuisine').value = recipe.cuisine || '';
+            document.getElementById('editRecipeSourceLink').value = recipe.sourceLink || getRecipeSourceLink(recipe) || '';
             document.getElementById('editRecipeIngredients').value = (recipe.ingredients || []).join('\n');
             document.getElementById('editRecipeInstructions').value = recipe.instructions || '';
 
@@ -6158,11 +6504,18 @@
             try {
                 const id = parseInt(document.getElementById('editRecipeId').value);
                 const editImageVal = document.getElementById('editRecipeImageData').value;
+                const sourceLinkInput = document.getElementById('editRecipeSourceLink').value.trim();
+                const sourceLink = sourceLinkInput ? normalizeRecipeLink(sourceLinkInput) : null;
+                if (sourceLinkInput && !sourceLink) {
+                    alert('Please enter a valid URL starting with http:// or https://');
+                    return;
+                }
                 const data = {
                     name: document.getElementById('editRecipeName').value.trim(),
                     description: document.getElementById('editRecipeDescription').value.trim(),
                     emoji: document.getElementById('editRecipeEmoji').value.trim() || undefined,
                     image: editImageVal || null,
+                    sourceLink,
                     cookTime: parseInt(document.getElementById('editRecipeCookTime').value) || undefined,
                     servings: parseInt(document.getElementById('editRecipeServings').value) || undefined,
                     difficulty: document.getElementById('editRecipeDifficulty').value,
@@ -7358,3 +7711,4 @@
     </div>
 </body>
 </html>
+

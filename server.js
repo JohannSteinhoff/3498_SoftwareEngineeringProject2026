@@ -211,10 +211,11 @@ app.delete('/api/users/account', authenticate, (req, res) => {
 app.post('/api/recipes', authenticate, (req, res) => {
     try {
         const { name, description, cookTime, servings, difficulty, cuisine, emoji, image, ingredients, instructions } = req.body;
+        const sourceLink = req.body.sourceLink ?? req.body.sourceUrl ?? req.body.source_url ?? req.body.link ?? null;
         if (!name) {
             return res.status(400).json({ error: 'Recipe name is required' });
         }
-        const ingredientsStr = Array.isArray(ingredients) ? ingredients.join(',') : (ingredients || '');
+        const ingredientsStr = Array.isArray(ingredients) ? ingredients.join('\n') : (ingredients || '');
         const recipe = RecipeDB.create(req.userId, {
             name,
             description,
@@ -224,6 +225,7 @@ app.post('/api/recipes', authenticate, (req, res) => {
             cuisine,
             emoji,
             image,
+            source_link: sourceLink,
             ingredients: ingredientsStr,
             instructions
         });
@@ -341,7 +343,15 @@ app.put('/api/recipes/:id', authenticate, (req, res) => {
             return res.status(403).json({ error: 'You can only edit your own recipes' });
         }
         const { name, description, cookTime, servings, difficulty, cuisine, emoji, image, ingredients, instructions } = req.body;
-        const ingredientsStr = Array.isArray(ingredients) ? ingredients.join(',') : (ingredients || undefined);
+        const hasSourceLink =
+            Object.prototype.hasOwnProperty.call(req.body, 'sourceLink') ||
+            Object.prototype.hasOwnProperty.call(req.body, 'sourceUrl') ||
+            Object.prototype.hasOwnProperty.call(req.body, 'source_url') ||
+            Object.prototype.hasOwnProperty.call(req.body, 'link');
+        const sourceLink = hasSourceLink
+            ? (req.body.sourceLink ?? req.body.sourceUrl ?? req.body.source_url ?? req.body.link ?? null)
+            : undefined;
+        const ingredientsStr = Array.isArray(ingredients) ? ingredients.join('\n') : (ingredients || undefined);
         const updated = RecipeDB.update(parseInt(req.params.id), {
             name,
             description,
@@ -351,6 +361,7 @@ app.put('/api/recipes/:id', authenticate, (req, res) => {
             cuisine,
             emoji,
             image,
+            source_link: sourceLink,
             ingredients: ingredientsStr,
             instructions
         });
@@ -861,3 +872,4 @@ startServer().catch(err => {
     log('ERROR', 'Server failed to start', { error: err.message });
     console.error(err);
 });
+
