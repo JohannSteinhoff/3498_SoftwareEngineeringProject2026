@@ -6,7 +6,13 @@
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd .gitignore and remove node_modules from tracking\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(python3:*)",
-      "Bash(pandoc:*)"
+      "Bash(pandoc:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebSearch",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "Bash(node:*)",
+      "Bash(\"/mnt/c/Program Files/nodejs/node.exe\":*)"
     ]
   }
 }

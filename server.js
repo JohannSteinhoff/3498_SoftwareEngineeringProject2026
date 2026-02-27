@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const { initDatabase, UserDB, RecipeDB, GroceryDB, FridgeDB, MealPlanDB } = require('./database');
+const { initDatabase, UserDB, RecipeDB, GroceryDB, FridgeDB, MealPlanDB, AdminDB } = require('./database');
 
 const os = require('os');
 
@@ -676,6 +676,118 @@ app.post('/api/admin/demote', authenticate, (req, res) => {
         res.json({ success: true, user: demoted });
     } catch (err) {
         log('ERROR', 'Demote admin error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Admin middleware helper
+function requireAdmin(req, res) {
+    const user = UserDB.getById(req.userId);
+    if (!user || !user.isAdmin) {
+        log('WARN', `Non-admin tried admin endpoint: ${req.path}`, { userId: req.userId });
+        res.status(403).json({ error: 'Admin access required' });
+        return null;
+    }
+    return user;
+}
+
+// Get all recipes with creator info (admin)
+app.get('/api/admin/recipes', authenticate, (req, res) => {
+    try {
+        if (!requireAdmin(req, res)) return;
+        const recipes = AdminDB.getAllRecipes();
+        res.json(recipes);
+    } catch (err) {
+        log('ERROR', 'Admin get recipes error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all likes (admin)
+app.get('/api/admin/likes', authenticate, (req, res) => {
+    try {
+        if (!requireAdmin(req, res)) return;
+        const likes = AdminDB.getAllLikes();
+        res.json(likes);
+    } catch (err) {
+        log('ERROR', 'Admin get likes error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all dislikes (admin)
+app.get('/api/admin/dislikes', authenticate, (req, res) => {
+    try {
+        if (!requireAdmin(req, res)) return;
+        const dislikes = AdminDB.getAllDislikes();
+        res.json(dislikes);
+    } catch (err) {
+        log('ERROR', 'Admin get dislikes error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all grocery items (admin)
+app.get('/api/admin/grocery', authenticate, (req, res) => {
+    try {
+        if (!requireAdmin(req, res)) return;
+        const items = AdminDB.getAllGroceryItems();
+        res.json(items);
+    } catch (err) {
+        log('ERROR', 'Admin get grocery error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all fridge items (admin)
+app.get('/api/admin/fridge', authenticate, (req, res) => {
+    try {
+        if (!requireAdmin(req, res)) return;
+        const items = AdminDB.getAllFridgeItems();
+        res.json(items);
+    } catch (err) {
+        log('ERROR', 'Admin get fridge error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all meal plans (admin)
+app.get('/api/admin/mealplans', authenticate, (req, res) => {
+    try {
+        if (!requireAdmin(req, res)) return;
+        const plans = AdminDB.getAllMealPlans();
+        res.json(plans);
+    } catch (err) {
+        log('ERROR', 'Admin get mealplans error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get aggregate stats (admin)
+app.get('/api/admin/stats', authenticate, (req, res) => {
+    try {
+        if (!requireAdmin(req, res)) return;
+        const stats = AdminDB.getStats();
+        try {
+            stats.dbSize = fs.statSync(path.join(__dirname, 'tender.db')).size;
+        } catch (e) {
+            stats.dbSize = null;
+        }
+        res.json(stats);
+    } catch (err) {
+        log('ERROR', 'Admin get stats error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Raw database dump (admin)
+app.get('/api/admin/dump', authenticate, (req, res) => {
+    try {
+        if (!requireAdmin(req, res)) return;
+        const dump = AdminDB.getDump();
+        res.json(dump);
+    } catch (err) {
+        log('ERROR', 'Admin dump error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });

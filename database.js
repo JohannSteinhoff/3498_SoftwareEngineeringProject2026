@@ -814,11 +814,112 @@ const MealPlanDB = {
     }
 };
 
+// Admin functions
+const AdminDB = {
+    getAllRecipes() {
+        return runQuery(`
+            SELECT r.id, r.name, r.cuisine, r.difficulty, r.cook_time, r.servings,
+                   r.created_at, u.email as created_by_email
+            FROM recipes r
+            LEFT JOIN users u ON r.created_by = u.id
+            ORDER BY r.id
+        `);
+    },
+
+    getAllLikes() {
+        return runQuery(`
+            SELECT lr.id, lr.liked_at, u.email as user_email, r.name as recipe_name
+            FROM liked_recipes lr
+            JOIN users u ON lr.user_id = u.id
+            JOIN recipes r ON lr.recipe_id = r.id
+            ORDER BY lr.liked_at DESC
+        `);
+    },
+
+    getAllDislikes() {
+        return runQuery(`
+            SELECT dr.id, dr.disliked_at, u.email as user_email, r.name as recipe_name
+            FROM disliked_recipes dr
+            JOIN users u ON dr.user_id = u.id
+            JOIN recipes r ON dr.recipe_id = r.id
+            ORDER BY dr.disliked_at DESC
+        `);
+    },
+
+    getAllGroceryItems() {
+        return runQuery(`
+            SELECT gi.id, gi.name, gi.quantity, gi.unit, gi.category, gi.checked, gi.added_at,
+                   u.email as user_email
+            FROM grocery_items gi
+            JOIN users u ON gi.user_id = u.id
+            ORDER BY gi.added_at DESC
+        `);
+    },
+
+    getAllFridgeItems() {
+        return runQuery(`
+            SELECT fi.id, fi.name, fi.quantity, fi.unit, fi.category, fi.added_at,
+                   u.email as user_email
+            FROM fridge_items fi
+            JOIN users u ON fi.user_id = u.id
+            ORDER BY fi.added_at DESC
+        `);
+    },
+
+    getAllMealPlans() {
+        return runQuery(`
+            SELECT mp.id, mp.plan_date, mp.meal_type,
+                   u.email as user_email, r.name as recipe_name
+            FROM meal_plans mp
+            JOIN users u ON mp.user_id = u.id
+            JOIN recipes r ON mp.recipe_id = r.id
+            ORDER BY mp.plan_date DESC, mp.meal_type
+        `);
+    },
+
+    getDump() {
+        const tables = [
+            'users', 'recipes', 'liked_recipes', 'disliked_recipes',
+            'grocery_items', 'fridge_items', 'meal_plans',
+            'user_dietary', 'user_cuisines'
+        ];
+        const result = {};
+        for (const table of tables) {
+            try {
+                result[table] = runQuery(`SELECT * FROM ${table}`);
+            } catch (e) {
+                result[table] = [];
+            }
+        }
+        return result;
+    },
+
+    getStats() {
+        const users = runQuery('SELECT COUNT(*) as count FROM users');
+        const recipes = runQuery('SELECT COUNT(*) as count FROM recipes');
+        const likes = runQuery('SELECT COUNT(*) as count FROM liked_recipes');
+        const dislikes = runQuery('SELECT COUNT(*) as count FROM disliked_recipes');
+        const grocery = runQuery('SELECT COUNT(*) as count FROM grocery_items');
+        const fridge = runQuery('SELECT COUNT(*) as count FROM fridge_items');
+        const mealplans = runQuery('SELECT COUNT(*) as count FROM meal_plans');
+        return {
+            users: users[0]?.count || 0,
+            recipes: recipes[0]?.count || 0,
+            likes: likes[0]?.count || 0,
+            dislikes: dislikes[0]?.count || 0,
+            grocery: grocery[0]?.count || 0,
+            fridge: fridge[0]?.count || 0,
+            mealplans: mealplans[0]?.count || 0
+        };
+    }
+};
+
 module.exports = {
     initDatabase,
     UserDB,
     RecipeDB,
     GroceryDB,
     FridgeDB,
-    MealPlanDB
+    MealPlanDB,
+    AdminDB
 };

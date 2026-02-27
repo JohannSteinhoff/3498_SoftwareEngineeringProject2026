@@ -3405,6 +3405,380 @@
             border-color: var(--border-color);
             border-top-color: #4ECDC4;
         }
+
+        /* ============================================
+           ADMIN PORTAL
+           ============================================ */
+
+        .admin-overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .admin-stat-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 18px 14px;
+            text-align: center;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-light);
+        }
+
+        .admin-stat-card .a-icon { font-size: 1.6em; margin-bottom: 6px; }
+        .admin-stat-card .a-count { font-size: 1.8em; font-weight: 700; color: var(--primary); }
+        .admin-stat-card .a-label { font-size: 0.78em; color: var(--text-secondary); margin-top: 2px; }
+
+        .admin-subtab-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .admin-subtab-btn {
+            padding: 7px 18px;
+            border-radius: 20px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.88em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admin-subtab-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .admin-table-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .admin-search-input {
+            flex: 1;
+            min-width: 180px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9em;
+        }
+
+        .admin-row-badge {
+            background: var(--border-light);
+            color: var(--text-secondary);
+            border-radius: 12px;
+            padding: 4px 12px;
+            font-size: 0.82em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .admin-swipe-filter {
+            display: flex;
+            gap: 6px;
+        }
+
+        .admin-swipe-filter button {
+            padding: 5px 12px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.82em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .admin-swipe-filter button.active {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+
+        .admin-table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.87em;
+            background: var(--bg-card);
+        }
+
+        .admin-table th {
+            padding: 11px 14px;
+            text-align: left;
+            background: var(--border-light);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.82em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .admin-table th:hover { color: var(--primary); }
+        .admin-table th.sorted-asc::after { content: ' ▲'; font-size: 0.7em; }
+        .admin-table th.sorted-desc::after { content: ' ▼'; font-size: 0.7em; }
+
+        .admin-table td {
+            padding: 10px 14px;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-primary);
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .admin-table tr:hover td { background: var(--bg-card-hover); }
+
+        .admin-promote-btn, .admin-demote-btn {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.8em;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .admin-promote-btn { background: #4ECDC4; color: white; }
+        .admin-demote-btn { background: #FF6B6B; color: white; }
+        .admin-promote-btn:hover { background: #3ab5ad; }
+        .admin-demote-btn:hover { background: #ee5a5a; }
+
+        .admin-badge-yes { background: rgba(78,205,196,0.15); color: #3ab5ad; border-radius: 6px; padding: 2px 8px; font-size: 0.82em; font-weight: 600; }
+        .admin-badge-no { background: var(--border-light); color: var(--text-tertiary); border-radius: 6px; padding: 2px 8px; font-size: 0.82em; }
+
+        .admin-type-liked { background: rgba(255,107,107,0.12); color: #ee5a5a; border-radius: 6px; padding: 2px 8px; font-size: 0.82em; font-weight: 600; }
+        .admin-type-disliked { background: rgba(150,150,150,0.12); color: var(--text-secondary); border-radius: 6px; padding: 2px 8px; font-size: 0.82em; font-weight: 600; }
+
+        html.dark-mode .admin-table th { background: var(--border-color); }
+        html.dark-mode .admin-stat-card { border-color: var(--border-color); }
+        html.dark-mode .admin-table-wrapper { border-color: var(--border-color); }
+
+        /* Construction-themed admin heading */
+        .admin-portal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 26px;
+            flex-wrap: wrap;
+        }
+
+        .admin-hazard-tape {
+            display: inline-block;
+            background: repeating-linear-gradient(
+                -45deg,
+                #FFD700 0px,  #FFD700 14px,
+                #111111 14px, #111111 28px
+            );
+            color: #ffffff;
+            text-shadow: 0 0 6px #000, 1px 1px 0 #000, -1px -1px 0 #000;
+            font-size: 1.55em;
+            font-weight: 800;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            padding: 7px 22px 7px 18px;
+            border-radius: 6px;
+            border: 3px solid #111111;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        /* High-contrast admin nav link */
+        #adminNavLink {
+            background: repeating-linear-gradient(
+                -45deg,
+                #FFD700 0px,  #FFD700 8px,
+                #111111 8px, #111111 16px
+            ) !important;
+            color: #ffffff !important;
+            text-shadow: 0 0 4px #000, 1px 1px 0 #000;
+            font-weight: 700 !important;
+            border: 2px solid #111111;
+            letter-spacing: 0.04em;
+        }
+        #adminNavLink:hover {
+            background: repeating-linear-gradient(
+                -45deg,
+                #ffe033 0px,  #ffe033 8px,
+                #222 8px, #222 16px
+            ) !important;
+            color: #ffffff !important;
+        }
+
+        #adminMobileNavLink {
+            color: #FFD700 !important;
+        }
+        #adminMobileNavLink.active {
+            color: #FFD700 !important;
+        }
+
+        /* DB Dump viewer */
+        .db-dump-btn {
+            margin-left: auto;
+            padding: 7px 16px;
+            background: #2d2d2d;
+            color: #9cdcfe;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .db-dump-btn:hover { background: #3a3a3a; }
+
+        .db-dump-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 2000;
+            padding: 20px;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+        }
+        .db-dump-overlay.active { display: flex; }
+
+        .db-dump-container {
+            background: #1e1e1e;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 1100px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid #3a3a3a;
+            overflow: hidden;
+        }
+
+        .db-dump-titlebar {
+            background: #2d2d2d;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid #3a3a3a;
+            flex-shrink: 0;
+        }
+
+        .db-dump-titlebar .title-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .db-dump-titlebar .title-dots span {
+            width: 12px; height: 12px; border-radius: 50%;
+        }
+        .db-dump-titlebar .title-dots span:nth-child(1) { background: #ff5f57; }
+        .db-dump-titlebar .title-dots span:nth-child(2) { background: #ffbd2e; }
+        .db-dump-titlebar .title-dots span:nth-child(3) { background: #28ca41; }
+
+        .db-dump-titlebar .title-name {
+            flex: 1;
+            text-align: center;
+            color: #808080;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82em;
+        }
+
+        .db-dump-close {
+            background: none;
+            border: none;
+            color: #808080;
+            font-size: 1.1em;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .db-dump-close:hover { background: #3a3a3a; color: #d4d4d4; }
+
+        .db-dump-toolbar {
+            background: #252526;
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #3a3a3a;
+            flex-shrink: 0;
+        }
+
+        .db-dump-copy-btn {
+            padding: 5px 14px;
+            background: #0e639c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+        .db-dump-copy-btn:hover { background: #1177bb; }
+
+        .db-dump-search {
+            padding: 5px 10px;
+            background: #3c3c3c;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            width: 200px;
+        }
+        .db-dump-search::placeholder { color: #666; }
+
+        .db-dump-info {
+            color: #608b4e;
+            font-family: 'Courier New', monospace;
+            font-size: 0.78em;
+            margin-left: auto;
+        }
+
+        .db-dump-pre {
+            font-family: 'Courier New', Consolas, 'Lucida Console', monospace;
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: #d4d4d4;
+            background: #1e1e1e;
+            padding: 20px 24px;
+            overflow: auto;
+            flex: 1;
+            white-space: pre;
+            tab-size: 4;
+        }
+
+        .db-dump-pre .dump-comment  { color: #6a9955; }
+        .db-dump-pre .dump-table    { color: #dcdcaa; font-weight: bold; }
+        .db-dump-pre .dump-divider  { color: #555; }
+        .db-dump-pre .dump-header   { color: #9cdcfe; }
+        .db-dump-pre .dump-number   { color: #b5cea8; }
+        .db-dump-pre .dump-string   { color: #ce9178; }
+        .db-dump-pre .dump-keyword  { color: #569cd6; }
+        .db-dump-pre .dump-null     { color: #569cd6; font-style: italic; }
+        .db-dump-pre .dump-highlight { background: #613214; }
     </style>
 </head>
 <body>
@@ -3413,6 +3787,7 @@
             <span>🍳</span> Tender
         </a>
         <div class="nav-menu">
+            <a onclick="switchPage('admin')" data-page="admin" id="adminNavLink" style="display:none;">&#9888; Admin</a>
             <a onclick="switchPage('dashboard')" class="active" data-page="dashboard">Dashboard</a>
             <a onclick="switchPage('swipe')" data-page="swipe">Swipe</a>
             <a onclick="switchPage('discover')" data-page="discover">Discover</a>
@@ -3444,6 +3819,9 @@
         </a>
         <a onclick="switchPage('grocery')" data-page="grocery">
             <span class="mob-icon">🛒</span> Grocery
+        </a>
+        <a onclick="switchPage('admin')" data-page="admin" id="adminMobileNavLink" style="display:none;">
+            <span class="mob-icon">🛡️</span> Admin
         </a>
     </div>
     <button class="theme-toggle-btn mobile-theme-toggle js-theme-toggle" type="button" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">
@@ -3534,24 +3912,6 @@
                         </div>
                     </form>
                     <div class="security-status" id="passwordChangeStatus"></div>
-                </div>
-                <div id="adminSection" class="admin-section" style="display:none;">
-                    <h3>Admin Controls</h3>
-                    <p style="font-size:0.85em; color:#666; margin-bottom:12px;">Promote another user to admin by email:</p>
-                    <div class="admin-promote-form">
-                        <input type="email" id="promoteEmailInput" placeholder="user@example.com">
-                        <button onclick="promoteUser()">Promote</button>
-                    </div>
-                    <div class="admin-users-header">
-                        <h3>All Registered Users</h3>
-                        <button class="btn-refresh-users" onclick="loadAllUsers()">Refresh</button>
-                    </div>
-                    <div id="adminUsersTableContainer">
-                        <p style="font-size:0.85em; color:#999;">Loading users...</p>
-                    </div>
-                </div>
-                <div id="becomeAdminSection" style="display:none; margin-top:15px;">
-                    <p style="font-size:0.9em; color:#888;">Want admin access? Contact Team 10 in CS4398 to request admin privileges.</p>
                 </div>
             </section>
         </div>
@@ -3728,6 +4088,55 @@
                 </div>
 
                 <div class="grocery-full-list" id="fridgeFullList"></div>
+            </div>
+        </div>
+
+        <!-- ========== ADMIN PAGE ========== -->
+        <div id="page-admin" class="page-view">
+            <div class="admin-portal-header">
+                <span class="admin-hazard-tape">&#9888; Admin Portal</span>
+                <button class="db-dump-btn" onclick="openDbDump()">&#x1F4C4; View Raw DB</button>
+            </div>
+
+            <!-- Overview Stats -->
+            <div class="admin-overview-grid" id="adminOverviewGrid">
+                <div class="admin-stat-card"><div class="a-icon">👥</div><div class="a-count" id="aStatUsers">-</div><div class="a-label">Users</div></div>
+                <div class="admin-stat-card"><div class="a-icon">🍽️</div><div class="a-count" id="aStatRecipes">-</div><div class="a-label">Recipes</div></div>
+                <div class="admin-stat-card"><div class="a-icon">❤️</div><div class="a-count" id="aStatLikes">-</div><div class="a-label">Likes</div></div>
+                <div class="admin-stat-card"><div class="a-icon">👎</div><div class="a-count" id="aStatDislikes">-</div><div class="a-label">Dislikes</div></div>
+                <div class="admin-stat-card"><div class="a-icon">🛒</div><div class="a-count" id="aStatGrocery">-</div><div class="a-label">Grocery Items</div></div>
+                <div class="admin-stat-card"><div class="a-icon">🧊</div><div class="a-count" id="aStatFridge">-</div><div class="a-label">Fridge Items</div></div>
+                <div class="admin-stat-card"><div class="a-icon">📅</div><div class="a-count" id="aStatMealPlans">-</div><div class="a-label">Meal Plans</div></div>
+                <div class="admin-stat-card"><div class="a-icon">💾</div><div class="a-count" id="aStatDbSize" style="font-size:1.1em;">-</div><div class="a-label">DB Size</div></div>
+            </div>
+
+            <!-- Sub-tab bar -->
+            <div class="admin-subtab-bar">
+                <button class="admin-subtab-btn active" onclick="switchAdminTab('users')" data-tab="users">Users</button>
+                <button class="admin-subtab-btn" onclick="switchAdminTab('recipes')" data-tab="recipes">Recipes</button>
+                <button class="admin-subtab-btn" onclick="switchAdminTab('swipes')" data-tab="swipes">Swipes</button>
+                <button class="admin-subtab-btn" onclick="switchAdminTab('grocery')" data-tab="grocery">Grocery</button>
+                <button class="admin-subtab-btn" onclick="switchAdminTab('fridge')" data-tab="fridge">Fridge</button>
+                <button class="admin-subtab-btn" onclick="switchAdminTab('mealplans')" data-tab="mealplans">Meal Plans</button>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="admin-table-toolbar">
+                <input type="text" class="admin-search-input" id="adminSearchInput" placeholder="Search..." oninput="adminSearch(this.value)">
+                <span class="admin-row-badge" id="adminRowBadge">0 rows</span>
+                <div class="admin-swipe-filter" id="adminSwipeFilter" style="display:none;">
+                    <button class="active" onclick="adminSwipeFilterSet('all', this)">All</button>
+                    <button onclick="adminSwipeFilterSet('liked', this)">Liked</button>
+                    <button onclick="adminSwipeFilterSet('disliked', this)">Disliked</button>
+                </div>
+            </div>
+
+            <!-- Table area -->
+            <div class="admin-table-wrapper">
+                <table class="admin-table" id="adminDataTable">
+                    <thead id="adminTableHead"></thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
             </div>
         </div>
 
@@ -4301,6 +4710,7 @@
             if (page === 'discover') loadDiscoverPage();
             if (page === 'mealplan') loadMealPlanPage();
             if (page === 'grocery') { loadGroceryPage(); loadFridgePage(); }
+            if (page === 'admin') loadAdminPage();
         }
 
         // ==================== DASHBOARD ====================
@@ -4327,14 +4737,10 @@
             isAdmin = currentUser.isAdmin === true;
             if (isAdmin) {
                 document.getElementById('adminBadge').style.display = 'inline-block';
-                document.getElementById('adminSection').style.display = 'block';
-                document.getElementById('becomeAdminSection').style.display = 'none';
-                loadAllUsers();
+                document.getElementById('adminNavLink').style.display = '';
+                document.getElementById('adminMobileNavLink').style.display = '';
             } else {
                 document.getElementById('adminBadge').style.display = 'none';
-                document.getElementById('adminSection').style.display = 'none';
-                // Show "become admin" button (will only work if no admins exist)
-                document.getElementById('becomeAdminSection').style.display = 'block';
             }
 
             // Load user's own recipes so edit/delete permissions work outside Discover too
@@ -5737,84 +6143,391 @@
             }
         }
 
-        // ==================== ADMIN ====================
-        async function becomeAdmin() {
+        // ==================== ADMIN PORTAL ====================
+
+        let adminData = {};         // cache: { users, recipes, likes, dislikes, grocery, fridge, mealplans }
+        let adminCurrentTab = 'users';
+        let adminSortCol = null;
+        let adminSortDir = 1;       // 1=asc, -1=desc
+        let adminSwipeMode = 'all'; // 'all'|'liked'|'disliked'
+
+        async function loadAdminPage() {
             try {
-                const result = await TenderAPI.promoteToAdmin();
-                if (result.success) {
-                    alert('You are now an admin!');
-                    window.location.reload();
-                }
+                const [stats, users, recipes, likes, dislikes, grocery, fridge, mealplans] = await Promise.all([
+                    TenderAPI.adminStats().catch(() => ({})),
+                    TenderAPI.getAllUsers().catch(() => []),
+                    TenderAPI.adminRecipes().catch(() => []),
+                    TenderAPI.adminLikes().catch(() => []),
+                    TenderAPI.adminDislikes().catch(() => []),
+                    TenderAPI.adminGrocery().catch(() => []),
+                    TenderAPI.adminFridge().catch(() => []),
+                    TenderAPI.adminMealPlans().catch(() => [])
+                ]);
+
+                // Overview stats
+                document.getElementById('aStatUsers').textContent = stats.users ?? '-';
+                document.getElementById('aStatRecipes').textContent = stats.recipes ?? '-';
+                document.getElementById('aStatLikes').textContent = stats.likes ?? '-';
+                document.getElementById('aStatDislikes').textContent = stats.dislikes ?? '-';
+                document.getElementById('aStatGrocery').textContent = stats.grocery ?? '-';
+                document.getElementById('aStatFridge').textContent = stats.fridge ?? '-';
+                document.getElementById('aStatMealPlans').textContent = stats.mealplans ?? '-';
+                document.getElementById('aStatDbSize').textContent = stats.dbSize != null ? formatBytes(stats.dbSize) : '-';
+
+                // Combine likes and dislikes into swipes
+                const liked = (likes || []).map(r => ({ ...r, swipe_type: 'liked', swipe_date: r.liked_at }));
+                const disliked = (dislikes || []).map(r => ({ ...r, swipe_type: 'disliked', swipe_date: r.disliked_at }));
+
+                adminData = {
+                    users: users || [],
+                    recipes: recipes || [],
+                    swipes: [...liked, ...disliked].sort((a, b) => (b.swipe_date || '').localeCompare(a.swipe_date || '')),
+                    grocery: grocery || [],
+                    fridge: fridge || [],
+                    mealplans: mealplans || []
+                };
+
+                renderAdminTable(adminCurrentTab);
             } catch (err) {
-                console.error('Failed to become admin:', err);
-                alert(err.message || 'Failed to become admin. An admin may already exist.');
+                console.error('Admin page load error:', err);
             }
         }
 
-        async function promoteUser() {
-            const email = document.getElementById('promoteEmailInput').value.trim();
-            if (!email) {
-                alert('Please enter an email address.');
-                return;
-            }
-            try {
-                const result = await TenderAPI.promoteToAdmin(email);
-                if (result.success) {
-                    alert(`${email} is now an admin!`);
-                    document.getElementById('promoteEmailInput').value = '';
-                    loadAllUsers();
+        function switchAdminTab(tab) {
+            adminCurrentTab = tab;
+            adminSortCol = null;
+            adminSortDir = 1;
+            document.getElementById('adminSearchInput').value = '';
+            document.querySelectorAll('.admin-subtab-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.tab === tab);
+            });
+            // Show swipe filter only on swipes tab
+            document.getElementById('adminSwipeFilter').style.display = tab === 'swipes' ? 'flex' : 'none';
+            if (tab === 'swipes') adminSwipeMode = 'all';
+            renderAdminTable(tab);
+        }
+
+        function adminSwipeFilterSet(mode, btn) {
+            adminSwipeMode = mode;
+            document.querySelectorAll('#adminSwipeFilter button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderAdminTable('swipes');
+        }
+
+        function getAdminRows(tab) {
+            switch (tab) {
+                case 'users': return adminData.users || [];
+                case 'recipes': return adminData.recipes || [];
+                case 'swipes': {
+                    const all = adminData.swipes || [];
+                    if (adminSwipeMode === 'liked') return all.filter(r => r.swipe_type === 'liked');
+                    if (adminSwipeMode === 'disliked') return all.filter(r => r.swipe_type === 'disliked');
+                    return all;
                 }
-            } catch (err) {
-                console.error('Failed to promote user:', err);
-                alert(err.message || 'Failed to promote user. Make sure the email is correct.');
+                case 'grocery': return adminData.grocery || [];
+                case 'fridge': return adminData.fridge || [];
+                case 'mealplans': return adminData.mealplans || [];
+                default: return [];
             }
         }
 
-        async function loadAllUsers() {
-            const container = document.getElementById('adminUsersTableContainer');
-            if (!container) return;
-            container.innerHTML = '<p style="font-size:0.85em; color:#999;">Loading users...</p>';
-            try {
-                const users = await TenderAPI.getAllUsers();
-                if (!users || users.length === 0) {
-                    container.innerHTML = '<p style="font-size:0.85em; color:#999;">No users found.</p>';
-                    return;
-                }
-                let html = `
-                    <table class="admin-users-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Password</th>
-                                <th>Role</th>
-                                <th>Joined</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-                for (const u of users) {
-                    const name = (u.firstName || '') + ' ' + (u.lastName || '');
-                    const role = u.isAdmin ? '<span class="admin-tag">Admin</span>' : '<span class="user-tag">User</span>';
-                    const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A';
-                    const pwd = u.password || '(not available)';
-                    html += `
-                        <tr>
-                            <td>${u.id}</td>
-                            <td>${name.trim() || 'N/A'}</td>
-                            <td>${u.email}</td>
-                            <td><span class="password-cell">${pwd}</span></td>
-                            <td>${role}</td>
-                            <td>${joined}</td>
-                        </tr>`;
-                }
-                html += '</tbody></table>';
-                html += `<p class="admin-user-count">${users.length} registered user${users.length !== 1 ? 's' : ''}</p>`;
-                container.innerHTML = html;
-            } catch (err) {
-                console.error('Failed to load users:', err);
-                container.innerHTML = '<p style="font-size:0.85em; color:#c00;">Failed to load users. Make sure you have admin access.</p>';
+        function getAdminColumns(tab) {
+            switch (tab) {
+                case 'users':    return ['id', 'firstName', 'lastName', 'email', 'isAdmin', 'cookingSkill', 'householdSize', 'weeklyBudget', 'createdAt'];
+                case 'recipes':  return ['id', 'name', 'cuisine', 'difficulty', 'cook_time', 'servings', 'created_by_email', 'created_at'];
+                case 'swipes':   return ['user_email', 'recipe_name', 'swipe_type', 'swipe_date'];
+                case 'grocery':  return ['user_email', 'name', 'quantity', 'unit', 'category', 'checked', 'added_at'];
+                case 'fridge':   return ['user_email', 'name', 'quantity', 'unit', 'category', 'added_at'];
+                case 'mealplans':return ['user_email', 'recipe_name', 'plan_date', 'meal_type'];
+                default: return [];
             }
+        }
+
+        function getAdminHeaders(tab) {
+            switch (tab) {
+                case 'users':    return ['ID', 'First Name', 'Last Name', 'Email', 'Admin', 'Skill', 'Household', 'Budget', 'Joined'];
+                case 'recipes':  return ['ID', 'Name', 'Cuisine', 'Difficulty', 'Cook Time', 'Servings', 'Created By', 'Created At'];
+                case 'swipes':   return ['User Email', 'Recipe', 'Type', 'Date'];
+                case 'grocery':  return ['User Email', 'Item', 'Qty', 'Unit', 'Category', 'Checked', 'Added At'];
+                case 'fridge':   return ['User Email', 'Item', 'Qty', 'Unit', 'Category', 'Added At'];
+                case 'mealplans':return ['User Email', 'Recipe', 'Date', 'Meal Type'];
+                default: return [];
+            }
+        }
+
+        function renderAdminTable(tab, rows) {
+            const cols = getAdminColumns(tab);
+            const headers = getAdminHeaders(tab);
+            const allRows = rows !== undefined ? rows : getAdminRows(tab);
+
+            // Apply search filter
+            const query = (document.getElementById('adminSearchInput')?.value || '').toLowerCase();
+            const filtered = query
+                ? allRows.filter(r => cols.some(c => String(r[c] ?? '').toLowerCase().includes(query)))
+                : allRows;
+
+            // Apply sort
+            const sorted = adminSortCol !== null ? [...filtered].sort((a, b) => {
+                const va = String(a[cols[adminSortCol]] ?? '');
+                const vb = String(b[cols[adminSortCol]] ?? '');
+                return va.localeCompare(vb, undefined, { numeric: true }) * adminSortDir;
+            }) : filtered;
+
+            // Render header
+            const thead = document.getElementById('adminTableHead');
+            thead.innerHTML = '<tr>' + headers.map((h, i) => {
+                let cls = '';
+                if (adminSortCol === i) cls = adminSortDir === 1 ? 'sorted-asc' : 'sorted-desc';
+                return `<th class="${cls}" onclick="sortAdminTable(${i})">${h}</th>`;
+            }).join('') + (tab === 'users' ? '<th>Action</th>' : '') + '</tr>';
+
+            // Render body
+            const tbody = document.getElementById('adminTableBody');
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${cols.length + (tab === 'users' ? 1 : 0)}" style="text-align:center;color:var(--text-secondary);padding:24px;">No data found.</td></tr>`;
+            } else {
+                tbody.innerHTML = sorted.map(row => {
+                    const cells = cols.map(c => {
+                        let val = row[c];
+                        if (tab === 'users' && c === 'isAdmin') {
+                            val = val ? '<span class="admin-badge-yes">Admin</span>' : '<span class="admin-badge-no">User</span>';
+                        } else if (tab === 'swipes' && c === 'swipe_type') {
+                            val = val === 'liked'
+                                ? '<span class="admin-type-liked">Liked</span>'
+                                : '<span class="admin-type-disliked">Disliked</span>';
+                        } else if (tab === 'grocery' && c === 'checked') {
+                            val = val ? '✅' : '⬜';
+                        } else if (c === 'cook_time' && val != null) {
+                            val = val + ' min';
+                        } else if ((c.endsWith('_at') || c === 'plan_date' || c === 'swipe_date') && val) {
+                            val = new Date(val).toLocaleDateString();
+                        } else if (c === 'createdAt' && val) {
+                            val = new Date(val).toLocaleDateString();
+                        } else {
+                            val = escapeHtml(String(val ?? ''));
+                        }
+                        return `<td>${val}</td>`;
+                    });
+                    let actionCell = '';
+                    if (tab === 'users') {
+                        const isAdm = row.isAdmin;
+                        if (isAdm) {
+                            actionCell = `<td><button class="admin-demote-btn" onclick="adminDemoteUser('${escapeHtml(row.email)}')">Demote</button></td>`;
+                        } else {
+                            actionCell = `<td><button class="admin-promote-btn" onclick="adminPromoteUser('${escapeHtml(row.email)}')">Promote</button></td>`;
+                        }
+                    }
+                    return '<tr>' + cells.join('') + actionCell + '</tr>';
+                }).join('');
+            }
+
+            document.getElementById('adminRowBadge').textContent = `${sorted.length} row${sorted.length !== 1 ? 's' : ''}`;
+        }
+
+        function adminSearch(query) {
+            renderAdminTable(adminCurrentTab);
+        }
+
+        function sortAdminTable(colIndex) {
+            if (adminSortCol === colIndex) {
+                adminSortDir *= -1;
+            } else {
+                adminSortCol = colIndex;
+                adminSortDir = 1;
+            }
+            renderAdminTable(adminCurrentTab);
+        }
+
+        async function adminPromoteUser(email) {
+            try {
+                await TenderAPI.promoteToAdmin(email);
+                // Update cached user data
+                const u = adminData.users.find(u => u.email === email);
+                if (u) u.isAdmin = true;
+                renderAdminTable('users');
+                // Update stat
+                const statsEl = document.getElementById('aStatUsers');
+                // no count change, just re-render
+            } catch (err) {
+                alert(err.message || 'Failed to promote user.');
+            }
+        }
+
+        async function adminDemoteUser(email) {
+            try {
+                await TenderAPI.demoteAdmin(email);
+                const u = adminData.users.find(u => u.email === email);
+                if (u) u.isAdmin = false;
+                renderAdminTable('users');
+            } catch (err) {
+                alert(err.message || 'Failed to demote user.');
+            }
+        }
+
+        // ==================== DB DUMP VIEWER ====================
+
+        let dbDumpRawText = '';
+        let dbDumpLastSearch = '';
+
+        async function openDbDump() {
+            document.getElementById('dbDumpOverlay').classList.add('active');
+            document.getElementById('dbDumpPre').innerHTML = '<span class="dump-comment">// Fetching database dump...</span>';
+            document.getElementById('dbDumpInfo').textContent = 'loading...';
+            document.getElementById('dumpSearchInput').value = '';
+            dbDumpLastSearch = '';
+
+            try {
+                const [data, stats] = await Promise.all([
+                    TenderAPI.adminDump(),
+                    TenderAPI.adminStats().catch(() => ({}))
+                ]);
+                const dbSize = stats.dbSize ?? null;
+                dbDumpRawText = formatDbDump(data, dbSize);
+                renderDumpPre(dbDumpRawText, '');
+
+                // Count total rows
+                const totalRows = Object.values(data).reduce((sum, rows) => sum + rows.length, 0);
+                const totalTables = Object.keys(data).length;
+                const sizeStr = dbSize != null ? ` · ${formatBytes(dbSize)}` : '';
+                document.getElementById('dbDumpInfo').textContent =
+                    `${totalTables} tables · ${totalRows} rows · ${dbDumpRawText.length.toLocaleString()} chars${sizeStr}`;
+            } catch (err) {
+                document.getElementById('dbDumpPre').innerHTML =
+                    `<span class="dump-comment">// Error: ${escapeHtml(err.message || 'Failed to load dump')}</span>`;
+                document.getElementById('dbDumpInfo').textContent = 'error';
+            }
+        }
+
+        function closeDbDump() {
+            document.getElementById('dbDumpOverlay').classList.remove('active');
+        }
+
+        function handleDumpOverlayClick(e) {
+            if (e.target === document.getElementById('dbDumpOverlay')) closeDbDump();
+        }
+
+        function formatBytes(bytes) {
+            if (bytes == null) return '?';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function formatDbDump(data, dbSize) {
+            const ts = new Date().toLocaleString();
+            const LINE = '─'.repeat(72);
+            let out = '';
+            out += `-- ============================================================\n`;
+            out += `-- TENDER DATABASE DUMP\n`;
+            out += `-- Generated: ${ts}\n`;
+            if (dbSize != null) out += `-- File size: ${formatBytes(dbSize)} (${dbSize.toLocaleString()} bytes)\n`;
+            out += `-- ============================================================\n\n`;
+
+            for (const [tableName, rows] of Object.entries(data)) {
+                out += `${LINE}\n`;
+                out += `TABLE: ${tableName.toUpperCase()}  (${rows.length} row${rows.length !== 1 ? 's' : ''})\n`;
+                out += `${LINE}\n`;
+
+                if (rows.length === 0) {
+                    out += `(empty)\n\n`;
+                    continue;
+                }
+
+                const cols = Object.keys(rows[0]);
+                // Calculate column widths: max of header or value, capped at 36
+                const widths = cols.map(c =>
+                    Math.min(36, Math.max(c.length, ...rows.map(r => String(r[c] ?? 'NULL').length)))
+                );
+
+                // Header row
+                out += cols.map((c, i) => c.padEnd(widths[i])).join('  ') + '\n';
+                out += cols.map((c, i) => '─'.repeat(widths[i])).join('  ') + '\n';
+
+                // Data rows
+                for (const row of rows) {
+                    out += cols.map((c, i) => {
+                        let val = row[c] == null ? 'NULL' : String(row[c]);
+                        // Truncate long values
+                        if (val.length > widths[i]) val = val.slice(0, widths[i] - 1) + '…';
+                        return val.padEnd(widths[i]);
+                    }).join('  ') + '\n';
+                }
+                out += '\n';
+            }
+
+            return out;
+        }
+
+        function syntaxColorDump(text) {
+            // Escape HTML first, then apply colour spans
+            let escaped = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Comments (lines starting with --)
+            escaped = escaped.replace(/^(-- .+)$/gm, '<span class="dump-comment">$1</span>');
+
+            // TABLE: headers
+            escaped = escaped.replace(/^(TABLE: \S+.*)$/gm, '<span class="dump-table">$1</span>');
+
+            // Divider lines
+            escaped = escaped.replace(/^(─+)$/gm, '<span class="dump-divider">$1</span>');
+
+            // NULL values
+            escaped = escaped.replace(/\bNULL\b/g, '<span class="dump-null">NULL</span>');
+
+            return escaped;
+        }
+
+        function highlightDumpSearch(query) {
+            dbDumpLastSearch = query;
+            renderDumpPre(dbDumpRawText, query);
+
+            // Update info with match count
+            if (query && dbDumpRawText) {
+                const matches = (dbDumpRawText.match(new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')) || []).length;
+                const info = document.getElementById('dbDumpInfo');
+                const base = info.textContent.split(' · match')[0];
+                info.textContent = matches > 0
+                    ? `${base} · ${matches} match${matches !== 1 ? 'es' : ''}`
+                    : `${base} · no matches`;
+            }
+        }
+
+        function renderDumpPre(rawText, searchQuery) {
+            let html = syntaxColorDump(rawText);
+
+            if (searchQuery && searchQuery.length > 0) {
+                // Highlight search term (applied after syntax coloring, so we match visible text)
+                const safeQ = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // We need to highlight only in text nodes, not inside span tags
+                // Simple approach: highlight the escaped version of the query
+                const escapedQ = searchQuery
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeEscQ = escapedQ.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                html = html.replace(new RegExp(`(${safeEscQ})`, 'gi'),
+                    '<mark style="background:#613214;color:#ffd700;border-radius:2px;">$1</mark>');
+            }
+
+            document.getElementById('dbDumpPre').innerHTML = html;
+        }
+
+        function copyDbDump() {
+            if (!dbDumpRawText) return;
+            navigator.clipboard.writeText(dbDumpRawText).then(() => {
+                const btn = document.querySelector('.db-dump-copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = 'Copy All'; }, 1800);
+            }).catch(() => {
+                // Fallback for non-secure contexts
+                const ta = document.createElement('textarea');
+                ta.value = dbDumpRawText;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            });
         }
 
         // ==================== MEAL PLAN PAGE ====================
@@ -6581,5 +7294,26 @@
         updateThemeToggleUI();
         loadDashboard();
     </script>
+
+    <!-- DB Dump Overlay -->
+    <div class="db-dump-overlay" id="dbDumpOverlay" onclick="handleDumpOverlayClick(event)">
+        <div class="db-dump-container">
+            <div class="db-dump-titlebar">
+                <div class="title-dots">
+                    <span onclick="closeDbDump()"></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="title-name">tender.db — raw database dump</div>
+                <button class="db-dump-close" onclick="closeDbDump()">✕</button>
+            </div>
+            <div class="db-dump-toolbar">
+                <button class="db-dump-copy-btn" onclick="copyDbDump()">Copy All</button>
+                <input type="text" class="db-dump-search" placeholder="Find in dump..." oninput="highlightDumpSearch(this.value)" id="dumpSearchInput">
+                <span class="db-dump-info" id="dbDumpInfo">loading...</span>
+            </div>
+            <pre class="db-dump-pre" id="dbDumpPre">Loading database dump...</pre>
+        </div>
+    </div>
 </body>
 </html>

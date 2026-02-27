@@ -184,6 +184,38 @@ const TenderAPI = {
         });
     },
 
+    async adminRecipes() {
+        return this.request('/admin/recipes');
+    },
+
+    async adminLikes() {
+        return this.request('/admin/likes');
+    },
+
+    async adminDislikes() {
+        return this.request('/admin/dislikes');
+    },
+
+    async adminGrocery() {
+        return this.request('/admin/grocery');
+    },
+
+    async adminFridge() {
+        return this.request('/admin/fridge');
+    },
+
+    async adminMealPlans() {
+        return this.request('/admin/mealplans');
+    },
+
+    async adminStats() {
+        return this.request('/admin/stats');
+    },
+
+    async adminDump() {
+        return this.request('/admin/dump');
+    },
+
     // ==================== GROCERY ====================
 
     async getGroceryList() {
