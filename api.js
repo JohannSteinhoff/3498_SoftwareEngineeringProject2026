@@ -289,15 +289,34 @@ const TenderAPI = {
         return this.request('/mealplan');
     },
 
-    async addToMealPlan(recipeId, date, mealType) {
+    async addToMealPlan(recipeId, date, mealType, course = 'main') {
         return this.request('/mealplan', {
             method: 'POST',
-            body: { recipeId, date, mealType },
+            body: { recipeId, date, mealType, course },
+        });
+    },
+
+    async moveMealPlanSlot(fromDate, fromMealType, toDate, toMealType) {
+        return this.request('/mealplan/move-slot', {
+            method: 'POST',
+            body: { fromDate, fromMealType, toDate, toMealType },
         });
     },
 
     async removeFromMealPlan(date, mealType) {
         return this.request(`/mealplan/${date}/${mealType}`, { method: 'DELETE' });
+    },
+
+    async removeMealPlanItem(itemId) {
+        return this.request(`/mealplan/item/${itemId}`, { method: 'DELETE' });
+    },
+
+    async addSecondaryToMealPlan(recipeId, date, mealType) {
+        return this.addToMealPlan(recipeId, date, mealType, 'secondary');
+    },
+
+    async removeSecondaryFromMealPlan(date, mealType) {
+        return this.request(`/mealplan/${date}/${mealType}/secondary`, { method: 'DELETE' });
     },
 
     // ==================== STATS ====================

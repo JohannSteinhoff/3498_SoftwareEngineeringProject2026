@@ -1914,10 +1914,52 @@
         .meal-slot {
             padding: 10px 15px;
             border-bottom: 1px solid var(--border-light);
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
         }
 
         .meal-slot:last-child {
             border-bottom: none;
+        }
+
+        .meal-slot.planned-slot {
+            cursor: grab;
+        }
+
+        .meal-slot.planned-slot:active {
+            cursor: grabbing;
+        }
+
+        .meal-slot.drag-origin {
+            opacity: 0.35;
+        }
+
+        .meal-slot.open-slot.drop-target {
+            border: 1px dashed var(--secondary);
+            background: color-mix(in srgb, var(--secondary) 12%, transparent);
+        }
+
+        .meal-slot.slot-snap {
+            animation: meal-slot-snap 0.26s ease-out;
+        }
+
+        @keyframes meal-slot-snap {
+            0% { transform: scale(0.98); }
+            70% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .meal-slot-drag-ghost {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2200;
+            opacity: 0.95;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+            transform: translate(-18px, -18px);
         }
 
         .meal-slot-label {
@@ -1925,7 +1967,39 @@
             font-weight: 600;
             color: var(--text-tertiary);
             text-transform: uppercase;
+            margin-bottom: 0;
+        }
+
+        .meal-slot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
             margin-bottom: 6px;
+        }
+
+        .meal-slot-add-side {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            border: 1px dashed var(--border-color);
+            background: none;
+            color: var(--text-tertiary);
+            font-family: inherit;
+            font-size: 0.95em;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .meal-slot-add-side:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+            background: color-mix(in srgb, var(--secondary) 10%, transparent);
         }
 
         .meal-slot-content {
@@ -2015,9 +2089,38 @@
             color: var(--primary);
         }
 
+        .meal-slot-side-content {
+            margin-top: 4px;
+            opacity: 0.85;
+        }
+
+        .meal-slot-side-content .meal-emoji {
+            font-size: 1.1em;
+        }
+
+        .meal-slot-side-content .meal-name {
+            font-size: 0.8em;
+        }
+
+        .meal-side-tag {
+            font-size: 0.65em;
+            font-weight: 700;
+            color: var(--secondary);
+            text-transform: uppercase;
+            flex-shrink: 0;
+            background: color-mix(in srgb, var(--secondary) 12%, transparent);
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
         /* Add to Meal Plan Modal */
+        .add-meal-modal {
+            align-items: flex-start;
+        }
+
         .add-meal-modal .modal {
             max-width: 800px;
+            margin-top: clamp(12px, 3vh, 36px);
         }
 
         .add-meal-modal .modal-body {
@@ -4759,8 +4862,8 @@
                     <button class="add-meal-search-clear" id="addMealSearchClear" onclick="clearAddMealSearch()" type="button">✕</button>
                 </div>
                 <div class="add-meal-filter-row">
-                    <button type="button" class="add-meal-filter-btn active" id="addMealFilterLiked" onclick="setAddMealRecipeFilter('liked')">❤️ Favorites</button>
-                    <button type="button" class="add-meal-filter-btn" id="addMealFilterAll" onclick="setAddMealRecipeFilter('all')">🍽️ All Recipes</button>
+                    <button type="button" class="add-meal-filter-btn" id="addMealFilterLiked" onclick="setAddMealRecipeFilter('liked')">❤️ Favorites</button>
+                    <button type="button" class="add-meal-filter-btn active" id="addMealFilterAll" onclick="setAddMealRecipeFilter('all')">🍽️ All Recipes</button>
                 </div>
                 <div class="recipe-select-list" id="recipeSelectList"></div>
             </div>
@@ -5131,11 +5234,22 @@
         let myRecipeIds = new Set();
         let currentWeekStart = getMonday(new Date());
         let mealPlanData = [];
-        let pendingMealSlot = null; // { date, mealType }
-        let addMealFilterMode = 'liked'; // 'liked' | 'all'
+        let pendingMealSlot = null; // { date, mealType, course }
+        let addMealFilterMode = 'all'; // 'liked' | 'all'
         let addMealLikedRecipes = [];
         let addMealSearchQuery = '';
         let groceryDay = localStorage.getItem('tenderGroceryDay') || null;
+        let mealPlanDragBound = false;
+        let mealPlanDragState = {
+            active: false,
+            sourceDate: null,
+            sourceMealType: null,
+            sourceEl: null,
+            dropEl: null,
+            ghostEl: null,
+            moving: false
+        };
+        let mealPlanLastMovedTarget = null;
 
         // ==================== THEME ====================
         function updateThemeToggleUI() {
@@ -6377,15 +6491,8 @@
             document.getElementById('scheduleRecipeModal').classList.add('active');
         }
 
-        function getPlannedMealForSlot(dateStr, mealType) {
-            const entry = schedulePlanData.find(m => m.plan_date === dateStr && m.meal_type === mealType);
-            if (!entry) return null;
-            // entry has recipe_name and recipe_emoji from the JOIN
-            return {
-                name: entry.recipe_name || 'Unknown',
-                emoji: entry.recipe_emoji || '🍽️',
-                recipeId: entry.recipe_id
-            };
+        function getPlannedMealsForSlot(dateStr, mealType) {
+            return schedulePlanData.filter(m => m.plan_date === dateStr && m.meal_type === mealType);
         }
 
         function renderScheduleDayPreview(dateStr) {
@@ -6393,28 +6500,33 @@
             const d = new Date(dateStr + 'T12:00:00');
             const label = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
             const slots = ['breakfast', 'lunch', 'dinner'];
-            const icons = { breakfast: '🌅', lunch: '☀️', dinner: '🌙' };
+            const icons = { breakfast: '\u{1F305}', lunch: '\u2600\uFE0F', dinner: '\u{1F319}' };
 
             const slotRows = slots.map(slot => {
-                const planned = getPlannedMealForSlot(dateStr, slot);
-                if (planned) {
+                const plannedMeals = getPlannedMealsForSlot(dateStr, slot);
+                if (plannedMeals.length > 0) {
+                    const previewMeals = plannedMeals
+                        .slice(0, 2)
+                        .map(m => `<span class="slot-emoji">${m.recipe_emoji || '&#127869;'}</span> ${escapeHtml(m.recipe_name || 'Unknown')}`)
+                        .join(' | ');
+                    const more = plannedMeals.length > 2 ? ` +${plannedMeals.length - 2} more` : '';
                     return `<div class="schedule-preview-slot">
                         <span class="slot-time">${icons[slot]} ${capitalizeFirst(slot)}</span>
-                        <span class="slot-recipe"><span class="slot-emoji">${planned.emoji}</span> ${escapeHtml(planned.name)}</span>
+                        <span class="slot-recipe">${previewMeals}${more}</span>
                     </div>`;
                 }
                 return `<div class="schedule-preview-slot">
                     <span class="slot-time">${icons[slot]} ${capitalizeFirst(slot)}</span>
-                    <span class="slot-empty">— empty —</span>
+                    <span class="slot-empty">- empty -</span>
                 </div>`;
             }).join('');
 
-            const allEmpty = slots.every(s => !getPlannedMealForSlot(dateStr, s));
+            const allEmpty = slots.every(s => getPlannedMealsForSlot(dateStr, s).length === 0);
 
             preview.innerHTML = `
                 <div class="schedule-day-preview-title">${label}</div>
                 ${allEmpty
-                    ? '<div class="schedule-day-preview-empty">Nothing planned yet — this day is wide open!</div>'
+                    ? '<div class="schedule-day-preview-empty">Nothing planned yet - this day is wide open!</div>'
                     : slotRows}
             `;
         }
@@ -6422,24 +6534,26 @@
         function renderScheduleMealButtons(dateStr) {
             const container = document.getElementById('scheduleMeals');
             const slots = ['breakfast', 'lunch', 'dinner'];
-            const icons = { breakfast: '🌅', lunch: '☀️', dinner: '🌙' };
+            const icons = { breakfast: '\u{1F305}', lunch: '\u2600\uFE0F', dinner: '\u{1F319}' };
 
-            // Pick the first empty slot as default, or dinner
+            // Pick the least filled slot as default (ties keep breakfast->lunch->dinner order)
             let defaultMeal = 'dinner';
+            let minCount = Number.POSITIVE_INFINITY;
             for (const slot of slots) {
-                if (!getPlannedMealForSlot(dateStr, slot)) {
+                const count = getPlannedMealsForSlot(dateStr, slot).length;
+                if (count < minCount) {
+                    minCount = count;
                     defaultMeal = slot;
-                    break;
                 }
             }
             scheduleMeal = defaultMeal;
 
             container.innerHTML = slots.map(slot => {
-                const planned = getPlannedMealForSlot(dateStr, slot);
+                const plannedMeals = getPlannedMealsForSlot(dateStr, slot);
                 const isActive = slot === defaultMeal;
-                const occupiedClass = planned ? 'occupied' : '';
-                const existingLabel = planned
-                    ? `<span class="meal-existing">${planned.emoji} ${escapeHtml(planned.name)}</span>`
+                const occupiedClass = plannedMeals.length > 0 ? 'occupied' : '';
+                const existingLabel = plannedMeals.length > 0
+                    ? `<span class="meal-existing">${plannedMeals.length} dish${plannedMeals.length !== 1 ? 'es' : ''} planned</span>`
                     : `<span class="meal-existing">Available</span>`;
 
                 return `<button class="schedule-meal-btn ${isActive ? 'active' : ''} ${occupiedClass}"
@@ -6473,14 +6587,9 @@
         async function confirmScheduleRecipe() {
             if (!scheduleRecipeId || !scheduleDate || !scheduleMeal) return;
 
-            // Warn if the slot already has a meal
-            const existing = getPlannedMealForSlot(scheduleDate, scheduleMeal);
-            if (existing) {
-                if (!confirm(`This will replace "${existing.name}" for ${scheduleMeal}. Continue?`)) return;
-            }
-
             try {
-                await TenderAPI.addToMealPlan(scheduleRecipeId, scheduleDate, scheduleMeal);
+                const course = getPlannedMealsForSlot(scheduleDate, scheduleMeal).length > 0 ? 'secondary' : 'main';
+                await TenderAPI.addToMealPlan(scheduleRecipeId, scheduleDate, scheduleMeal, course);
                 closeScheduleModal();
                 switchPage('mealplan');
             } catch (err) {
@@ -7363,6 +7472,166 @@
         const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         const mealTypes = ['breakfast', 'lunch', 'dinner'];
 
+        function getMealsForSlot(entries, dateStr, mealType) {
+            return entries
+                .filter(m => m.plan_date === dateStr && m.meal_type === mealType)
+                .sort((a, b) => {
+                    const courseRankA = a.course === 'main' ? 0 : 1;
+                    const courseRankB = b.course === 'main' ? 0 : 1;
+                    if (courseRankA !== courseRankB) return courseRankA - courseRankB;
+                    const posA = Number(a.position || 0);
+                    const posB = Number(b.position || 0);
+                    if (posA !== posB) return posA - posB;
+                    return Number(a.id || 0) - Number(b.id || 0);
+                });
+        }
+
+        function initMealPlanDragDrop() {
+            if (mealPlanDragBound) return;
+            const container = document.getElementById('mealplanWeek');
+            if (!container) return;
+
+            mealPlanDragBound = true;
+            container.addEventListener('dragstart', onMealSlotDragStart);
+            container.addEventListener('dragover', onMealSlotDragOver);
+            container.addEventListener('drop', onMealSlotDrop);
+            container.addEventListener('dragleave', onMealSlotDragLeave);
+            container.addEventListener('dragend', onMealSlotDragEnd);
+            document.addEventListener('dragover', onMealSlotGlobalDragOver);
+        }
+
+        function updateMealSlotGhostPosition(x, y) {
+            if (!mealPlanDragState.ghostEl) return;
+            mealPlanDragState.ghostEl.style.left = `${x}px`;
+            mealPlanDragState.ghostEl.style.top = `${y}px`;
+        }
+
+        function destroyMealSlotGhost() {
+            if (mealPlanDragState.ghostEl) {
+                mealPlanDragState.ghostEl.remove();
+                mealPlanDragState.ghostEl = null;
+            }
+        }
+
+        function clearMealSlotDropTarget() {
+            if (mealPlanDragState.dropEl) {
+                mealPlanDragState.dropEl.classList.remove('drop-target');
+                mealPlanDragState.dropEl = null;
+            }
+        }
+
+        function resetMealSlotDragState() {
+            if (mealPlanDragState.sourceEl) {
+                mealPlanDragState.sourceEl.classList.remove('drag-origin');
+            }
+            clearMealSlotDropTarget();
+            destroyMealSlotGhost();
+            mealPlanDragState.active = false;
+            mealPlanDragState.sourceDate = null;
+            mealPlanDragState.sourceMealType = null;
+            mealPlanDragState.sourceEl = null;
+            mealPlanDragState.moving = false;
+        }
+
+        function onMealSlotGlobalDragOver(event) {
+            if (!mealPlanDragState.active) return;
+            updateMealSlotGhostPosition(event.clientX, event.clientY);
+        }
+
+        function onMealSlotDragStart(event) {
+            const slotEl = event.target.closest('.meal-slot.planned-slot[draggable="true"]');
+            if (!slotEl || mealPlanDragState.moving) {
+                event.preventDefault();
+                return;
+            }
+            if (event.target.closest('.remove-meal, .meal-slot-add-side')) {
+                event.preventDefault();
+                return;
+            }
+
+            mealPlanDragState.active = true;
+            mealPlanDragState.sourceDate = slotEl.dataset.date;
+            mealPlanDragState.sourceMealType = slotEl.dataset.meal;
+            mealPlanDragState.sourceEl = slotEl;
+            slotEl.classList.add('drag-origin');
+
+            const blankImg = new Image();
+            blankImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+            event.dataTransfer.setDragImage(blankImg, 0, 0);
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', `${mealPlanDragState.sourceDate}|${mealPlanDragState.sourceMealType}`);
+
+            const ghost = slotEl.cloneNode(true);
+            ghost.classList.add('meal-slot-drag-ghost');
+            ghost.style.width = `${Math.round(slotEl.getBoundingClientRect().width)}px`;
+            document.body.appendChild(ghost);
+            mealPlanDragState.ghostEl = ghost;
+            updateMealSlotGhostPosition(event.clientX, event.clientY);
+        }
+
+        function onMealSlotDragOver(event) {
+            if (!mealPlanDragState.active) return;
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            updateMealSlotGhostPosition(event.clientX, event.clientY);
+
+            const targetSlot = event.target.closest('.meal-slot.open-slot');
+            if (targetSlot !== mealPlanDragState.dropEl) {
+                clearMealSlotDropTarget();
+                if (targetSlot) {
+                    targetSlot.classList.add('drop-target');
+                    mealPlanDragState.dropEl = targetSlot;
+                }
+            }
+        }
+
+        function onMealSlotDragLeave(event) {
+            if (!mealPlanDragState.active || !mealPlanDragState.dropEl) return;
+            const leavingCurrentTarget = event.target === mealPlanDragState.dropEl;
+            if (leavingCurrentTarget && !mealPlanDragState.dropEl.contains(event.relatedTarget)) {
+                clearMealSlotDropTarget();
+            }
+        }
+
+        async function movePlannedMealSlot(fromDate, fromMealType, toDate, toMealType) {
+            if (!fromDate || !fromMealType || !toDate || !toMealType) return;
+            try {
+                await TenderAPI.moveMealPlanSlot(fromDate, fromMealType, toDate, toMealType);
+                mealPlanLastMovedTarget = `${toDate}|${toMealType}`;
+                await loadMealPlanPage();
+                setTimeout(() => {
+                    mealPlanLastMovedTarget = null;
+                }, 350);
+            } catch (err) {
+                console.error('Failed to move meal slot:', err);
+                alert(err?.message || 'Could not move that meal slot.');
+            }
+        }
+
+        function onMealSlotDrop(event) {
+            if (!mealPlanDragState.active || mealPlanDragState.moving) return;
+            event.preventDefault();
+
+            const dropEl = event.target.closest('.meal-slot.open-slot');
+            const sourceDate = mealPlanDragState.sourceDate;
+            const sourceMealType = mealPlanDragState.sourceMealType;
+            const toDate = dropEl?.dataset?.date;
+            const toMealType = dropEl?.dataset?.meal;
+
+            if (!dropEl || !toDate || !toMealType) return;
+            mealPlanDragState.moving = true;
+            movePlannedMealSlot(sourceDate, sourceMealType, toDate, toMealType)
+                .finally(() => {
+                    resetMealSlotDragState();
+                });
+        }
+
+        function onMealSlotDragEnd() {
+            if (!mealPlanDragState.moving) {
+                resetMealSlotDragState();
+            }
+        }
+
         function changeWeek(offset) {
             currentWeekStart = new Date(currentWeekStart);
             currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
@@ -7371,6 +7640,8 @@
         }
 
         async function loadMealPlanPage() {
+            initMealPlanDragDrop();
+
             // Ensure we have recipes loaded
             if (allRecipes.length === 0) {
                 try {
@@ -7433,25 +7704,33 @@
                     `;
 
                     for (const meal of mealTypes) {
-                        const planned = mealPlanData.find(m =>
-                            m.plan_date === dateStr && m.meal_type === meal
-                        );
+                        const slotMeals = getMealsForSlot(mealPlanData, dateStr, meal);
+                        const slotKey = `${dateStr}|${meal}`;
+                        const slotClass = `meal-slot ${slotMeals.length > 0 ? 'planned-slot' : 'open-slot'}${mealPlanLastMovedTarget === slotKey ? ' slot-snap' : ''}`;
+                        const draggableAttr = slotMeals.length > 0 ? 'draggable="true"' : '';
 
                         html += `
-                            <div class="meal-slot">
-                                <div class="meal-slot-label">${capitalizeFirst(meal)}</div>
+                            <div class="${slotClass}" data-date="${dateStr}" data-meal="${meal}" ${draggableAttr}>
+                                <div class="meal-slot-header">
+                                    <div class="meal-slot-label">${capitalizeFirst(meal)}</div>
+                                    ${slotMeals.length > 0
+                                        ? `<button class="meal-slot-add-side" onclick="openAddMealModal('${dateStr}', '${meal}', 'secondary')" title="Add another dish to ${capitalizeFirst(meal)}" aria-label="Add another dish to ${capitalizeFirst(meal)}">+</button>`
+                                        : ''
+                                    }
+                                </div>
                         `;
 
-                        if (planned) {
-                            html += `
-                                <div class="meal-slot-content">
-                                    <button class="meal-recipe-btn" onclick="openRecipeModal(${planned.recipe_id})" title="View recipe details">
-                                        <span class="meal-emoji">${planned.recipe_emoji || '🍽️'}</span>
-                                        <span class="meal-name">${escapeHtml(planned.recipe_name)}</span>
+                        if (slotMeals.length > 0) {
+                            html += slotMeals.map(item => `
+                                <div class="meal-slot-content ${item.course === 'secondary' ? 'meal-slot-side-content' : ''}">
+                                    <button class="meal-recipe-btn" onclick="openRecipeModal(${item.recipe_id})" title="View recipe details">
+                                        ${item.course === 'secondary' ? '<span class="meal-side-tag">side</span>' : ''}
+                                        <span class="meal-emoji">${item.recipe_emoji || '&#127869;'}</span>
+                                        <span class="meal-name">${escapeHtml(item.recipe_name)}</span>
                                     </button>
-                                    <button class="remove-meal" onclick="removeMeal('${dateStr}', '${meal}')">✕</button>
+                                    <button class="remove-meal" onclick="removeMeal(${item.id})">&times;</button>
                                 </div>
-                            `;
+                            `).join('');
                         } else {
                             html += `
                                 <div class="meal-slot-empty">
@@ -7491,13 +7770,16 @@
 
             document.getElementById('summaryMeals').textContent = weekMeals.length;
 
-            const uniqueRecipes = new Set(weekMeals.map(m => m.recipe_id || m.recipe_name));
+            const uniqueRecipes = new Set();
+            weekMeals.forEach(m => {
+                if (m.recipe_id) uniqueRecipes.add(m.recipe_id);
+            });
             document.getElementById('summaryRecipes').textContent = uniqueRecipes.size;
 
             // Estimate cook time from recipes
             let totalTime = 0;
             weekMeals.forEach(m => {
-                const recipe = allRecipes.find(r => r.name === m.recipe_name);
+                const recipe = allRecipes.find(r => r.id === m.recipe_id || r.name === m.recipe_name);
                 if (recipe) totalTime += recipe.cookTime || 0;
             });
             document.getElementById('summaryCookTime').textContent = totalTime + ' min';
@@ -7568,8 +7850,8 @@
             // Collect all ingredients and consolidate duplicates client-side
             const ingredientMap = new Map(); // lowercase name -> { name, quantity }
             selectedMeals.forEach(m => {
-                const recipe = allRecipes.find(r => r.id === m.recipe_id || r.name === m.recipe_name);
-                if (recipe && recipe.ingredients) {
+                const addIngredients = recipe => {
+                    if (!recipe || !recipe.ingredients) return;
                     recipe.ingredients.forEach(ing => {
                         const name = ing.trim();
                         if (!name) return;
@@ -7580,7 +7862,8 @@
                             ingredientMap.set(key, { name, quantity: 1 });
                         }
                     });
-                }
+                };
+                addIngredients(allRecipes.find(r => r.id === m.recipe_id || r.name === m.recipe_name));
             });
 
             const consolidated = Array.from(ingredientMap.values());
@@ -7666,10 +7949,12 @@
             `).join('');
         }
 
-        async function openAddMealModal(date, mealType) {
-            pendingMealSlot = { date, mealType };
-            document.getElementById('addMealTitle').textContent =
-                `Add ${capitalizeFirst(mealType)} for ${new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}`;
+        async function openAddMealModal(date, mealType, course = 'main') {
+            pendingMealSlot = { date, mealType, course };
+            const dateFormatted = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+            document.getElementById('addMealTitle').textContent = course === 'secondary'
+                ? `Add Another Dish for ${capitalizeFirst(mealType)} on ${dateFormatted}`
+                : `Add ${capitalizeFirst(mealType)} for ${dateFormatted}`;
 
             // Clear search state
             addMealSearchQuery = '';
@@ -7694,7 +7979,7 @@
                 addMealLikedRecipes = [];
             }
 
-            setAddMealRecipeFilter('liked');
+            setAddMealRecipeFilter('all');
             document.getElementById('addMealModal').classList.add('active');
         }
 
@@ -7734,7 +8019,12 @@
             if (!pendingMealSlot) return;
 
             try {
-                await TenderAPI.addToMealPlan(recipeId, pendingMealSlot.date, pendingMealSlot.mealType);
+                await TenderAPI.addToMealPlan(
+                    recipeId,
+                    pendingMealSlot.date,
+                    pendingMealSlot.mealType,
+                    pendingMealSlot.course || 'main'
+                );
                 closeAddMealModal();
                 loadMealPlanPage();
             } catch (err) {
@@ -7742,9 +8032,9 @@
             }
         }
 
-        async function removeMeal(date, mealType) {
+        async function removeMeal(itemId) {
             try {
-                await TenderAPI.removeFromMealPlan(date, mealType);
+                await TenderAPI.removeMealPlanItem(itemId);
                 loadMealPlanPage();
             } catch (err) {
                 console.error('Failed to remove meal:', err);

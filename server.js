@@ -620,11 +620,46 @@ app.get('/api/mealplan', authenticate, (req, res) => {
 // Add to meal plan
 app.post('/api/mealplan', authenticate, (req, res) => {
     try {
-        const { recipeId, date, mealType } = req.body;
-        MealPlanDB.add(req.userId, recipeId, date, mealType);
+        const { recipeId, date, mealType, course } = req.body;
+        MealPlanDB.add(req.userId, recipeId, date, mealType, course);
         res.json({ success: true });
     } catch (err) {
         log('ERROR', 'Add meal plan error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Move all planned dishes from one slot to another empty slot
+app.post('/api/mealplan/move-slot', authenticate, (req, res) => {
+    try {
+        const { fromDate, fromMealType, toDate, toMealType } = req.body || {};
+        if (!fromDate || !fromMealType || !toDate || !toMealType) {
+            return res.status(400).json({ error: 'Missing required move parameters' });
+        }
+
+        const result = MealPlanDB.moveSlot(req.userId, fromDate, fromMealType, toDate, toMealType);
+        if (!result?.ok) {
+            return res.status(409).json({ error: result?.error || 'Could not move meal slot' });
+        }
+
+        res.json({ success: true, moved: result.moved || 0 });
+    } catch (err) {
+        log('ERROR', 'Move meal plan slot error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Remove one specific meal plan item
+app.delete('/api/mealplan/item/:itemId', authenticate, (req, res) => {
+    try {
+        const itemId = parseInt(req.params.itemId, 10);
+        if (!Number.isInteger(itemId) || itemId <= 0) {
+            return res.status(400).json({ error: 'Invalid meal plan item id' });
+        }
+        MealPlanDB.removeItem(req.userId, itemId);
+        res.json({ success: true });
+    } catch (err) {
+        log('ERROR', 'Remove meal plan item error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -636,6 +671,29 @@ app.delete('/api/mealplan/:date/:mealType', authenticate, (req, res) => {
         res.json({ success: true });
     } catch (err) {
         log('ERROR', 'Remove meal plan error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Add secondary recipe to meal plan slot
+app.post('/api/mealplan/secondary', authenticate, (req, res) => {
+    try {
+        const { recipeId, date, mealType } = req.body;
+        MealPlanDB.add(req.userId, recipeId, date, mealType, 'secondary');
+        res.json({ success: true });
+    } catch (err) {
+        log('ERROR', 'Add secondary meal plan error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Remove secondary recipe from meal plan slot
+app.delete('/api/mealplan/:date/:mealType/secondary', authenticate, (req, res) => {
+    try {
+        MealPlanDB.removeSecondary(req.userId, req.params.date, req.params.mealType);
+        res.json({ success: true });
+    } catch (err) {
+        log('ERROR', 'Remove secondary meal plan error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });

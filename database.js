@@ -150,6 +150,13 @@ async function initDatabase() {
     `);
 
     db.run(`
+        CREATE TABLE IF NOT EXISTS app_meta (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        )
+    `);
+
+    db.run(`
         CREATE TABLE IF NOT EXISTS meal_plans (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -181,6 +188,64 @@ async function initDatabase() {
         db.run('ALTER TABLE users ADD COLUMN plain_password TEXT DEFAULT ""');
     } catch (e) {
         // Column already exists, ignore
+    }
+
+    // Add secondary_recipe_id column to meal_plans if it doesn't exist
+    try {
+        db.run('ALTER TABLE meal_plans ADD COLUMN secondary_recipe_id INTEGER');
+    } catch (e) {
+        // Column already exists, ignore
+    }
+
+    // New normalized meal plan table: one row per dish item in a meal slot
+    db.run(`
+        CREATE TABLE IF NOT EXISTS meal_plan_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            recipe_id INTEGER NOT NULL,
+            plan_date DATE NOT NULL,
+            meal_type TEXT NOT NULL,
+            course TEXT NOT NULL DEFAULT 'main',
+            position INTEGER NOT NULL DEFAULT 0,
+            added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
+        )
+    `);
+    db.run('CREATE INDEX IF NOT EXISTS idx_meal_plan_items_user_slot ON meal_plan_items(user_id, plan_date, meal_type)');
+    db.run('CREATE INDEX IF NOT EXISTS idx_meal_plan_items_recipe ON meal_plan_items(recipe_id)');
+
+    // One-time migration from legacy meal_plans schema (main + optional secondary)
+    try {
+        const migrated = runQuery(
+            'SELECT value FROM app_meta WHERE key = ?',
+            ['meal_plan_items_migrated']
+        )[0]?.value === '1';
+
+        if (!migrated) {
+            const legacyCount = runQuery('SELECT COUNT(*) as count FROM meal_plans')[0]?.count || 0;
+            const itemCount = runQuery('SELECT COUNT(*) as count FROM meal_plan_items')[0]?.count || 0;
+            if (legacyCount > 0 && itemCount === 0) {
+                db.run(`
+                    INSERT INTO meal_plan_items (user_id, recipe_id, plan_date, meal_type, course, position)
+                    SELECT user_id, recipe_id, plan_date, meal_type, 'main', 0
+                    FROM meal_plans
+                    WHERE recipe_id IS NOT NULL
+                `);
+                db.run(`
+                    INSERT INTO meal_plan_items (user_id, recipe_id, plan_date, meal_type, course, position)
+                    SELECT user_id, secondary_recipe_id, plan_date, meal_type, 'secondary', 1
+                    FROM meal_plans
+                    WHERE secondary_recipe_id IS NOT NULL
+                `);
+            }
+            runUpdate(
+                'INSERT OR REPLACE INTO app_meta (key, value) VALUES (?, ?)',
+                ['meal_plan_items_migrated', '1']
+            );
+        }
+    } catch (e) {
+        console.error('Meal plan migration error:', e);
     }
 
     // Insert sample recipes if table is empty
@@ -651,6 +716,7 @@ const RecipeDB = {
         runUpdate('DELETE FROM liked_recipes WHERE recipe_id = ?', [id]);
         runUpdate('DELETE FROM disliked_recipes WHERE recipe_id = ?', [id]);
         runUpdate('DELETE FROM meal_plans WHERE recipe_id = ?', [id]);
+        runUpdate('DELETE FROM meal_plan_items WHERE recipe_id = ?', [id]);
         runUpdate('DELETE FROM recipes WHERE id = ?', [id]);
     },
 
@@ -820,28 +886,106 @@ const FridgeDB = {
 const MealPlanDB = {
     getAll(userId) {
         return runQuery(`
-            SELECT mp.*, r.name as recipe_name, r.emoji as recipe_emoji
-            FROM meal_plans mp
-            JOIN recipes r ON mp.recipe_id = r.id
-            WHERE mp.user_id = ?
-            ORDER BY mp.plan_date, mp.meal_type
+            SELECT mpi.id, mpi.user_id, mpi.recipe_id, mpi.plan_date, mpi.meal_type,
+                   mpi.course, mpi.position, mpi.added_at,
+                   r.name as recipe_name, r.emoji as recipe_emoji
+            FROM meal_plan_items mpi
+            JOIN recipes r ON mpi.recipe_id = r.id
+            WHERE mpi.user_id = ?
+            ORDER BY mpi.plan_date, mpi.meal_type,
+                     CASE mpi.course WHEN 'main' THEN 0 ELSE 1 END,
+                     mpi.position, mpi.id
         `, [userId]);
     },
 
-    add(userId, recipeId, date, mealType) {
+    add(userId, recipeId, date, mealType, course = 'main') {
+        const normalizedCourse = (course === 'secondary') ? 'secondary' : 'main';
+        const nextPos =
+            runQuery(
+                `SELECT COALESCE(MAX(position), -1) + 1 AS next_pos
+                 FROM meal_plan_items
+                 WHERE user_id = ? AND plan_date = ? AND meal_type = ?`,
+                [userId, date, mealType]
+            )[0]?.next_pos ?? 0;
+
         return runInsert(
-            `INSERT OR REPLACE INTO meal_plans (user_id, recipe_id, plan_date, meal_type)
-             VALUES (?, ?, ?, ?)`,
-            [userId, recipeId, date, mealType]
+            `INSERT INTO meal_plan_items (user_id, recipe_id, plan_date, meal_type, course, position)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [userId, recipeId, date, mealType, normalizedCourse, nextPos]
         );
     },
 
+    addSecondary(userId, recipeId, date, mealType) {
+        return this.add(userId, recipeId, date, mealType, 'secondary');
+    },
+
+    removeSecondary(userId, date, mealType) {
+        const row = runQuery(
+            `SELECT id FROM meal_plan_items
+             WHERE user_id = ? AND plan_date = ? AND meal_type = ? AND course = 'secondary'
+             ORDER BY position DESC, id DESC
+             LIMIT 1`,
+            [userId, date, mealType]
+        )[0];
+        if (row?.id) {
+            runUpdate('DELETE FROM meal_plan_items WHERE user_id = ? AND id = ?', [userId, row.id]);
+        }
+    },
+
     remove(userId, date, mealType) {
-        runUpdate('DELETE FROM meal_plans WHERE user_id = ? AND plan_date = ? AND meal_type = ?', [userId, date, mealType]);
+        runUpdate('DELETE FROM meal_plan_items WHERE user_id = ? AND plan_date = ? AND meal_type = ?', [userId, date, mealType]);
+    },
+
+    removeItem(userId, itemId) {
+        runUpdate('DELETE FROM meal_plan_items WHERE user_id = ? AND id = ?', [userId, itemId]);
+    },
+
+    moveSlot(userId, fromDate, fromMealType, toDate, toMealType) {
+        if (fromDate === toDate && fromMealType === toMealType) {
+            return { ok: true, moved: 0 };
+        }
+
+        const sourceItems = runQuery(
+            `SELECT id
+             FROM meal_plan_items
+             WHERE user_id = ? AND plan_date = ? AND meal_type = ?
+             ORDER BY CASE course WHEN 'main' THEN 0 ELSE 1 END, position, id`,
+            [userId, fromDate, fromMealType]
+        );
+        if (sourceItems.length === 0) {
+            return { ok: false, error: 'Source slot is empty' };
+        }
+
+        const targetCount = runQuery(
+            'SELECT COUNT(*) as count FROM meal_plan_items WHERE user_id = ? AND plan_date = ? AND meal_type = ?',
+            [userId, toDate, toMealType]
+        )[0]?.count || 0;
+        if (targetCount > 0) {
+            return { ok: false, error: 'Target slot is not empty' };
+        }
+
+        try {
+            db.run('BEGIN');
+            sourceItems.forEach((item, idx) => {
+                db.run(
+                    'UPDATE meal_plan_items SET plan_date = ?, meal_type = ?, position = ? WHERE user_id = ? AND id = ?',
+                    [toDate, toMealType, idx, userId, item.id]
+                );
+            });
+            db.run('COMMIT');
+            saveDatabase();
+            return { ok: true, moved: sourceItems.length };
+        } catch (err) {
+            try { db.run('ROLLBACK'); } catch (_) {}
+            return { ok: false, error: 'Failed to move meal slot' };
+        }
     },
 
     clearWeek(userId, startDate) {
-        runUpdate('DELETE FROM meal_plans WHERE user_id = ? AND plan_date >= ? AND plan_date < date(?, "+7 days")', [userId, startDate, startDate]);
+        runUpdate(
+            'DELETE FROM meal_plan_items WHERE user_id = ? AND plan_date >= ? AND plan_date < date(?, "+7 days")',
+            [userId, startDate, startDate]
+        );
     }
 };
 
@@ -899,19 +1043,19 @@ const AdminDB = {
 
     getAllMealPlans() {
         return runQuery(`
-            SELECT mp.id, mp.plan_date, mp.meal_type,
+            SELECT mpi.id, mpi.plan_date, mpi.meal_type, mpi.course,
                    u.email as user_email, r.name as recipe_name
-            FROM meal_plans mp
-            JOIN users u ON mp.user_id = u.id
-            JOIN recipes r ON mp.recipe_id = r.id
-            ORDER BY mp.plan_date DESC, mp.meal_type
+            FROM meal_plan_items mpi
+            JOIN users u ON mpi.user_id = u.id
+            JOIN recipes r ON mpi.recipe_id = r.id
+            ORDER BY mpi.plan_date DESC, mpi.meal_type, mpi.position, mpi.id
         `);
     },
 
     getDump() {
         const tables = [
             'users', 'recipes', 'liked_recipes', 'disliked_recipes',
-            'grocery_items', 'fridge_items', 'meal_plans',
+            'grocery_items', 'fridge_items', 'meal_plans', 'meal_plan_items', 'app_meta',
             'user_dietary', 'user_cuisines'
         ];
         const result = {};
@@ -932,7 +1076,7 @@ const AdminDB = {
         const dislikes = runQuery('SELECT COUNT(*) as count FROM disliked_recipes');
         const grocery = runQuery('SELECT COUNT(*) as count FROM grocery_items');
         const fridge = runQuery('SELECT COUNT(*) as count FROM fridge_items');
-        const mealplans = runQuery('SELECT COUNT(*) as count FROM meal_plans');
+        const mealplans = runQuery('SELECT COUNT(*) as count FROM meal_plan_items');
         return {
             users: users[0]?.count || 0,
             recipes: recipes[0]?.count || 0,
