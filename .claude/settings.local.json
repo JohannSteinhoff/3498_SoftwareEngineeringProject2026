@@ -12,7 +12,19 @@
       "WebSearch",
       "WebFetch(domain:commons.wikimedia.org)",
       "Bash(node:*)",
-      "Bash(\"/mnt/c/Program Files/nodejs/node.exe\":*)"
+      "Bash(\"/mnt/c/Program Files/nodejs/node.exe\":*)",
+      "WebFetch(domain:www.daringgourmet.com)",
+      "WebFetch(domain:www.recipesfromeurope.com)",
+      "WebFetch(domain:brooklynfarmgirl.com)",
+      "WebFetch(domain:www.inspiredtaste.net)",
+      "WebFetch(domain:cookieandkate.com)",
+      "WebFetch(domain:mangiawithmichele.com)",
+      "WebFetch(domain:www.loveandlemons.com)",
+      "WebFetch(domain:bakeitwithlove.com)",
+      "WebFetch(domain:www.loavesanddishes.net)",
+      "WebFetch(domain:diethood.com)",
+      "WebFetch(domain:themom100.com)",
+      "WebFetch(domain:keepingitsimpleitalian.com)"
     ]
   }
 }

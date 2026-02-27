@@ -342,7 +342,7 @@ app.put('/api/recipes/:id', authenticate, (req, res) => {
         if (recipe.createdBy !== req.userId && !user.isAdmin) {
             return res.status(403).json({ error: 'You can only edit your own recipes' });
         }
-        const { name, description, cookTime, servings, difficulty, cuisine, emoji, image, ingredients, instructions } = req.body;
+        const { name, description, cookTime, servings, difficulty, cuisine, emoji, image, ingredients, instructions, dietary } = req.body;
         const hasSourceLink =
             Object.prototype.hasOwnProperty.call(req.body, 'sourceLink') ||
             Object.prototype.hasOwnProperty.call(req.body, 'sourceUrl') ||
@@ -352,6 +352,9 @@ app.put('/api/recipes/:id', authenticate, (req, res) => {
             ? (req.body.sourceLink ?? req.body.sourceUrl ?? req.body.source_url ?? req.body.link ?? null)
             : undefined;
         const ingredientsStr = Array.isArray(ingredients) ? ingredients.join('\n') : (ingredients || undefined);
+        const dietaryOverridesStr = dietary !== undefined
+            ? JSON.stringify(Array.isArray(dietary) ? dietary : [])
+            : undefined;
         const updated = RecipeDB.update(parseInt(req.params.id), {
             name,
             description,
@@ -363,11 +366,33 @@ app.put('/api/recipes/:id', authenticate, (req, res) => {
             image,
             source_link: sourceLink,
             ingredients: ingredientsStr,
-            instructions
+            instructions,
+            dietary_overrides: dietaryOverridesStr
         });
         res.json(updated);
     } catch (err) {
         log('ERROR', 'Update recipe error', { error: err.message });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Admin: quickly set dietary overrides for a recipe
+app.patch('/api/admin/recipes/:id/dietary', authenticate, (req, res) => {
+    try {
+        const user = UserDB.getById(req.userId);
+        if (!user || !user.isAdmin) {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const recipe = RecipeDB.getById(parseInt(req.params.id));
+        if (!recipe) {
+            return res.status(404).json({ error: 'Recipe not found' });
+        }
+        const { dietary } = req.body;
+        const dietaryStr = JSON.stringify(Array.isArray(dietary) ? dietary : []);
+        const updated = RecipeDB.update(parseInt(req.params.id), { dietary_overrides: dietaryStr });
+        res.json(updated);
+    } catch (err) {
+        log('ERROR', 'Set recipe dietary error', { error: err.message });
         res.status(500).json({ error: 'Server error' });
     }
 });

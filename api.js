@@ -164,6 +164,13 @@ const TenderAPI = {
         return this.request(`/recipes/${id}`, { method: 'DELETE' });
     },
 
+    async setRecipeDietary(id, dietary) {
+        return this.request(`/admin/recipes/${id}/dietary`, {
+            method: 'PATCH',
+            body: { dietary },
+        });
+    },
+
     // ==================== ADMIN ====================
 
     async getAllUsers() {

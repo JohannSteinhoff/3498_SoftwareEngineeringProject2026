@@ -91,6 +91,13 @@ async function initDatabase() {
         // Column already exists, ignore
     }
 
+    // Migration: add dietary_overrides column to existing databases
+    try {
+        db.run(`ALTER TABLE recipes ADD COLUMN dietary_overrides TEXT`);
+    } catch (e) {
+        // Column already exists, ignore
+    }
+
     db.run(`
         CREATE TABLE IF NOT EXISTS liked_recipes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -615,6 +622,7 @@ const RecipeDB = {
         if (data.source_link !== undefined) { updates.push('source_link = ?'); values.push(data.source_link); }
         if (data.ingredients !== undefined) { updates.push('ingredients = ?'); values.push(data.ingredients); }
         if (data.instructions !== undefined) { updates.push('instructions = ?'); values.push(data.instructions); }
+        if (data.dietary_overrides !== undefined) { updates.push('dietary_overrides = ?'); values.push(data.dietary_overrides); }
 
         if (updates.length > 0) {
             values.push(id);
@@ -673,7 +681,8 @@ const RecipeDB = {
             instructions: recipe.instructions,
             likesCount: Number(recipe.likes_count || 0),
             createdBy: recipe.created_by || null,
-            createdAt: recipe.created_at
+            createdAt: recipe.created_at,
+            dietaryOverrides: recipe.dietary_overrides ? JSON.parse(recipe.dietary_overrides) : []
         };
     }
 };

@@ -184,9 +184,9 @@
 
         /* Main Content */
         .main-content {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: 30px 5%;
+            padding: 30px 3%;
         }
 
         /* Page views - only active one is visible */
@@ -1935,14 +1935,46 @@
             gap: 8px;
         }
 
+        .meal-recipe-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+            background: none;
+            border: none;
+            padding: 4px 6px;
+            margin: -4px -6px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: left;
+            color: var(--text-primary);
+            transition: background 0.18s;
+        }
+
+        .meal-recipe-btn:hover {
+            background: var(--light);
+        }
+
+        .meal-recipe-btn:hover .meal-name {
+            color: var(--primary);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
         .meal-slot-content .meal-emoji {
             font-size: 1.3em;
+            flex-shrink: 0;
         }
 
         .meal-slot-content .meal-name {
             font-size: 0.85em;
             font-weight: 500;
-            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: color 0.18s;
         }
 
         .meal-slot-content .remove-meal {
@@ -1985,21 +2017,17 @@
 
         /* Add to Meal Plan Modal */
         .add-meal-modal .modal {
-            max-width: 450px;
+            max-width: 800px;
         }
 
         .add-meal-modal .modal-body {
-            padding: 25px;
-        }
-
-        .add-meal-modal h3 {
-            margin-bottom: 15px;
+            padding: 22px 28px 28px;
         }
 
         .add-meal-filter-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .add-meal-filter-btn {
@@ -2007,8 +2035,8 @@
             background: var(--bg-card);
             color: var(--text-secondary);
             border-radius: 999px;
-            padding: 7px 12px;
-            font-size: 0.85em;
+            padding: 8px 18px;
+            font-size: 0.88em;
             font-weight: 600;
             cursor: pointer;
             font-family: inherit;
@@ -2027,45 +2055,196 @@
         }
 
         .recipe-select-list {
-            max-height: 300px;
+            max-height: 420px;
             overflow-y: auto;
+            margin: 0 -4px;
+            padding: 0 4px;
         }
 
         .recipe-select-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 10px;
+            gap: 14px;
+            padding: 11px 14px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.18s, border-color 0.18s;
+            border: 1px solid transparent;
         }
 
         .recipe-select-item:hover {
             background: var(--light);
+            border-color: var(--border-color);
         }
 
         .recipe-select-empty {
             border: 2px dashed var(--border-color);
             border-radius: 12px;
-            padding: 18px 14px;
+            padding: 28px 14px;
             color: var(--text-secondary);
             text-align: center;
             font-size: 0.9em;
             background: var(--bg-card);
         }
 
-        .recipe-select-item .emoji {
-            font-size: 1.5em;
+        .recipe-select-emoji {
+            font-size: 1.8em;
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            border-radius: 12px;
+        }
+
+        .recipe-select-info {
+            flex: 1;
+            min-width: 0;
         }
 
         .recipe-select-item .name {
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-bottom: 3px;
         }
 
         .recipe-select-item .time {
-            font-size: 0.85em;
+            font-size: 0.82em;
             color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0;
+            flex-wrap: wrap;
+        }
+
+        .rsi-dot {
+            margin: 0 5px;
+            color: var(--text-tertiary);
+        }
+
+        .rsi-cuisine {
+            background: rgba(255,107,107,0.12);
+            color: var(--primary);
+            font-weight: 600;
+            padding: 1px 8px;
+            border-radius: 999px;
+            font-size: 0.9em;
+        }
+
+        /* Add Meal Search */
+        .add-meal-search-wrap {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .add-meal-search-wrap::before {
+            content: '🔍';
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9em;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .add-meal-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 40px 11px 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 999px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.92em;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .add-meal-search:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255,107,107,0.12);
+        }
+
+        .add-meal-search-clear {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            font-size: 1em;
+            padding: 0;
+            line-height: 1;
+            display: none;
+        }
+
+        .add-meal-search-clear.visible {
+            display: block;
+        }
+
+        /* Grocery day marker */
+        .mealplan-day.grocery-day {
+            border: 2px solid var(--secondary);
+        }
+
+        .grocery-day-btn {
+            display: block;
+            margin: 5px auto 0;
+            background: none;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-size: 0.78em;
+            padding: 2px 8px;
+            border-radius: 6px;
+            opacity: 0.3;
+            transition: opacity 0.2s, background 0.2s, border-color 0.2s;
+            font-family: inherit;
+            line-height: 1.5;
+            white-space: nowrap;
+            color: var(--text-secondary);
+        }
+
+        .grocery-day-btn:hover {
+            opacity: 0.75;
+            background: rgba(78, 205, 196, 0.1);
+            border-color: var(--secondary);
+        }
+
+        .mealplan-day.grocery-day .grocery-day-btn {
+            opacity: 1;
+            color: var(--secondary);
+            background: rgba(78, 205, 196, 0.12);
+            border-color: var(--secondary);
+            font-weight: 600;
+        }
+
+        /* Two-week section headers */
+        .week-section-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 0.95em;
+            color: var(--text-secondary);
+            padding: 6px 2px 10px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 14px;
+        }
+
+        .week-section-label + .week-section-label,
+        .mealplan-week + .week-section-label {
+            margin-top: 30px;
+        }
+
+        .week-section-range {
+            font-weight: 400;
+            font-size: 0.9em;
         }
 
         /* Meal Plan Summary */
@@ -2825,6 +3004,69 @@
             margin-top: 10px;
         }
 
+        .swipe-difficulty-filters {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .swipe-diff-label {
+            font-size: 0.68em;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 2px;
+        }
+
+        .swipe-diff-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 999px;
+            padding: 5px 14px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            text-align: center;
+            box-shadow: 0 2px 6px var(--shadow-color);
+        }
+
+        .swipe-diff-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .swipe-diff-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .swipe-diff-btn[data-diff="easy"].active {
+            background: #4ade80;
+            border-color: #4ade80;
+            color: #fff;
+        }
+
+        .swipe-diff-btn[data-diff="medium"].active {
+            background: #fb923c;
+            border-color: #fb923c;
+            color: #fff;
+        }
+
+        .swipe-diff-btn[data-diff="hard"].active {
+            background: #f87171;
+            border-color: #f87171;
+            color: #fff;
+        }
+
         .swipe-container {
             position: relative;
             width: 380px;
@@ -2972,6 +3214,44 @@
         .swipe-card-difficulty.easy { background: rgba(78, 205, 196, 0.2); color: #2aa89f; }
         .swipe-card-difficulty.medium { background: rgba(255, 230, 109, 0.3); color: #b8960a; }
         .swipe-card-difficulty.hard { background: rgba(255, 107, 107, 0.2); color: var(--primary); }
+
+        /* Admin gluten-free toggle button on swipe card */
+        .swipe-gf-btn {
+            position: absolute;
+            bottom: 14px;
+            left: 14px;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75em;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 10;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            letter-spacing: 0.04em;
+        }
+
+        .swipe-gf-btn:hover {
+            background: rgba(0, 0, 0, 0.55);
+            border-color: rgba(255, 255, 255, 0.7);
+            color: white;
+        }
+
+        .swipe-gf-btn.active {
+            background: rgba(74, 222, 128, 0.85);
+            border-color: #4ade80;
+            color: white;
+        }
+
+        .swipe-gf-btn.denied {
+            background: rgba(248, 113, 113, 0.85);
+            border-color: #f87171;
+            color: white;
+        }
 
         .swipe-card-body {
             padding: 22px 24px;
@@ -4181,6 +4461,13 @@
             <div class="swipe-bg" id="swipeBg"></div>
             <div class="emoji-rain-container" id="emojiRainContainer"></div>
             <div class="swipe-page">
+                <div class="swipe-difficulty-filters">
+                    <span class="swipe-diff-label">Difficulty</span>
+                    <button class="swipe-diff-btn active" data-diff="" onclick="setSwipeDifficulty('')">All</button>
+                    <button class="swipe-diff-btn" data-diff="easy" onclick="setSwipeDifficulty('easy')">Easy</button>
+                    <button class="swipe-diff-btn" data-diff="medium" onclick="setSwipeDifficulty('medium')">Medium</button>
+                    <button class="swipe-diff-btn" data-diff="hard" onclick="setSwipeDifficulty('hard')">Hard</button>
+                </div>
                 <div class="swipe-header">
                     <h1>What's for Dinner?</h1>
                     <p>Swipe right to save, left to skip</p>
@@ -4257,7 +4544,7 @@
                 </div>
             </div>
 
-            <div class="mealplan-week" id="mealplanWeek"></div>
+            <div class="mealplan-weeks-container" id="mealplanWeek"></div>
 
             <div class="ingredient-action-bar" id="ingredientBar">
                 <div class="ingredient-bar-info">
@@ -4459,11 +4746,21 @@
     <div class="modal-overlay add-meal-modal" id="addMealModal">
         <div class="modal" style="position:relative;">
             <button class="modal-close" onclick="closeAddMealModal()">✕</button>
+            <div class="modal-header">
+                <span class="emoji">📅</span>
+                <div>
+                    <h2 id="addMealTitle">Select a Recipe</h2>
+                    <p>Pick a recipe to add to your meal plan</p>
+                </div>
+            </div>
             <div class="modal-body">
-                <h3 id="addMealTitle">Select a Recipe</h3>
+                <div class="add-meal-search-wrap">
+                    <input class="add-meal-search" id="addMealSearch" type="text" placeholder="Search by name, cuisine, or ingredient..." oninput="onAddMealSearch(this.value)" autocomplete="off">
+                    <button class="add-meal-search-clear" id="addMealSearchClear" onclick="clearAddMealSearch()" type="button">✕</button>
+                </div>
                 <div class="add-meal-filter-row">
-                    <button type="button" class="add-meal-filter-btn active" id="addMealFilterLiked" onclick="setAddMealRecipeFilter('liked')">Liked Only</button>
-                    <button type="button" class="add-meal-filter-btn" id="addMealFilterAll" onclick="setAddMealRecipeFilter('all')">All Recipes</button>
+                    <button type="button" class="add-meal-filter-btn active" id="addMealFilterLiked" onclick="setAddMealRecipeFilter('liked')">❤️ Favorites</button>
+                    <button type="button" class="add-meal-filter-btn" id="addMealFilterAll" onclick="setAddMealRecipeFilter('all')">🍽️ All Recipes</button>
                 </div>
                 <div class="recipe-select-list" id="recipeSelectList"></div>
             </div>
@@ -4837,6 +5134,8 @@
         let pendingMealSlot = null; // { date, mealType }
         let addMealFilterMode = 'liked'; // 'liked' | 'all'
         let addMealLikedRecipes = [];
+        let addMealSearchQuery = '';
+        let groceryDay = localStorage.getItem('tenderGroceryDay') || null;
 
         // ==================== THEME ====================
         function updateThemeToggleUI() {
@@ -4907,24 +5206,43 @@
                 || (currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : []);
             if (active.length === 0) return recipes;
 
-            const excluded = new Set();
-            for (const restriction of active) {
-                const items = DIETARY_EXCLUSIONS[restriction];
-                if (items) items.forEach(i => excluded.add(i));
-            }
-            if (excluded.size === 0) return recipes;
-
             return recipes.filter(recipe => {
+                const overrides = Array.isArray(recipe.dietaryOverrides) ? recipe.dietaryOverrides : [];
                 const ingredients = Array.isArray(recipe.ingredients)
                     ? recipe.ingredients.map(i => i.toLowerCase())
                     : (recipe.ingredients || '').toLowerCase().split(',').map(i => i.trim());
-                for (const ing of ingredients) {
-                    for (const excl of excluded) {
-                        if (ing.includes(excl)) return false;
+
+                for (const restriction of active) {
+                    // Explicit denial: admin confirmed this recipe contains this allergen
+                    if (overrides.includes('!' + restriction)) return false;
+                    // Explicit approval: admin confirmed this recipe is safe
+                    if (overrides.includes(restriction)) continue;
+
+                    const excluded = DIETARY_EXCLUSIONS[restriction] || [];
+                    for (const ing of ingredients) {
+                        for (const excl of excluded) {
+                            if (ing.includes(excl)) return false;
+                        }
                     }
                 }
                 return true;
             });
+        }
+
+        // Returns: 'denied' | 'confirmed' | 'natural' | 'none'
+        // denied   = has !gluten-free override → explicitly NOT GF
+        // confirmed= has gluten-free override  → explicitly GF
+        // natural  = passes ingredient check, no override
+        // none     = fails ingredient check, no override
+        function computeRecipeGFState(recipe) {
+            const overrides = Array.isArray(recipe.dietaryOverrides) ? recipe.dietaryOverrides : [];
+            if (overrides.includes('!gluten-free')) return 'denied';
+            if (overrides.includes('gluten-free'))  return 'confirmed';
+            const excluded = DIETARY_EXCLUSIONS['gluten-free'] || [];
+            const ings = Array.isArray(recipe.ingredients)
+                ? recipe.ingredients.map(i => i.toLowerCase())
+                : (recipe.ingredients || '').toLowerCase().split(',').map(i => i.trim());
+            return ings.some(ing => excluded.some(excl => ing.includes(excl))) ? 'none' : 'natural';
         }
 
         // Render active dietary tags on the swipe page header
@@ -4939,6 +5257,23 @@
             container.innerHTML = userDietary.map(d =>
                 `<span class="swipe-filter-tag">${escapeHtml(d)}</span>`
             ).join('');
+        }
+
+        function setSwipeDifficulty(diff) {
+            swipeDifficultyFilter = diff;
+            document.querySelectorAll('.swipe-diff-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.diff === diff);
+            });
+            applySwipeFilters();
+        }
+
+        function applySwipeFilters() {
+            let filtered = swipeDeckMaster.slice();
+            if (swipeDifficultyFilter) {
+                filtered = filtered.filter(r => (r.difficulty || 'medium') === swipeDifficultyFilter);
+            }
+            swipeDeck = shuffleArray(filtered);
+            renderSwipeCard();
         }
 
         // Build the dietary filter chips for the discover page
@@ -5567,6 +5902,7 @@
 
         let swipeDeck = [];
         let swipeDeckMaster = [];
+        let swipeDifficultyFilter = ''; // '' | 'easy' | 'medium' | 'hard'
         let swipeLikedToday = 0;
         let swipeDragging = false;
         let swipeStartX = 0;
@@ -5598,8 +5934,7 @@
                 recipes = filterByDietary(recipes);
                 shuffleArray(recipes);
                 swipeDeckMaster = recipes.slice();
-                swipeDeck = recipes.slice();
-                renderSwipeCard();
+                applySwipeFilters();
             } catch (err) {
                 console.error('Failed to load swipe recipes:', err);
                 document.getElementById('swipeContainer').innerHTML = `
@@ -5616,8 +5951,23 @@
 
             if (swipeDeck.length === 0) {
                 if (swipeDeckMaster.length > 0) {
-                    swipeDeck = shuffleArray(swipeDeckMaster.slice());
-                    renderSwipeCard();
+                    let refill = swipeDeckMaster.slice();
+                    if (swipeDifficultyFilter) {
+                        refill = refill.filter(r => (r.difficulty || 'medium') === swipeDifficultyFilter);
+                    }
+                    if (refill.length > 0) {
+                        swipeDeck = shuffleArray(refill);
+                        renderSwipeCard();
+                        return;
+                    }
+                    // No recipes match current difficulty filter
+                    container.innerHTML = `
+                        <div class="swipe-empty">
+                            <div class="empty-icon">🔍</div>
+                            <h2>No ${capitalizeFirst(swipeDifficultyFilter)} Recipes</h2>
+                            <p>No recipes match this difficulty.<br>Try a different filter above.</p>
+                        </div>`;
+                    document.getElementById('swipeActions').style.display = 'none';
                     return;
                 }
                 container.innerHTML = `
@@ -5644,6 +5994,20 @@
                         ${recipe.cuisine ? `<span class="swipe-card-cuisine">${capitalizeFirst(recipe.cuisine)}</span>` : ''}
                         <span class="swipe-card-difficulty ${(recipe.difficulty || 'medium').toLowerCase()}">${capitalizeFirst(recipe.difficulty || 'medium')}</span>
                         <span class="swipe-card-emoji">${recipe.emoji || '🍽️'}</span>
+                        ${isAdmin ? (() => {
+                            const gfState = computeRecipeGFState(recipe);
+                            const isGF = gfState === 'confirmed' || gfState === 'natural';
+                            const btnClass = gfState === 'denied' ? 'denied' : (isGF ? 'active' : '');
+                            const btnLabel = isGF ? '- GF' : '+ GF';
+                            const btnTitle = gfState === 'denied'   ? 'Marked NOT gluten-free — click to mark as GF'
+                                           : gfState === 'confirmed' ? 'Manually confirmed GF — click to un-confirm'
+                                           : gfState === 'natural'   ? 'Passes GF filter — click to mark as NOT GF'
+                                           :                           'Fails GF filter — click to mark as GF';
+                            return `<button class="swipe-gf-btn${btnClass ? ' ' + btnClass : ''}" id="swipeGFBtn"
+                                onpointerdown="event.stopPropagation()"
+                                onclick="swipeToggleGlutenFree(event,${recipe.id})"
+                                title="${btnTitle}">${btnLabel}</button>`;
+                        })() : ''}
                     </div>
                     <div class="swipe-card-body">
                         <div class="swipe-card-name">${escapeHtml(recipe.name)}</div>
@@ -5799,6 +6163,15 @@
             if (!swipeDragging) return;
             swipeDragging = false;
 
+            // Quick tap (barely moved) — open recipe details
+            if (Math.abs(swipeCurrentX) < 8) {
+                this.style.transition = 'transform 0.35s cubic-bezier(0.2, 0, 0, 1)';
+                this.style.transform = 'translateX(0) rotate(0)';
+                setSwipeBackground(0);
+                if (swipeDeck.length > 0) showRecipeModal(swipeDeck[0]);
+                return;
+            }
+
             const threshold = 100;
             if (swipeCurrentX > threshold) {
                 completeSwipe('like');
@@ -5811,6 +6184,42 @@
                 document.getElementById('stampLike').style.opacity = 0;
                 document.getElementById('stampNope').style.opacity = 0;
                 setSwipeBackground(0);
+            }
+        }
+
+        async function swipeToggleGlutenFree(e, recipeId) {
+            e.stopPropagation();
+            if (!isAdmin) return;
+
+            const recipe = swipeDeckMaster.find(r => r.id === recipeId);
+            if (!recipe) return;
+
+            const gfState = computeRecipeGFState(recipe);
+            const currentlyGF = gfState === 'confirmed' || gfState === 'natural';
+
+            // Strip any existing GF overrides, then apply the opposite
+            const base = (Array.isArray(recipe.dietaryOverrides) ? recipe.dietaryOverrides : [])
+                .filter(d => d !== 'gluten-free' && d !== '!gluten-free');
+            const newOverrides = currentlyGF
+                ? [...base, '!gluten-free']  // was GF → mark as NOT GF
+                : [...base, 'gluten-free'];   // was not GF → mark as GF
+
+            try {
+                await TenderAPI.setRecipeDietary(recipeId, newOverrides);
+                recipe.dietaryOverrides = newOverrides;
+
+                const btn = document.getElementById('swipeGFBtn');
+                if (btn) {
+                    const newState = computeRecipeGFState(recipe);
+                    const nowGF = newState === 'confirmed' || newState === 'natural';
+                    btn.className = 'swipe-gf-btn' + (newState === 'denied' ? ' denied' : nowGF ? ' active' : '');
+                    btn.textContent = nowGF ? '- GF' : '+ GF';
+                    btn.title = nowGF ? 'Passes GF filter — click to mark as NOT GF'
+                                      : 'Marked NOT gluten-free — click to mark as GF';
+                }
+            } catch (err) {
+                console.error('Failed to update gluten-free status:', err);
+                alert('Failed to update. Please try again.');
             }
         }
 
@@ -6764,11 +7173,9 @@
         let dbDumpLastSearch = '';
 
         async function openDbDump() {
-            document.getElementById('dbDumpOverlay').classList.add('active');
-            document.getElementById('dbDumpPre').innerHTML = '<span class="dump-comment">// Fetching database dump...</span>';
-            document.getElementById('dbDumpInfo').textContent = 'loading...';
-            document.getElementById('dumpSearchInput').value = '';
-            dbDumpLastSearch = '';
+            const btn = document.querySelector('.db-dump-btn');
+            const original = btn ? btn.textContent : '';
+            if (btn) { btn.textContent = '⏳ Loading…'; btn.disabled = true; }
 
             try {
                 const [data, stats] = await Promise.all([
@@ -6776,19 +7183,30 @@
                     TenderAPI.adminStats().catch(() => ({}))
                 ]);
                 const dbSize = stats.dbSize ?? null;
-                dbDumpRawText = formatDbDump(data, dbSize);
-                renderDumpPre(dbDumpRawText, '');
+                const rawText = formatDbDump(data, dbSize);
 
-                // Count total rows
-                const totalRows = Object.values(data).reduce((sum, rows) => sum + rows.length, 0);
-                const totalTables = Object.keys(data).length;
-                const sizeStr = dbSize != null ? ` · ${formatBytes(dbSize)}` : '';
-                document.getElementById('dbDumpInfo').textContent =
-                    `${totalTables} tables · ${totalRows} rows · ${dbDumpRawText.length.toLocaleString()} chars${sizeStr}`;
+                const escaped = rawText
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>tender.db dump</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1e1e1e; color: #d4d4d4; }
+  pre { font-family: Consolas, 'Courier New', monospace; font-size: 13px;
+        line-height: 1.6; padding: 24px; white-space: pre;
+        overflow-x: auto; min-width: max-content; }
+</style></head>
+<body><pre>${escaped}</pre></body></html>`;
+                const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
             } catch (err) {
-                document.getElementById('dbDumpPre').innerHTML =
-                    `<span class="dump-comment">// Error: ${escapeHtml(err.message || 'Failed to load dump')}</span>`;
-                document.getElementById('dbDumpInfo').textContent = 'error';
+                alert('Failed to load database dump: ' + (err.message || 'Unknown error'));
+            } finally {
+                if (btn) { btn.textContent = original; btn.disabled = false; }
             }
         }
 
@@ -6984,55 +7402,80 @@
             const container = document.getElementById('mealplanWeek');
             const today = formatDate(new Date());
 
-            let html = '';
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(currentWeekStart);
-                date.setDate(date.getDate() + i);
-                const dateStr = formatDate(date);
-                const isToday = dateStr === today;
-
-                html += `
-                    <div class="mealplan-day ${isToday ? 'today' : ''}" data-date="${dateStr}">
-                        <div class="mealplan-day-header" onclick="toggleDaySelection('${dateStr}')">
-                            ${dayNames[i]}
-                            <div class="date">${formatDateShort(date)}</div>
-                            <span class="select-check">✓</span>
-                        </div>
+            function buildWeekGrid(weekStart, label) {
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                let html = `
+                    <div class="week-section-label">
+                        <span>${label}</span>
+                        <span class="week-section-range">${formatDateShort(weekStart)} – ${formatDateShort(weekEnd)}</span>
+                    </div>
+                    <div class="mealplan-week">
                 `;
 
-                for (const meal of mealTypes) {
-                    const planned = mealPlanData.find(m =>
-                        m.plan_date === dateStr && m.meal_type === meal
-                    );
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(weekStart);
+                    date.setDate(date.getDate() + i);
+                    const dateStr = formatDate(date);
+                    const isToday = dateStr === today;
+                    const isGroceryDay = groceryDay === dateStr;
+                    const groceryTitle = isGroceryDay ? 'Clear grocery day' : 'Set as grocery shopping day';
+                    const groceryLabel = isGroceryDay ? '🛒 Grocery Day' : '🛒 Set Grocery Day';
 
                     html += `
-                        <div class="meal-slot">
-                            <div class="meal-slot-label">${capitalizeFirst(meal)}</div>
+                        <div class="mealplan-day ${isToday ? 'today' : ''} ${isGroceryDay ? 'grocery-day' : ''}" data-date="${dateStr}">
+                            <div class="mealplan-day-header" onclick="toggleDaySelection('${dateStr}')">
+                                ${dayNames[i]}
+                                <div class="date">${formatDateShort(date)}</div>
+                                <button class="grocery-day-btn" onclick="event.stopPropagation();toggleGroceryDay('${dateStr}')" title="${groceryTitle}">${groceryLabel}</button>
+                                <span class="select-check">✓</span>
+                            </div>
                     `;
 
-                    if (planned) {
+                    for (const meal of mealTypes) {
+                        const planned = mealPlanData.find(m =>
+                            m.plan_date === dateStr && m.meal_type === meal
+                        );
+
                         html += `
-                            <div class="meal-slot-content">
-                                <span class="meal-emoji">${planned.recipe_emoji || '🍽️'}</span>
-                                <span class="meal-name">${escapeHtml(planned.recipe_name)}</span>
-                                <button class="remove-meal" onclick="removeMeal('${dateStr}', '${meal}')">✕</button>
-                            </div>
+                            <div class="meal-slot">
+                                <div class="meal-slot-label">${capitalizeFirst(meal)}</div>
                         `;
-                    } else {
-                        html += `
-                            <div class="meal-slot-empty">
-                                <button class="add-meal-btn" onclick="openAddMealModal('${dateStr}', '${meal}')">+ Add ${capitalizeFirst(meal)}</button>
-                            </div>
-                        `;
+
+                        if (planned) {
+                            html += `
+                                <div class="meal-slot-content">
+                                    <button class="meal-recipe-btn" onclick="openRecipeModal(${planned.recipe_id})" title="View recipe details">
+                                        <span class="meal-emoji">${planned.recipe_emoji || '🍽️'}</span>
+                                        <span class="meal-name">${escapeHtml(planned.recipe_name)}</span>
+                                    </button>
+                                    <button class="remove-meal" onclick="removeMeal('${dateStr}', '${meal}')">✕</button>
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <div class="meal-slot-empty">
+                                    <button class="add-meal-btn" onclick="openAddMealModal('${dateStr}', '${meal}')">+ Add ${capitalizeFirst(meal)}</button>
+                                </div>
+                            `;
+                        }
+
+                        html += `</div>`;
                     }
 
                     html += `</div>`;
                 }
 
                 html += `</div>`;
+                return html;
             }
 
-            container.innerHTML = html;
+            const nextWeekStart = new Date(currentWeekStart);
+            nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+
+            container.innerHTML =
+                buildWeekGrid(currentWeekStart, 'This Week') +
+                buildWeekGrid(nextWeekStart, 'Next Week');
         }
 
         function updateMealPlanSummary() {
@@ -7186,31 +7629,38 @@
             if (!list) return;
 
             const sourceRecipes = addMealFilterMode === 'liked' ? addMealLikedRecipes : allRecipes;
-            const recipes = Array.isArray(sourceRecipes) ? sourceRecipes : [];
+            let recipes = Array.isArray(sourceRecipes) ? sourceRecipes : [];
+
+            if (addMealSearchQuery.trim()) {
+                const q = addMealSearchQuery.toLowerCase();
+                recipes = recipes.filter(r =>
+                    r.name.toLowerCase().includes(q) ||
+                    (r.cuisine && r.cuisine.toLowerCase().includes(q)) ||
+                    (r.ingredients && (Array.isArray(r.ingredients) ? r.ingredients.join(', ') : r.ingredients).toLowerCase().includes(q))
+                );
+            }
 
             if (recipes.length === 0) {
-                if (addMealFilterMode === 'liked') {
-                    list.innerHTML = `
-                        <div class="recipe-select-empty">
-                            Please like recipes to see them here.
-                        </div>
-                    `;
-                } else {
-                    list.innerHTML = `
-                        <div class="recipe-select-empty">
-                            No recipes available right now.
-                        </div>
-                    `;
-                }
+                const emptyMsg = addMealSearchQuery.trim()
+                    ? 'No recipes match your search.'
+                    : addMealFilterMode === 'liked'
+                        ? 'Please like recipes to see them here.'
+                        : 'No recipes available right now.';
+                list.innerHTML = `<div class="recipe-select-empty">${emptyMsg}</div>`;
                 return;
             }
 
             list.innerHTML = recipes.map(recipe => `
                 <div class="recipe-select-item" onclick="selectMealRecipe(${recipe.id})">
-                    <span class="emoji">${recipe.emoji || '&#127869;'}</span>
-                    <div>
+                    <span class="recipe-select-emoji">${recipe.emoji || '&#127869;'}</span>
+                    <div class="recipe-select-info">
                         <div class="name">${escapeHtml(recipe.name)}</div>
-                        <div class="time">${recipe.cookTime || '?'} min - ${capitalizeFirst(recipe.difficulty || 'medium')}</div>
+                        <div class="time">
+                            <span>${recipe.cookTime || '?'} min</span>
+                            <span class="rsi-dot">·</span>
+                            <span>${capitalizeFirst(recipe.difficulty || 'medium')}</span>
+                            ${recipe.cuisine ? `<span class="rsi-dot">·</span><span class="rsi-cuisine">${capitalizeFirst(recipe.cuisine)}</span>` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -7220,6 +7670,13 @@
             pendingMealSlot = { date, mealType };
             document.getElementById('addMealTitle').textContent =
                 `Add ${capitalizeFirst(mealType)} for ${new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}`;
+
+            // Clear search state
+            addMealSearchQuery = '';
+            const searchInput = document.getElementById('addMealSearch');
+            if (searchInput) searchInput.value = '';
+            const clearBtn = document.getElementById('addMealSearchClear');
+            if (clearBtn) clearBtn.classList.remove('visible');
 
             // Ensure recipe pools are ready, then default picker to liked recipes.
             if (allRecipes.length === 0) {
@@ -7244,6 +7701,33 @@
         function closeAddMealModal() {
             document.getElementById('addMealModal').classList.remove('active');
             pendingMealSlot = null;
+        }
+
+        function onAddMealSearch(value) {
+            addMealSearchQuery = value;
+            const clearBtn = document.getElementById('addMealSearchClear');
+            if (clearBtn) clearBtn.classList.toggle('visible', value.length > 0);
+            renderAddMealRecipeList();
+        }
+
+        function clearAddMealSearch() {
+            addMealSearchQuery = '';
+            const input = document.getElementById('addMealSearch');
+            if (input) input.value = '';
+            const clearBtn = document.getElementById('addMealSearchClear');
+            if (clearBtn) clearBtn.classList.remove('visible');
+            renderAddMealRecipeList();
+        }
+
+        function toggleGroceryDay(dateStr) {
+            if (groceryDay === dateStr) {
+                groceryDay = null;
+                localStorage.removeItem('tenderGroceryDay');
+            } else {
+                groceryDay = dateStr;
+                localStorage.setItem('tenderGroceryDay', dateStr);
+            }
+            renderMealPlanWeek();
         }
 
         async function selectMealRecipe(recipeId) {
