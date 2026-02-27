@@ -844,30 +844,115 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'tender.html'));
 });
 
-// Start server after database initialization
-async function startServer() {
-    await initDatabase();
+// ==================== STARTUP ART ====================
 
-    app.listen(PORT, '0.0.0.0', () => {
-        const localIP = getLocalIP();
-        log('SERVER', `Tender server started on port ${PORT}`);
-        console.log(`
-    ╔════════════════════════════════════════════╗
-    ║                                            ║
-    ║   🍳 Tender Server Running!                ║
-    ║                                            ║
-    ║   Local:   http://localhost:${PORT}            ║
-    ║   Network: http://${localIP}:${PORT}   ║
-    ║   Log:     server.log                      ║
-    ║                                            ║
-    ║   Open the Network URL on your phone       ║
-    ║   (must be on the same Wi-Fi network)      ║
-    ║                                            ║
-    ╚════════════════════════════════════════════╝
-        `);
-    });
+const TERM = {
+    reset: '\x1b[0m',
+    bold: '\x1b[1m',
+    dim: '\x1b[2m',
+    cyan: '\x1b[36m',
+    magenta: '\x1b[35m',
+    yellow: '\x1b[33m',
+    green: '\x1b[32m',
+    red: '\x1b[31m'
+};
+
+function style(text, ...codes) {
+    if (!process.stdout.isTTY) return text;
+    return `${codes.join('')}${text}${TERM.reset}`;
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function playStartupAnimation() {
+    if (!process.stdout.isTTY) return;
+
+    const spinner = ['|', '/', '-', '\\'];
+    const steps = [
+        'Lighting pilot flame',
+        'Searing middleware',
+        'Plating API routes',
+        'Final garnish'
+    ];
+
+    for (const step of steps) {
+        for (let i = 0; i < spinner.length * 3; i++) {
+            const frame = spinner[i % spinner.length];
+            const line = `${style('[BOOT]', TERM.bold, TERM.cyan)} ${step.padEnd(22)} ${style(frame, TERM.yellow)}`;
+            process.stdout.write(`\r${line}`);
+            await sleep(65);
+        }
+    }
+
+    process.stdout.write(`\r${style('[BOOT]', TERM.bold, TERM.green)} Ready to serve!${' '.repeat(24)}\n\n`);
+}
+
+function printStartupBanner(port, localIP) {
+    const localUrl = `http://localhost:${port}`;
+    const networkUrl = `http://${localIP}:${port}`;
+    const startedAt = new Date().toLocaleString();
+
+    const tenderArt = [
+        'TTTTTT EEEEEE NN   NN DDDDD   EEEEEE RRRRRR ',
+        '  TT   EE     NNN  NN DD  DD  EE     RR   RR',
+        '  TT   EEEE   NN N NN DD   DD EEEE   RRRRRR ',
+        '  TT   EE     NN  NNN DD  DD  EE     RR  RR ',
+        '  TT   EEEEEE NN   NN DDDDD   EEEEEE RR   RR'
+    ].map(line => style(line, TERM.bold, TERM.magenta)).join('\n');
+
+    const subtitle = style('            KITCHEN COMMAND CENTER', TERM.bold, TERM.cyan);
+
+    const rows = [
+        ['LOCAL', localUrl],
+        ['NETWORK', networkUrl],
+        ['LOG FILE', 'server.log'],
+        ['STARTED', startedAt],
+        ['TIP', 'Open NETWORK URL on same Wi-Fi']
+    ];
+
+    const maxValueLen = Math.max(...rows.map(([, value]) => value.length));
+    const width = Math.max(66, 20 + maxValueLen);
+    const line = '='.repeat(width);
+
+    const panel = rows.map(([label, value]) => {
+        const left = `${label.padEnd(10)} : `;
+        return `${left}${value}`.padEnd(width - 2, ' ');
+    });
+
+    console.log(style(`+${line}+`, TERM.cyan));
+    panel.forEach(row => {
+        console.log(style('| ', TERM.cyan) + style(row, TERM.bold) + style(' |', TERM.cyan));
+    });
+    console.log(style(`+${line}+`, TERM.cyan));
+
+    console.log(`\n${tenderArt}`);
+    console.log(subtitle);
+    console.log(style('\nStatus: ONLINE and hungry for requests\n', TERM.bold, TERM.green));
+}
+
+// Start server after database initialization
+async function startServer() {
+    await playStartupAnimation();
+    await initDatabase();
+
+    const server = app.listen(PORT, '0.0.0.0', () => {
+        const localIP = getLocalIP();
+        log('SERVER', `Tender server started on port ${PORT}`);
+        printStartupBanner(PORT, localIP);
+    });
+
+    server.on('error', (err) => {
+        if (err && err.code === 'EADDRINUSE') {
+            console.error(style(`\n[PORT IN USE] 0.0.0.0:${PORT} is already busy.`, TERM.bold, TERM.red));
+            console.error(style('Stop the other server or run: $env:PORT=3001; node server.js\n', TERM.dim, TERM.yellow));
+            process.exitCode = 1;
+            return;
+        }
+        throw err;
+    });
+}
 startServer().catch(err => {
     log('ERROR', 'Server failed to start', { error: err.message });
     console.error(err);
