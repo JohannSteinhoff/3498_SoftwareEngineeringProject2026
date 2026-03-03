@@ -1036,8 +1036,12 @@ async function startServer() {
         throw err;
     });
 }
-startServer().catch(err => {
-    log('ERROR', 'Server failed to start', { error: err.message });
-    console.error(err);
-});
+if (require.main === module) {
+    startServer().catch(err => {
+        log('ERROR', 'Server failed to start', { error: err.message });
+        console.error(err);
+    });
+}
+
+module.exports = app;
 

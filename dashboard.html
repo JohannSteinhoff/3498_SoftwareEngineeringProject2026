@@ -766,98 +766,346 @@
            DISCOVER PAGE
            ============================================ */
 
-        .discover-carousel {
-            position: relative;
+        .recipe-of-day {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: linear-gradient(135deg, #ff8a80, #ff6b6b 40%, #4ecdc4);
+            border: none;
+            border-radius: 20px;
+            padding: 20px;
             margin-bottom: 24px;
-            border-radius: 16px;
-            border: 1px solid var(--border-light);
-            background: linear-gradient(180deg, rgba(78, 205, 196, 0.08), rgba(255, 107, 107, 0.06));
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.2s;
+            position: relative;
             overflow: hidden;
-            padding: 14px 0;
+            box-shadow: 0 4px 0 #d94f4f, 0 6px 18px rgba(255,107,107,0.35);
         }
-
-        .discover-carousel::before,
-        .discover-carousel::after {
+        .recipe-of-day::before,
+        .recipe-of-day::after {
             content: '';
             position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 42px;
-            z-index: 2;
+            top: -60%;
             pointer-events: none;
+            border-radius: 50%;
+            transform: rotate(-30deg);
         }
-
-        .discover-carousel::before {
-            left: 0;
-            background: linear-gradient(90deg, var(--bg-primary) 10%, transparent 100%);
+        .recipe-of-day::before {
+            left: 8%;
+            width: 38%;
+            height: 160%;
+            background: rgba(255,255,255,0.45);
         }
-
-        .discover-carousel::after {
-            right: 0;
-            background: linear-gradient(270deg, var(--bg-primary) 10%, transparent 100%);
+        .recipe-of-day::after {
+            left: 52%;
+            width: 12%;
+            height: 160%;
+            background: rgba(255,255,255,0.28);
         }
-
-        .discover-carousel-track {
-            --discover-carousel-duration: 18s;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            width: max-content;
-            padding: 0 14px;
-            animation: discover-carousel-scroll var(--discover-carousel-duration) linear infinite;
-            will-change: transform;
+        .recipe-of-day:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 0 #d94f4f, 0 10px 28px rgba(255,107,107,0.4);
         }
-
-        .discover-carousel-item {
-            width: 230px;
-            flex-shrink: 0;
-            border: 1px solid var(--border-color);
-            background: var(--bg-card);
+        .recipe-of-day-thumb {
+            width: 110px;
+            height: 80px;
             border-radius: 12px;
-            padding: 10px;
-            min-height: 86px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px var(--shadow-color);
-        }
-
-        .discover-carousel-thumb {
-            width: 92px;
-            height: 66px;
-            border-radius: 8px;
             overflow: hidden;
             background: var(--gradient);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5em;
+            font-size: 2.2em;
             flex-shrink: 0;
         }
-
-        .discover-carousel-thumb img {
+        .recipe-of-day-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
-
-        .discover-carousel-name {
-            color: var(--text-primary);
-            font-size: 0.92em;
-            font-weight: 600;
-            line-height: 1.25;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+        .recipe-of-day-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .recipe-of-day-label {
+            font-size: 0.72em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 4px;
+        }
+        .recipe-of-day-name {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
             overflow: hidden;
-            text-align: left;
+            text-overflow: ellipsis;
+            margin-bottom: 6px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .recipe-of-day-meta {
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.88);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        @keyframes discover-carousel-scroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
+        /* ===== EASTER EGG TITLE SHAKE ===== */
+        @keyframes eggShake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-4px) rotate(-1deg); }
+            75% { transform: translateX(4px) rotate(1deg); }
+        }
+        .egg-shake { animation: eggShake 0.25s ease; }
+
+        /* ===== GAMES PORTAL ===== */
+        .games-portal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .games-back-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .games-back-btn:hover { background: var(--bg-hover); }
+        .games-portal-title { flex: 1; }
+        .games-portal-title h1 { margin: 0 0 4px; font-size: 1.8em; }
+        .games-portal-title p  { margin: 0; color: var(--text-secondary); font-size: 0.9em; }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .game-card {
+            border-radius: 20px;
+            padding: 28px 22px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.15), 0 6px 20px rgba(0,0,0,0.12);
+            transition: transform 0.18s, box-shadow 0.18s;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 5%;
+            width: 40%;
+            height: 160%;
+            background: rgba(255,255,255,0.35);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+            pointer-events: none;
+        }
+        .game-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 52%;
+            width: 12%;
+            height: 160%;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+            pointer-events: none;
+        }
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 0 rgba(0,0,0,0.15), 0 12px 30px rgba(0,0,0,0.18);
+        }
+        .game-card-icon { font-size: 2.8em; line-height: 1; }
+        .game-card-name { font-size: 1.2em; font-weight: 700; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+        .game-card-desc { font-size: 0.85em; color: rgba(255,255,255,0.88); line-height: 1.4; }
+        .game-card-spin  { background: linear-gradient(135deg, #f7971e, #ffd200); }
+        .game-card-battle{ background: linear-gradient(135deg, #e53935, #ff6b6b); }
+        .game-card-yesno { background: linear-gradient(135deg, #1de9b6, #1565c0); }
+
+        /* ===== ROULETTE MODAL ===== */
+        .roulette-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+        .roulette-canvas-container {
+            position: relative;
+            display: inline-block;
+        }
+        #rouletteCanvas { display: block; border-radius: 50%; }
+        .roulette-pointer {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8em;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+            z-index: 2;
+            pointer-events: none;
+        }
+        .roulette-spin-btn {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            border: none;
+            border-radius: 14px;
+            padding: 14px 40px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 0 #c47a00, 0 6px 16px rgba(247,151,30,0.4);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .roulette-spin-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #c47a00; }
+        .roulette-spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .roulette-result {
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            padding: 16px 20px;
+            text-align: center;
+            width: 100%;
+            display: none;
+        }
+        .roulette-result.show { display: block; animation: fadeInUp 0.4s ease; }
+        .roulette-result-label { font-size: 0.78em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); margin-bottom: 6px; }
+        .roulette-result-name { font-size: 1.3em; font-weight: 700; color: var(--text-primary); }
+
+        /* ===== RECIPE BATTLE ===== */
+        .battle-arena {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .battle-card {
+            flex: 1;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            padding: 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .battle-card:hover { transform: scale(1.03); border-color: var(--primary); box-shadow: 0 4px 18px rgba(255,107,107,0.25); }
+        .battle-card.winner { border-color: #4ecdc4; background: rgba(78,205,196,0.1); animation: winnerPulse 0.4s ease; }
+        .battle-card.loser  { opacity: 0.35; transform: scale(0.95); }
+        @keyframes winnerPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        .battle-card-emoji { font-size: 2.8em; }
+        .battle-card-name  { font-size: 0.92em; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
+        .battle-vs { font-size: 1.5em; font-weight: 900; color: var(--primary); flex-shrink: 0; text-shadow: 0 2px 6px rgba(255,107,107,0.4); }
+        .battle-round-label { text-align: center; font-size: 0.8em; color: var(--text-secondary); margin-bottom: 14px; font-weight: 600; }
+        .battle-result {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .battle-result.show { display: block; animation: fadeInUp 0.4s ease; }
+        .battle-result-emoji { font-size: 3em; }
+        .battle-result-name  { font-size: 1.4em; font-weight: 700; color: var(--text-primary); margin: 8px 0 4px; }
+        .battle-play-again {
+            margin-top: 14px;
+            background: linear-gradient(135deg, #e53935, #ff6b6b);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 28px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95em;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #a00;
+        }
+
+        /* ===== YES OR NO ===== */
+        .yesno-progress {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .yesno-pip {
+            width: 28px;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-color);
+            transition: background 0.3s;
+        }
+        .yesno-pip.done { background: var(--primary); }
+        .yesno-question-text {
+            font-size: 1.25em;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            min-height: 3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+        .yesno-btns {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+        }
+        .yesno-btn {
+            flex: 1;
+            max-width: 150px;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .yesno-btn:hover { transform: translateY(-3px); }
+        .yesno-btn-yes { background: linear-gradient(135deg, #1de9b6, #00b0ff); color: #fff; box-shadow: 0 4px 0 #00796b; }
+        .yesno-btn-no  { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: #fff; box-shadow: 0 4px 0 #b71c1c; }
+        .yesno-result {
+            text-align: center;
+            display: none;
+            animation: fadeInUp 0.4s ease;
+        }
+        .yesno-result.show { display: block; }
+        .yesno-result-emoji { font-size: 3em; margin-bottom: 8px; }
+        .yesno-result-name  { font-size: 1.3em; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+        .yesno-result-meta  { font-size: 0.85em; color: var(--text-secondary); }
+        .yesno-play-again {
+            margin-top: 14px;
+            background: linear-gradient(135deg, #1de9b6, #1565c0);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 28px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95em;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #0d47a1;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .discover-header {
@@ -3847,14 +4095,13 @@
                 grid-template-columns: 1fr;
             }
 
-            .discover-carousel-item {
-                width: 200px;
-                min-height: 78px;
+            .recipe-of-day {
+                flex-direction: column;
+                align-items: flex-start;
             }
-
-            .discover-carousel-thumb {
-                width: 78px;
-                height: 56px;
+            .recipe-of-day-thumb {
+                width: 100%;
+                height: 120px;
             }
 
             .swipe-container {
@@ -4572,7 +4819,7 @@
                     <button class="swipe-diff-btn" data-diff="hard" onclick="setSwipeDifficulty('hard')">Hard</button>
                 </div>
                 <div class="swipe-header">
-                    <h1>What's for Dinner?</h1>
+                    <h1 id="swipeTitle" style="cursor:default;user-select:none;">What's for Dinner?</h1>
                     <p>Swipe right to save, left to skip</p>
                     <div class="swipe-counter" id="swipeCounter">0 recipes liked today</div>
                     <div class="swipe-active-filters" id="swipeActiveFilters"></div>
@@ -4601,8 +4848,13 @@
 
         <!-- ========== DISCOVER PAGE ========== -->
         <div id="page-discover" class="page-view">
-            <div class="discover-carousel" id="discoverCarousel" style="display:none;">
-                <div class="discover-carousel-track" id="discoverCarouselTrack"></div>
+            <div class="recipe-of-day" id="recipeOfDay" style="display:none;" onclick="openRecipeModal(window._rotdId)">
+                <div class="recipe-of-day-thumb" id="rotdThumb"></div>
+                <div class="recipe-of-day-body">
+                    <div class="recipe-of-day-label">Recipe of the Day</div>
+                    <div class="recipe-of-day-name" id="rotdName"></div>
+                    <div class="recipe-of-day-meta" id="rotdMeta"></div>
+                </div>
             </div>
 
             <div class="discover-header">
@@ -4634,6 +4886,34 @@
             <div class="filter-chips" id="cuisineChips"></div>
 
             <div class="discover-grid" id="discoverGrid"></div>
+        </div>
+
+        <!-- ========== GAMES PORTAL (Easter Egg) ========== -->
+        <div id="page-games" class="page-view">
+            <div class="games-portal-header">
+                <button class="games-back-btn" onclick="switchPage('swipe')">← Back</button>
+                <div class="games-portal-title">
+                    <h1>🎮 Game Room</h1>
+                    <p>Play a game to decide what's for dinner tonight</p>
+                </div>
+            </div>
+            <div class="games-grid">
+                <div class="game-card game-card-spin" onclick="openSpinWheel()">
+                    <div class="game-card-icon">🎡</div>
+                    <div class="game-card-name">Spin the Wheel</div>
+                    <div class="game-card-desc">Roulette-style spinner picks your dinner — place your bets!</div>
+                </div>
+                <div class="game-card game-card-battle" onclick="openRecipeBattle()">
+                    <div class="game-card-icon">⚔️</div>
+                    <div class="game-card-name">Recipe Battle</div>
+                    <div class="game-card-desc">Two recipes go head-to-head. Pick your favourite to advance.</div>
+                </div>
+                <div class="game-card game-card-yesno" onclick="openYesNo()">
+                    <div class="game-card-icon">🤔</div>
+                    <div class="game-card-name">Yes or No</div>
+                    <div class="game-card-desc">Answer a few quick questions and we'll find your perfect dinner.</div>
+                </div>
+            </div>
         </div>
 
         <!-- ========== MEAL PLAN PAGE ========== -->
@@ -5106,6 +5386,86 @@
     </div>
 
     <!-- Edit Recipe Modal -->
+    <!-- ===== SPIN THE WHEEL MODAL ===== -->
+    <div class="modal-overlay" id="spinWheelModal">
+        <div class="modal" style="position:relative; max-width:560px;">
+            <button class="modal-close" onclick="closeSpinWheel()">✕</button>
+            <div class="modal-header">
+                <span class="emoji">🎡</span>
+                <div><h2>Spin the Wheel</h2><p>Let fate decide tonight's dinner</p></div>
+            </div>
+            <div class="modal-body">
+                <div class="roulette-wrap">
+                    <div class="roulette-canvas-container">
+                        <div class="roulette-pointer">▼</div>
+                        <canvas id="rouletteCanvas" width="420" height="420"></canvas>
+                    </div>
+                    <button class="roulette-spin-btn" id="rouletteSpinBtn" onclick="spinRouletteWheel()">🎲 Spin!</button>
+                    <div class="roulette-result" id="rouletteResult">
+                        <div class="roulette-result-label">Tonight's Dinner</div>
+                        <div class="roulette-result-name" id="rouletteResultName"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RECIPE BATTLE MODAL ===== -->
+    <div class="modal-overlay" id="recipeBattleModal">
+        <div class="modal" style="position:relative;">
+            <button class="modal-close" onclick="closeRecipeBattle()">✕</button>
+            <div class="modal-header">
+                <span class="emoji">⚔️</span>
+                <div><h2>Recipe Battle</h2><p>Pick the one you'd rather eat</p></div>
+            </div>
+            <div class="modal-body">
+                <div class="battle-round-label" id="battleRoundLabel">Round 1 of 5</div>
+                <div class="battle-arena" id="battleArena">
+                    <div class="battle-card" id="battleCard1" onclick="pickBattleWinner(0)">
+                        <div class="battle-card-emoji" id="battleEmoji1">🍽️</div>
+                        <div class="battle-card-name" id="battleName1">Recipe A</div>
+                    </div>
+                    <div class="battle-vs">VS</div>
+                    <div class="battle-card" id="battleCard2" onclick="pickBattleWinner(1)">
+                        <div class="battle-card-emoji" id="battleEmoji2">🍽️</div>
+                        <div class="battle-card-name" id="battleName2">Recipe B</div>
+                    </div>
+                </div>
+                <div class="battle-result" id="battleResult">
+                    <div class="battle-result-emoji" id="battleResultEmoji">🏆</div>
+                    <div style="font-size:0.9em;color:var(--text-secondary);margin-bottom:4px;">Tonight's Dinner</div>
+                    <div class="battle-result-name" id="battleResultName"></div>
+                    <button class="battle-play-again" onclick="startBattle()">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== YES OR NO MODAL ===== -->
+    <div class="modal-overlay" id="yesNoModal">
+        <div class="modal" style="position:relative;">
+            <button class="modal-close" onclick="closeYesNo()">✕</button>
+            <div class="modal-header">
+                <span class="emoji">🤔</span>
+                <div><h2>Yes or No</h2><p>We'll narrow it down for you</p></div>
+            </div>
+            <div class="modal-body">
+                <div class="yesno-progress" id="yesnoProgress"></div>
+                <div class="yesno-question-text" id="yesnoQuestion">Loading...</div>
+                <div class="yesno-btns" id="yesnoBtns">
+                    <button class="yesno-btn yesno-btn-yes" onclick="answerYesNo(true)">✅ Yes</button>
+                    <button class="yesno-btn yesno-btn-no"  onclick="answerYesNo(false)">❌ No</button>
+                </div>
+                <div class="yesno-result" id="yesnoResult">
+                    <div class="yesno-result-emoji" id="yesnoResultEmoji">🍽️</div>
+                    <div class="yesno-result-name" id="yesnoResultName"></div>
+                    <div class="yesno-result-meta" id="yesnoResultMeta"></div>
+                    <button class="yesno-play-again" onclick="startYesNo()">Try Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="editRecipeModal">
         <div class="modal" style="position:relative; max-width:720px;">
             <button class="modal-close" onclick="closeEditRecipeModal()">✕</button>
@@ -5436,6 +5796,323 @@
             if (page === 'mealplan') loadMealPlanPage();
             if (page === 'grocery') { loadGroceryPage(); loadFridgePage(); }
             if (page === 'admin') loadAdminPage();
+            if (page === 'games') loadGamesPage();
+        }
+
+        // ==================== EASTER EGG ====================
+        (function attachEasterEgg() {
+            let eggClicks = 0, eggTimer = null;
+            // Runs after DOM is ready (script is at bottom of body)
+            const title = document.getElementById('swipeTitle');
+            if (!title) return;
+            title.addEventListener('click', () => {
+                eggClicks++;
+                title.classList.remove('egg-shake');
+                void title.offsetWidth; // reflow to restart animation
+                title.classList.add('egg-shake');
+                clearTimeout(eggTimer);
+                if (eggClicks >= 5) {
+                    eggClicks = 0;
+                    switchPage('games');
+                } else {
+                    eggTimer = setTimeout(() => { eggClicks = 0; }, 4000);
+                }
+            });
+        })();
+
+        // ==================== GAMES PORTAL ====================
+        function loadGamesPage() { /* nothing to async-load, cards are static */ }
+
+        // ---- Spin the Wheel (Roulette) ----
+        let rouletteState = null;
+
+        function openSpinWheel() {
+            const modal = document.getElementById('spinWheelModal');
+            modal.classList.add('active');
+            document.getElementById('rouletteResult').classList.remove('show');
+            document.getElementById('rouletteSpinBtn').disabled = false;
+            initRouletteWheel();
+        }
+        function closeSpinWheel() {
+            document.getElementById('spinWheelModal').classList.remove('active');
+            if (rouletteState && rouletteState.rafId) cancelAnimationFrame(rouletteState.rafId);
+            rouletteState = null;
+        }
+
+        function initRouletteWheel() {
+            const canvas = document.getElementById('rouletteCanvas');
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            const cx = W / 2, cy = H / 2;
+            const wheelR = W * 0.42;
+            const trackR  = wheelR * 0.88; // ball outer track radius
+            const pocketR = wheelR * 0.72; // where ball settles
+
+            // Pick up to 12 recipes (dietary filtered)
+            const userDietary = currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : [];
+            let pool = userDietary.length ? filterByDietary(allRecipes, userDietary) : allRecipes;
+            if (!pool || pool.length === 0) pool = allRecipes;
+            const recipes = pool.slice().sort(() => Math.random() - 0.5).slice(0, 12);
+            if (recipes.length === 0) return;
+
+            const n = recipes.length;
+            const sliceAngle = (2 * Math.PI) / n;
+            const palette = ['#ff6b6b','#ffd200','#4ecdc4','#a29bfe','#fd79a8','#e17055','#00b894','#0984e3','#fdcb6e','#6c5ce7','#00cec9','#e84393'];
+
+            rouletteState = {
+                ctx, cx, cy, wheelR, trackR, pocketR, recipes, n, sliceAngle, palette,
+                wheelAngle: 0,
+                wheelVel: 0,
+                ballAngle: Math.random() * Math.PI * 2,
+                ballR: trackR,
+                ballVel: 0,
+                spinning: false,
+                settled: false,
+                rafId: null,
+            };
+
+            drawRoulette();
+        }
+
+        function drawRoulette() {
+            const s = rouletteState;
+            if (!s) return;
+            const { ctx, cx, cy, wheelR, pocketR, recipes, n, sliceAngle, palette, wheelAngle, ballAngle, ballR } = s;
+            const W = ctx.canvas.width, H = ctx.canvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            // Outer rim
+            ctx.beginPath();
+            ctx.arc(cx, cy, wheelR + 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#2d2d2d';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(cx, cy, wheelR + 8, 0, Math.PI * 2);
+            ctx.strokeStyle = '#c47a00';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Segments
+            for (let i = 0; i < n; i++) {
+                const start = wheelAngle + i * sliceAngle;
+                const end   = start + sliceAngle;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, wheelR, start, end);
+                ctx.closePath();
+                ctx.fillStyle = palette[i % palette.length];
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Label
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(start + sliceAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = 'rgba(0,0,0,0.75)';
+                ctx.font = `bold ${Math.max(9, Math.min(13, 130/n))}px Poppins, sans-serif`;
+                const label = (recipes[i].name || 'Recipe').slice(0, 14);
+                ctx.fillText(label, wheelR - 8, 4);
+                ctx.restore();
+            }
+
+            // Center cap
+            ctx.beginPath();
+            ctx.arc(cx, cy, wheelR * 0.14, 0, Math.PI * 2);
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fill();
+            ctx.strokeStyle = '#c47a00';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Ball
+            const bx = cx + ballR * Math.cos(ballAngle);
+            const by = cy + ballR * Math.sin(ballAngle);
+            ctx.beginPath();
+            ctx.arc(bx, by, 9, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.shadowColor = 'rgba(0,0,0,0.6)';
+            ctx.shadowBlur = 6;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(bx - 2, by - 2, 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.fill();
+        }
+
+        function spinRouletteWheel() {
+            if (!rouletteState || rouletteState.spinning) return;
+            const s = rouletteState;
+            s.spinning = true;
+            s.settled  = false;
+            s.wheelVel = (Math.random() * 0.06 + 0.09);  // wheel spin speed
+            s.ballVel  = -(Math.random() * 0.12 + 0.15); // ball goes opposite direction
+            s.ballR    = s.trackR;
+            document.getElementById('rouletteSpinBtn').disabled = true;
+            document.getElementById('rouletteResult').classList.remove('show');
+
+            function tick() {
+                if (!rouletteState) return;
+                const friction = 0.992;
+                s.wheelVel *= friction;
+                s.ballVel  *= friction;
+                s.wheelAngle += s.wheelVel;
+                s.ballAngle  += s.ballVel;
+
+                // Ball falls inward as angular velocity drops
+                const speed = Math.abs(s.ballVel);
+                const targetR = speed > 0.04 ? s.trackR : s.pocketR + (s.trackR - s.pocketR) * (speed / 0.04);
+                s.ballR += (targetR - s.ballR) * 0.06;
+
+                drawRoulette();
+
+                if (speed < 0.002 && !s.settled) {
+                    s.settled = true;
+                    s.ballR = s.pocketR;
+                    drawRoulette();
+                    // Determine winning segment
+                    const relAngle = ((s.ballAngle - s.wheelAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+                    const idx = Math.floor(relAngle / s.sliceAngle) % s.n;
+                    const winner = s.recipes[idx];
+                    document.getElementById('rouletteResultName').textContent = winner.name || 'Untitled Recipe';
+                    document.getElementById('rouletteResult').classList.add('show');
+                    document.getElementById('rouletteSpinBtn').disabled = false;
+                    return;
+                }
+
+                s.rafId = requestAnimationFrame(tick);
+            }
+            s.rafId = requestAnimationFrame(tick);
+        }
+
+        // ---- Recipe Battle ----
+        let battleState = null;
+        const BATTLE_ROUNDS = 5;
+
+        function openRecipeBattle() {
+            document.getElementById('recipeBattleModal').classList.add('active');
+            startBattle();
+        }
+        function closeRecipeBattle() {
+            document.getElementById('recipeBattleModal').classList.remove('active');
+            battleState = null;
+        }
+
+        function startBattle() {
+            const userDietary = currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : [];
+            let pool = userDietary.length ? filterByDietary(allRecipes, userDietary) : allRecipes;
+            if (!pool || pool.length < 2) pool = allRecipes;
+            const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+
+            battleState = { pool: shuffled, round: 1, picks: [] };
+            document.getElementById('battleResult').classList.remove('show');
+            document.getElementById('battleArena').style.display = 'flex';
+            renderBattleRound();
+        }
+
+        function renderBattleRound() {
+            const s = battleState;
+            document.getElementById('battleRoundLabel').textContent = `Round ${s.round} of ${BATTLE_ROUNDS}`;
+            const [a, b] = [s.pool[(s.round - 1) * 2 % s.pool.length], s.pool[(s.round - 1) * 2 + 1 % s.pool.length]];
+            s.current = [a, b];
+            ['battleCard1','battleCard2'].forEach(id => document.getElementById(id).classList.remove('winner','loser'));
+            document.getElementById('battleEmoji1').textContent = a.emoji || '🍽️';
+            document.getElementById('battleName1').textContent  = a.name  || 'Recipe A';
+            document.getElementById('battleEmoji2').textContent = b.emoji || '🍽️';
+            document.getElementById('battleName2').textContent  = b.name  || 'Recipe B';
+        }
+
+        function pickBattleWinner(idx) {
+            const s = battleState;
+            if (!s) return;
+            const winner = s.current[idx];
+            const loser  = s.current[1 - idx];
+            s.picks.push(winner);
+            document.getElementById(idx === 0 ? 'battleCard1' : 'battleCard2').classList.add('winner');
+            document.getElementById(idx === 0 ? 'battleCard2' : 'battleCard1').classList.add('loser');
+
+            setTimeout(() => {
+                if (s.round >= BATTLE_ROUNDS) {
+                    // Most-picked recipe wins
+                    const freq = {};
+                    s.picks.forEach(r => { freq[r.id] = (freq[r.id] || 0) + 1; });
+                    const topId = Object.keys(freq).sort((a,b) => freq[b]-freq[a])[0];
+                    const finalWinner = s.picks.find(r => String(r.id) === String(topId)) || winner;
+                    document.getElementById('battleArena').style.display = 'none';
+                    document.getElementById('battleResultEmoji').textContent = finalWinner.emoji || '🏆';
+                    document.getElementById('battleResultName').textContent  = finalWinner.name  || 'Untitled';
+                    document.getElementById('battleResult').classList.add('show');
+                } else {
+                    s.round++;
+                    renderBattleRound();
+                }
+            }, 500);
+        }
+
+        // ---- Yes or No ----
+        const YESNO_QUESTIONS = [
+            { text: 'Something quick? (under 30 min)',      filter: (r,y) => y ? (r.cookTime && r.cookTime <= 30) : true },
+            { text: 'Feeling adventurous? (new cuisine)',   filter: (r,y) => y ? !['italian','american','mexican'].includes((r.cuisine||'').toLowerCase()) : true },
+            { text: 'Cooking for more than 2 people?',      filter: (r,y) => y ? (r.servings && r.servings > 2) : (r.servings && r.servings <= 2) },
+            { text: 'Something hearty and filling?',        filter: (r,y) => y ? (r.difficulty === 'medium' || r.difficulty === 'hard') : true },
+            { text: 'Low effort tonight? (easy recipe)',    filter: (r,y) => y ? r.difficulty === 'easy' : r.difficulty !== 'easy' },
+        ];
+        let yesnoState = null;
+
+        function openYesNo() {
+            document.getElementById('yesNoModal').classList.add('active');
+            startYesNo();
+        }
+        function closeYesNo() {
+            document.getElementById('yesNoModal').classList.remove('active');
+            yesnoState = null;
+        }
+
+        function startYesNo() {
+            const userDietary = currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : [];
+            let pool = userDietary.length ? filterByDietary(allRecipes, userDietary) : allRecipes;
+            if (!pool || pool.length === 0) pool = allRecipes;
+            yesnoState = { pool: pool.slice(), step: 0 };
+
+            document.getElementById('yesnoResult').classList.remove('show');
+            document.getElementById('yesnoBtns').style.display = 'flex';
+
+            const pips = document.getElementById('yesnoProgress');
+            pips.innerHTML = YESNO_QUESTIONS.map(() => '<div class="yesno-pip"></div>').join('');
+            renderYesNoStep();
+        }
+
+        function renderYesNoStep() {
+            const s = yesnoState;
+            const q = YESNO_QUESTIONS[s.step];
+            document.getElementById('yesnoQuestion').textContent = q.text;
+            document.querySelectorAll('.yesno-pip').forEach((p, i) => {
+                p.classList.toggle('done', i < s.step);
+            });
+        }
+
+        function answerYesNo(yes) {
+            const s = yesnoState;
+            if (!s) return;
+            const q = YESNO_QUESTIONS[s.step];
+            const filtered = s.pool.filter(r => q.filter(r, yes));
+            if (filtered.length > 0) s.pool = filtered; // keep result only if non-empty
+
+            s.step++;
+            if (s.step >= YESNO_QUESTIONS.length) {
+                const pick = s.pool[Math.floor(Math.random() * s.pool.length)];
+                document.getElementById('yesnoBtns').style.display = 'none';
+                document.getElementById('yesnoResultEmoji').textContent = pick.emoji || '🍽️';
+                document.getElementById('yesnoResultName').textContent  = pick.name  || 'Untitled Recipe';
+                const meta = [pick.cuisine && capitalizeFirst(pick.cuisine), pick.cookTime && pick.cookTime + ' min', pick.difficulty && capitalizeFirst(pick.difficulty)].filter(Boolean).join('  ·  ');
+                document.getElementById('yesnoResultMeta').textContent = meta;
+                document.getElementById('yesnoResult').classList.add('show');
+            } else {
+                renderYesNoStep();
+            }
         }
 
         // ==================== DASHBOARD ====================
@@ -6629,13 +7306,12 @@
                 discoverDietaryFilters = new Set(userDietary);
                 renderDiscoverDietaryChips();
 
-                renderDiscoverCarousel(allRecipes);
+                renderRecipeOfDay(allRecipes);
                 populateCuisineFilter();
                 filterRecipes();
             } catch (err) {
                 console.error('Failed to load discover:', err);
-                const carousel = document.getElementById('discoverCarousel');
-                if (carousel) carousel.style.display = 'none';
+                document.getElementById('recipeOfDay').style.display = 'none';
                 document.getElementById('discoverGrid').innerHTML = `
                     <div class="no-results">
                         <div class="icon">⚠️</div>
@@ -6662,37 +7338,37 @@
             });
         }
 
-        function renderDiscoverCarousel(recipes) {
-            const carousel = document.getElementById('discoverCarousel');
-            const track = document.getElementById('discoverCarouselTrack');
-            if (!carousel || !track) return;
+        function renderRecipeOfDay(recipes) {
+            const card = document.getElementById('recipeOfDay');
+            if (!card) return;
 
-            const source = (Array.isArray(recipes) ? recipes : []).filter(r => r && r.id).slice(0, 20);
-            if (source.length < 2) {
-                carousel.style.display = 'none';
-                track.innerHTML = '';
-                return;
-            }
+            // Filter by user dietary restrictions first, fall back to all recipes
+            const userDietary = currentUser && Array.isArray(currentUser.dietary) ? currentUser.dietary : [];
+            let pool = userDietary.length > 0 ? filterByDietary(recipes, userDietary) : recipes;
+            if (!pool || pool.length === 0) pool = recipes;
+            if (!pool || pool.length === 0) { card.style.display = 'none'; return; }
 
-            carousel.style.display = 'block';
+            // Pick deterministically by date so it stays the same all day
+            const today = new Date();
+            const dateKey = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+            const recipe = pool[dateKey % pool.length];
 
-            const itemHtml = source.map(recipe => `
-                <div class="discover-carousel-item" onclick="openRecipeModal(${recipe.id})" title="${escapeHtml(recipe.name || 'Recipe')}">
-                    <div class="discover-carousel-thumb">
-                        ${recipe.image
-                            ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name || 'Recipe')}">`
-                            : (recipe.emoji || '🍽️')}
-                    </div>
-                    <div class="discover-carousel-name">${escapeHtml(recipe.name || 'Untitled Recipe')}</div>
-                </div>
-            `).join('');
+            window._rotdId = recipe.id;
 
-            // Duplicate for seamless infinite scrolling.
-            track.innerHTML = itemHtml + itemHtml;
+            document.getElementById('rotdThumb').innerHTML = recipe.image
+                ? `<img src="${recipe.image}" alt="${escapeHtml(recipe.name || 'Recipe')}">`
+                : (recipe.emoji || '🍽️');
 
-            // Fast, but still readable speed. Scale with item count.
-            const durationSec = Math.max(14, Math.min(36, source.length * 1.4));
-            track.style.setProperty('--discover-carousel-duration', `${durationSec}s`);
+            document.getElementById('rotdName').textContent = recipe.name || 'Untitled Recipe';
+
+            const meta = [];
+            if (recipe.cuisine) meta.push(`🌍 ${capitalizeFirst(recipe.cuisine)}`);
+            if (recipe.difficulty) meta.push(`📊 ${capitalizeFirst(recipe.difficulty)}`);
+            if (recipe.cookTime) meta.push(`⏱ ${recipe.cookTime} min`);
+            if (userDietary.length > 0) meta.push(`✅ Matches your preferences`);
+            document.getElementById('rotdMeta').textContent = meta.join('  ·  ');
+
+            card.style.display = 'flex';
         }
 
         function selectCuisineChip(chip, cuisine) {

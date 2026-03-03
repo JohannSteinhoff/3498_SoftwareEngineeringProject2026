@@ -25,7 +25,9 @@
       "WebFetch(domain:diethood.com)",
       "WebFetch(domain:themom100.com)",
       "WebFetch(domain:keepingitsimpleitalian.com)",
-      "WebFetch(domain:www.onceuponachef.com)"
+      "WebFetch(domain:www.onceuponachef.com)",
+      "Bash(npm install:*)",
+      "Bash(npx jest:*)"
     ]
   }
 }
